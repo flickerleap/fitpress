@@ -1,0 +1,31 @@
+.class-time{
+	padding: 10px 20px;
+}
+.class-time:nth-child(even){
+	background: #fafafa;
+}
+.add-class-time{
+    display: inline-block;
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 26px;
+    height: 28px;
+    margin: 0;
+    padding: 0 10px 1px;
+    cursor: pointer;
+    border-width: 1px;
+    border-style: solid;
+    -webkit-appearance: none;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    white-space: nowrap;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    color: #555;
+    border-color: #ccc;
+    background: #f7f7f7;
+    -webkit-box-shadow: 0 1px 0 #ccc;
+    box-shadow: 0 1px 0 #ccc;
+    vertical-align: top;
+}

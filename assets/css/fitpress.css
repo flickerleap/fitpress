@@ -1,0 +1,37 @@
+table.fp-calendar { width: 100%; border: none; }
+tr.fp-calendar-row { border: none; }
+td.fp-calendar-day { min-height:80px; position:relative; }
+td.fp-calendar-day .mobile-day{ display: none; }
+td.fp-calendar-day:hover   { background:#eee; }
+td.fp-calendar-day-np  { background:#faf1f1; min-height:80px; }
+th.fp-calendar-day-head { border: none; font-weight:bold; text-align:center; padding:5px; font-size: 13px;}
+div.fp-day-number      { padding: 0 5px; height: 25px; line-height: 25px; font-weight:bold; text-align:center; border-bottom:1px solid #999; }
+td.fp-calendar-day, td.fp-calendar-day-np { border: 1px solid #fff; font-size:10px; padding: 5px 5px 5px; vertical-align: top;text-align: center;}
+table.fp-calendar td .day-session{clear:both;position: relative;margin-bottom: 10px;padding: 5px;}
+table.fp-calendar td .day-session:nth-child(odd){background:#eee;}
+table.fp-calendar td .day-session .class-name{font-size: 9px;margin: 0;}
+table.fp-calendar td .day-session .session-time{font-size:11px;font-weight: bold;margin:0;}
+table.fp-calendar td .day-session .session-book{margin:0;}
+table.fp-calendar td .day-session .session-space{font-size: 9px;margin:0;}
+
+.btn{font-weight: bold; font-size: 12px;text-transform: uppercase;text-decoration: none;display: inline-block;background: #ccc;color: #222;border:none;line-height: 2.5em;padding: 0 5px;border-radius: 4px;margin: 5px 0;box-shadow: none;}
+.btn.do-booking{background: #55dd55;text-decoration: none;border:none;color:#fff;text-shadow: 1px 1px 0 rgba(0,0,0,0.3);}
+.btn.do-booking:hover{background: #44cc44;}
+.btn.btn-cancel{background: #dd5555;color:#fff;text-shadow: 1px 1px 0 rgba(0,0,0,0.3);}
+.btn.btn-booking:hover{background: #cc4444;}
+table.fp-calendar td .day-session .session-book .btn{display: block;}
+
+@media only screen and (max-width: 760px),(min-device-width: 768px) and (max-device-width: 1024px)  {
+    table.fp-calendar, table.fp-calendar thead, table.fp-calendar tbody, table.fp-calendar th, table.fp-calendar td, table.fp-calendar tr { display: block; width: 100%; }
+    table.fp-calendar thead tr, table.fp-calendar tr td.fp-calendar-day-np, table.fp-calendar tr td.fp-calendar-day-empty  { position: absolute;top: -9999px;left: -9999px;}
+    table.fp-calendar tr .mobile-day { display: inline }
+    table.fp-calendar td { /* Behave  like a "row" */border: none;background: none;}
+    table.fp-calendar div.fp-day-number { font-size: 13px;}
+    table.fp-calendar td .day-session { width: 50%;display: inline-block;padding: 10px;background: none;}
+    table.fp-calendar td .day-session:nth-child(odd) {background: none;}
+}
+
+.account-menu{margin: 0 0 20px;padding: 0;}
+.account-menu li{margin: 0 10px 0 0;padding: 0;list-style: none;display: inline-block;}
+.account-menu li a{display: inline-block;box-shadow: none;padding: 0 10px;line-height: 2em;border-radius:4px;color: #444;}
+.account-menu .active a, .account-menu li a:hover{background: #eee;}

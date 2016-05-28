@@ -32,6 +32,8 @@ class FitPress{
 	 */
 	public $version = '1.0';
 
+	public $query = '';
+
 	/**
 	 * @var FitPress The single instance of the class
 	 * @since 1.0
@@ -87,8 +89,42 @@ class FitPress{
 	 * @since  1.0
 	 */
 	private function init_hooks() {
-		register_activation_hook( __FILE__, array( 'WC_Install', 'install' ) );
+
+		register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
+		register_activation_hook( __FILE__, array( 'FP_Install', 'install' ) );
 		add_action( 'after_setup_theme', array( $this, 'setup_environment' ) );
+
+		add_action('wp_enqueue_scripts', array( $this, 'enqueue_frontend_scripts' ) );
+		add_action('admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+
+	}
+
+	/**
+	 * Hook into actions and filters
+	 * @since  1.0
+	 */
+	public function enqueue_admin_scripts() {
+		
+		wp_enqueue_script( 'fitpress-admin-script', FP_PLUGIN_URL . '/assets/js/fitpress-admin.js', array( 'jquery' ) );
+		
+		wp_enqueue_style( 'fitpress-admin-style', FP_PLUGIN_URL . '/assets/css/fitpress-admin.css' );
+
+	}
+
+	/**
+	 * Hook into actions and filters
+	 * @since  1.0
+	 */
+	public function enqueue_frontend_scripts() {
+		
+		wp_enqueue_script( 'fitpress-script', FP_PLUGIN_URL . '/assets/js/fitpress.js', array( 'jquery' ) );
+		
+		wp_localize_script( 'fitpress-script', 'fp_booking',
+            array( 'ajax_url' => self::ajax_url() ) );
+		
+		wp_enqueue_style( 'fitpress-style', FP_PLUGIN_URL . '/assets/css/fitpress.css' );
+		wp_enqueue_style( 'font-awesome', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css' );
+
 	}
 
 	/**
@@ -99,6 +135,7 @@ class FitPress{
 		$upload_dir = wp_upload_dir();
 
 		$this->define( 'FP_PLUGIN_FILE', __FILE__ );
+		$this->define( 'FP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 		$this->define( 'FP_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 		$this->define( 'FP_VERSION', $this->version );
 
@@ -119,7 +156,14 @@ class FitPress{
 	 * Include required core files used in admin and on the frontend.
 	 */
 	public function includes() {
-		include_once( 'includes/class-fp-post-types.php' );
+		include_once( 'includes/fp-utilities.php' );
+		include_once( 'includes/class-fp-install.php' );
+		$this->query = include_once( 'includes/class-fp-account.php' );
+		include_once( 'includes/class-fp-membership.php' );
+		include_once( 'includes/class-fp-credits.php' );
+		include_once( 'includes/class-fp-classes.php' );
+		include_once( 'includes/class-fp-session.php' );
+		include_once( 'includes/class-fp-booking.php' );
 	}
 
 	/**
