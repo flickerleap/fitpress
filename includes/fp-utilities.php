@@ -209,7 +209,7 @@ add_filter( 'cancel_booking_url',  'fp_cancel_booking_url', 10, 0 );
  * @return string
  */
 function fp_customer_edit_account_url() {
-	$edit_account_url = fp_get_endpoint_url( 'edit-account', '', fp_get_page_permalink( 'myaccount' ) );
+	$edit_account_url = fp_get_endpoint_url( 'update-account', '', fp_get_page_permalink( 'account' ) );
 
 	return apply_filters( 'woocommerce_customer_edit_account_url', $edit_account_url );
 }
@@ -231,9 +231,18 @@ function fp_template_redirect() {
 add_action( 'template_redirect', 'fp_template_redirect' );
 
 function maybe_manual_run(){
-	if( isset( $_GET['reset_credits'] ) ):
+	if( isset( $_GET['force_reset_credits'] ) ):
 		FP_Credit::maybe_reset_credits( true );
-		$url = remove_query_arg( array( 'reset_credits' ) );
+		$url = remove_query_arg( array( 'force_reset_credits' ) );
+		wp_redirect( $url );
+	elseif( isset( $_GET['force_create_sessions'] ) ):
+		$FP_Session = new FP_Session();
+		$FP_Session->add_sessions( strtotime( 'tomorrow midnight' ) );
+		$url = remove_query_arg( array( 'force_create_sessions' ) );
+		wp_redirect( $url );
+	elseif( isset( $_GET['member_id'] ) && isset( $_GET['membership_id'] ) ):
+		FP_Membership::quick_member_add( $_GET['member_id'], $_GET['membership_id'] );
+		$url = remove_query_arg( array( 'member_id', 'membership_id' ) );
 		wp_redirect( $url );
 	endif;
 }

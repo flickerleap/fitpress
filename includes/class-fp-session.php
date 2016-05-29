@@ -20,9 +20,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class FP_Session {
 
-	public $book_ahead = 7;
+	public static $book_ahead = 7;
 
-	public $holidays = array();
+	public static $holidays = array();
 
 	/**
 	 * Hook in methods.
@@ -38,14 +38,14 @@ class FP_Session {
 
 	}
 
-	public function add_sessions( $current_day = null, $class_id = null ){	
+	public static function add_sessions( $start_day = null, $class_id = null ){	
 
-		if( !$current_day )
-			$current_day = strtotime( '+' . $this->book_ahead . ' days' );
+		if( !$start_day )
+			$start_day = strtotime( '+' . self::$book_ahead . ' days' );
 		
-		$end_day = strtotime( '+1 day', strtotime( '+' . $this->book_ahead . ' days' )  );
+		$end_day = strtotime( '+1 day', strtotime( '+' . self::$book_ahead . ' days' )  );
 
-		$this->holidays = get_option( 'fitpress_holidays' );
+		self::$holidays = get_option( 'fitpress_holidays' );
 
 		if( $class_id ):
 
@@ -70,6 +70,8 @@ class FP_Session {
 
 				$class_id = $class->ID;
 
+				$current_day = $start_day;
+
 				while( $current_day < $end_day ):
 					
 					$day_of_week = strtolower( date( 'l', $current_day  ) );
@@ -85,8 +87,8 @@ class FP_Session {
 						$sunday_public_holiday = date( 'j F', strtotime( '-1 day', $current_day ) );
 
 					if(
-						!in_array( $short_date, $this->holidays )
-						&& !in_array( $sunday_public_holiday, $this->holidays )
+						!in_array( $short_date, self::$holidays )
+						&& !in_array( $sunday_public_holiday, self::$holidays )
 						&& $short_date != $easter
 						&& $short_date != $easter
 						&& $short_date != $family_day
@@ -97,7 +99,7 @@ class FP_Session {
 							'meta_query' => array(
 								array(
 									'key' => 'fp_class_id',
-									'value' => $class->ID,
+									'value' => $class_id,
 									'type' => 'NUMERIC'
 								)
 							),

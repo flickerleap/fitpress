@@ -14,7 +14,7 @@ jQuery(document).ready(function($) {
          type : "post",
          dataType : "json",
          url : fp_booking.ajax_url,
-         data : {action: $(this).data('action'), session_id: $(this).data('session-id'), subscription_key: $(this).data('subscription-key')},
+         data : {action: $(this).data('action'), session_id: $(this).data('session-id')},
          success: function(response) {
             if(response.type == "success") {
               cell = button.parent();

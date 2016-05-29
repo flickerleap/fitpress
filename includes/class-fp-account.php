@@ -60,7 +60,7 @@ class FP_Account {
 		// Query vars to add to WP
 		$this->query_vars = array(
 			// My account actions
-			'edit-account',
+			'update-account',
 			'lost-password',
 			'member-logout',
 			'book',
@@ -122,7 +122,7 @@ class FP_Account {
 
 			self::account_menu();
 
-			if ( isset( $wp->query_vars['edit-account'] ) ) {
+			if ( isset( $wp->query_vars['update-account'] ) ) {
 
 				self::edit_account();
 
@@ -171,7 +171,7 @@ class FP_Account {
 	 * Edit account details page
 	 */
 	private static function edit_account() {
-		fp_get_template( 'account/form-edit-account.php', array( 'user' => get_user_by( 'id', get_current_user_id() ) ) );
+		fp_get_template( 'account/form-update-account.php', array( 'user' => get_user_by( 'id', get_current_user_id() ) ) );
 	}
 
 	/**

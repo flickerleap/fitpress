@@ -68,7 +68,7 @@
 
 					$calendar.= '<p class="session-space">';
 
-					$calendar .= 'Space: ';
+					$calendar .= 'Space: <br />';
 					$calendar .= ( isset( $day_session->class_limit ) && !empty( $day_session->class_limit )) ? '<span class="session-bookings">' . ($day_session->class_limit - $day_session->current_bookings) . '</span> / <span class="session-limit">' . $day_session->class_limit . '</span>' : '<span class="session-limit">Unlimited</span>';
 
 					$calendar.= '</p>';

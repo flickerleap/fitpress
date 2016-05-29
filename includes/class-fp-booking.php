@@ -31,8 +31,8 @@ class FP_Booking {
 
 		add_action( 'template_redirect', array( $this, 'booking_hook' ) );
 
-		add_action( 'wp_ajax_make_booking', array( $this, 'make_booking_callback' ) );
-		add_action( 'wp_ajax_cancel_booking', array( $this, 'cancel_booking_callback' ) );
+		add_action( 'wp_ajax_fp_make_booking', array( $this, 'make_booking_callback' ) );
+		add_action( 'wp_ajax_fp_cancel_booking', array( $this, 'cancel_booking_callback' ) );
 
 		add_action( 'init', array( $this, 'register_post_types' ), 5 );
 
@@ -162,7 +162,7 @@ class FP_Booking {
 				fp_cancel_booking_url()
 			);
 
-			$action = '<a href="' . $url . '" class="btn btn-flat btn-small btn-cancel do-booking" data-session-id="' . $session->ID . '" data-action="cancel_booking">Cancel</a>';
+			$action = '<a href="' . $url . '" class="button button-flat button-small button-cancel do-booking" data-session-id="' . $session->ID . '" data-action="fp_cancel_booking">Cancel</a>';
 
 		elseif( self::is_booked( $session->ID, $user_id ) && date( 'G', current_time( 'timestamp' ) ) >= 0 && date( 'G', current_time( 'timestamp' ) ) < 12 && strtotime( "+30 minutes", current_time( 'timestamp' ) ) > $session->start_time ):
 
@@ -192,7 +192,7 @@ class FP_Booking {
 				fp_make_booking_url()
 			);
 
-			$action = '<a href="' . $url . '" class="btn btn-flat btn-small do-booking" data-subscription-key="' . $subscription_key . '" data-session-id="' . $session->ID . '" data-action="make_booking">Book</a>';
+			$action = '<a href="' . $url . '" class="button button-flat button-small do-booking" data-subscription-key="' . $subscription_key . '" data-session-id="' . $session->ID . '" data-action="fp_make_booking">Book</a>';
 
 		endif;
 
@@ -257,7 +257,7 @@ class FP_Booking {
 					fp_cancel_booking_url()
 				);
 
-				$action = '<a href="' . $url . '" class="btn btn-flat btn-small btn-cancel do-booking" data-session-id="' . $session->ID . '" data-action="cancel_booking">Cancel</a>';
+				$action = '<a href="' . $url . '" class="button button-flat button-small button-cancel do-booking" data-session-id="' . $session->ID . '" data-action="fp_cancel_booking">Cancel</a>';
 
 			elseif( self::is_booked( $session->ID, $user_id ) && date( 'G', current_time( 'timestamp' ) ) >= 0 && date( 'G', current_time( 'timestamp' ) ) < 12 && strtotime( "+30 minutes", current_time( 'timestamp' ) ) > $session->start_time ):
 
@@ -286,7 +286,7 @@ class FP_Booking {
 					fp_make_booking_url()
 				);
 
-				$action = '<a href="' . $url . '" class="btn btn-flat btn-small do-booking" data-session-id="' . $session->ID . '" data-action="make_booking">Book</a>';
+				$action = '<a href="' . $url . '" class="button button-flat button-small do-booking" data-session-id="' . $session->ID . '" data-action="fp_make_booking">Book</a>';
 
 			endif;
 
@@ -424,6 +424,37 @@ class FP_Booking {
 			exit;
 
 		endif;
+
+	}
+
+	public static function add_booking( $session_id, $member_ids ){
+
+		foreach( $member_ids as $member_id ):
+
+			if( !self::is_booked( $session_id, $member_id ) && get_user_by('id', $member_id) ):
+
+				$booking_date = get_post_meta( $session_id, '_fp_start_time', true );
+
+				$booking_post = array(
+					'post_title'     => 'Session Booking',
+					'post_status'    => 'publish',
+					'ping_status'    => 'closed',
+					'comment_status' => 'closed',
+					'post_type'      => 'fp_booking',
+				);
+
+				$booking_post_id = wp_insert_post( $booking_post );
+
+				if( $booking_post_id ):
+					update_post_meta( $booking_post_id, '_fp_session_id', $session_id );
+					update_post_meta( $booking_post_id, '_fp_user_id', $member_id );
+				endif;
+
+				FP_Credit::modify_credits( -1, $member_id );
+
+			endif;
+
+		endforeach;
 
 	}
 
@@ -580,7 +611,7 @@ class FP_Booking {
 						'date' => date( 'l, j F Y', $start_time ),
 						'start_time' => date( 'H:i', $start_time ),
 						'end_time' => date( 'H:i', $start_time ),
-						'action'     => '<a href="' . $url . '" class="btn btn-flat btn-small btn-cancel">Cancel</a>',
+						'action'     => '<a href="' . $url . '" class="button button-flat button-small button-cancel">Cancel</a>',
 					);
 
 				endforeach;
@@ -607,7 +638,7 @@ class FP_Booking {
 
 					$session_id = $params['session_id'];
 					$user_id = get_post_meta( $booking->ID, '_fp_user_id', true );
-					$user = get_user_by( 'id', get_current_user_id() );
+					$user = get_user_by( 'id', $user_id );
 
 					$url = add_query_arg(
 						array(
@@ -619,7 +650,7 @@ class FP_Booking {
 
 					$booking_data[] = array(
 						'user' => $user,
-						'action'     => '<a href="' . $url . '" class="btn btn-flat btn-small btn-cancel">Cancel</a>',
+						'action'     => '<a href="' . $url . '" class="button button-flat button-small button-cancel">Cancel</a>',
 						'action'     => '',
 					);
 

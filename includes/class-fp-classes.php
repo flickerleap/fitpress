@@ -225,12 +225,26 @@ class FP_Classes {
         </p>
    		<?php
 
-   		$days = get_terms( array(
-   			'taxonomy' => 'fp_day',
-			'hide_empty' => false,
-			'orderby' => 'term_id',
-			'get' => 'all'
-		) );
+   		global $wp_version;
+
+   		if($wp_version >= 4.5):
+
+	   		$days = get_terms( array(
+	   			'taxonomy' => 'fp_day',
+				'hide_empty' => false,
+				'orderby' => 'term_id',
+				'get' => 'all'
+			) );
+
+	   	else:
+
+	   		$days = get_terms( 'fp_day', array(
+				'hide_empty' => false,
+				'orderby' => 'term_id',
+				'get' => 'all'
+			) );
+
+	   	endif;
 
    		$args = array(
    			'post_type' => 'fp_class_time',
@@ -263,7 +277,7 @@ class FP_Classes {
 					</p>
 					<p>
 					<?php foreach($days as $day):?>
-						<?php echo $day->name;?> <input type="checkbox" name="class_time_days[<?php echo $class_time->ID;?>][]" <?php if( in_array( $day->term_id, $class_time_term_ids ) ) echo 'checked="checked"';?> class="regular-check class-day" value="<?php echo $day->term_id;?>" /> 
+						<input type="checkbox" name="class_time_days[<?php echo $class_time->ID;?>][]" <?php if( in_array( $day->term_id, $class_time_term_ids ) ) echo 'checked="checked"';?> class="regular-check class-day" value="<?php echo $day->term_id;?>" /> <?php echo $day->name;?>&nbsp;|&nbsp;
 					<?php endforeach;?>
 					</p>
 				</div>
@@ -279,11 +293,11 @@ class FP_Classes {
 			<div class="class-time">
 				<p>
 				Start Time <input name="class_times[0][start_time]" type="text" value="" class="class-start-time" placeholder="00:00" /> - 
-				<input name="class_times[0][end_time]" type="text" value="" class="class-start-time" placeholder="00:00" /> End Time (Delete? <input type="checkbox" name="class_times[0][delete]"  class="regular-check" value="1" />)
+				<input name="class_times[0][end_time]" type="text" value="" class="class-end-time" placeholder="00:00" /> End Time (Delete? <input type="checkbox" name="class_times[0][delete]"  class="regular-check" value="1" />)
 				</p>
 				<p>
 				<?php foreach($days as $day):?>
-					<?php echo $day->name;?> <input type="checkbox" name="class_time_days[0][]" class="regular-check class-day" value="<?php echo $day->term_id;?>" /> 
+					<input type="checkbox" name="class_time_days[0][]" class="regular-check class-day" value="<?php echo $day->term_id;?>" /> <?php echo $day->name;?>&nbsp;|&nbsp;
 				<?php endforeach;?>
 				</p>
 			</div>
@@ -347,7 +361,7 @@ class FP_Classes {
         	<ol>
         		<?php foreach( $bookings as $booking ):?>
         		<li>
-        			<?php echo $booking['user']->display_name;?>
+        			<a href="<?php echo get_edit_user_link( $booking['user']->ID ); ?>"><?php echo $booking['user']->display_name;?></a>
         			<?php echo $booking['action'];?>
         		</li>
         		<?php endforeach;?>
@@ -356,6 +370,10 @@ class FP_Classes {
     	<?php else:?>
     		<p>No members have booked yet.</p>
     	<?php endif;?>
+        <p>
+            <label for="add_member">Add Members (comma separated)</label>
+            <input name="add_member" type="text" class="small-text">
+        </p>
         <?php
     }
  
@@ -494,6 +512,12 @@ class FP_Classes {
      * @return null
      */
     public function save_session_metabox( $post_id, $post ) {
+ 
+        // Check if nonce is set.
+        if ( $post->post_type != 'fp_session' ) {
+            return;
+        }
+
         // Add nonce for security and authentication.
         $nonce_name   = isset( $_POST['session_nonce'] ) ? $_POST['session_nonce'] : '';
         $nonce_action = FP_PLUGIN_FILE;
@@ -527,17 +551,22 @@ class FP_Classes {
         $end_time = get_post_meta( $post->ID, "_fp_end_time", true ); 
         $class_id = get_post_meta( $post->ID, "_fp_class_id", true ); 
 
-	    if(isset($_POST["start_time"])){
+	    if(isset($_POST["start_time"]))
 	        $start_time = strtotime( $_POST["date"] . ' ' . $_POST["start_time"] );
-	    }
 
-	    if(isset($_POST["end_time"])){
+	    if(isset($_POST["end_time"]))
 	        $end_time = strtotime( $_POST["date"] . ' ' . $_POST["end_time"] );
-	    }
 
-	    if(isset($_POST["class_id"])){
+	    if(isset($_POST["class_id"]))
 	        $class_id = $_POST["class_id"];
-	    }
+
+	    if( isset( $_POST["add_member"] ) && !empty( $_POST["add_member"] ) ):
+
+	    	$member_ids = array_map( 'trim', explode( ',', $_POST["add_member"] ) );
+
+	    	FP_Booking::add_booking( $post_id, $member_ids );
+
+	    endif;
 
 	    $args = array(
       		'ID' => $post_id,

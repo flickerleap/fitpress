@@ -264,12 +264,27 @@ class FP_Membership {
 
 	}
 
+	public static function quick_member_add( $member_id = null, $membership_id = null ) {
+
+		if( !$member_id || !$membership_id  )
+			return;
+
+		$credits = FP_Credit::update_member_credits( $membership_id, 0, 0 );
+
+   		do_action( 'fitpress_before_membership_profile_save', array( 'member_id' => $member_id, 'old_membership_id' => false ) );
+
+		update_user_meta( $member_id, 'fitpress_membership_id', $membership_id );
+		update_user_meta( $member_id, 'fitpress_credits', $credits );
+
+	}
+
 	public static function get_memberships( $select = false ){
 
 		$args = array(
 			'post_type' => 'membership',
 			'orderby' => 'post_title',
-			'order' => 'ASC'
+			'order' => 'ASC',
+			'posts_per_page' => '-1'
 		);
 
 		$memberships_obj = new WP_Query( $args );

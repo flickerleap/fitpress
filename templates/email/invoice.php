@@ -30,10 +30,10 @@ if ( ! defined( 'ABSPATH' ) ) {
                                 	<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_header" style="background-color: #000;padding:10px;">
                                         <tr>
                                             <td style="text-align: left;color: #fff;">
-                                            	<a href="http://cfxa.co.za"><img src="http://cfxa.co.za/wp-content/uploads/2015/05/ExAnimo_logo.png" title="CrossFit Ex Animo" alt="CrossFit Ex Animo" style="width:300px;" /></a><br />
+                                            	<a href="http://cfxa.co.za"><img src="http://cfxa.co.za/wp-content/uploads/2015/05/ExAnimo_logo.png" title="CrossFit Ex Animo" alt="CrossFit Ex Animo" style="width:300px;" width="300" /></a><br />
                                                 <h2><?php $header;?></h2>
                                             </td>
-                                            <td style="text-align: right;color: #fff;">
+                                            <td style="text-align: right;color: #fff;font-size: 11px;">
 
                                                 <p>P.O Box 48 Linbro Park 2065</p>
 
