@@ -229,4 +229,13 @@ function fp_template_redirect() {
 
 }
 add_action( 'template_redirect', 'fp_template_redirect' );
+
+function maybe_manual_run(){
+	if( isset( $_GET['reset_credits'] ) ):
+		FP_Credit::maybe_reset_credits( true );
+		$url = remove_query_arg( array( 'reset_credits' ) );
+		wp_redirect( $url );
+	endif;
+}
+add_action( 'template_redirect', 'maybe_manual_run');
 ?>

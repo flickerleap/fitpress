@@ -4,7 +4,7 @@
  */
 /*
 Plugin Name: FitPress
-Plugin URI: http://fitpress.com/
+Plugin URI: http://fitpress.co.za
 Description: FitPress is the first of its kind for managing CrossFit boxes and fitness gyms. It allows for member management and class bookings.
 Version: 1.0
 Author: Digital Leap
@@ -164,6 +164,7 @@ class FitPress{
 		include_once( 'includes/class-fp-classes.php' );
 		include_once( 'includes/class-fp-session.php' );
 		include_once( 'includes/class-fp-booking.php' );
+		include_once( 'includes/class-fp-email.php' );
 	}
 
 	/**

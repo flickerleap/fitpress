@@ -36,13 +36,6 @@ class FP_Booking {
 
 		add_action( 'init', array( $this, 'register_post_types' ), 5 );
 
-		if ( ! is_admin() ) {
-			add_filter( 'query_vars', array( $this, 'add_query_vars'), 1 );
-			add_action( 'parse_request', array( $this, 'parse_request'), 1 );
-		}
-
-		$this->init_query_vars();
-
 	}
 
 	public function add_endpoints(){
@@ -51,50 +44,6 @@ class FP_Booking {
 			add_rewrite_endpoint( $var, EP_ROOT | EP_PAGES );
 		}
 
-	}
-
-	/**
-	 * Init query vars by loading options.
-	 */
-	public function init_query_vars() {
-		// Query vars to add to WP
-		$this->query_vars = array(
-			'make-booking',
-			'cancel-booking'
-		);
-	}
-
-	/**
-	 * add_query_vars function.
-	 *
-	 * @access public
-	 * @param array $vars
-	 * @return array
-	 */
-	public function add_query_vars( $vars ) {
-		foreach ( $this->query_vars as $key => $var ) {
-			$vars[] = $key;
-		}
-
-		return $vars;
-	}
-
-	/**
-	 * Parse the request and look for query vars - endpoints may not be supported
-	 */
-	public function parse_request() {
-		global $wp;
-
-		// Map query vars to their keys, or get them if endpoints are not supported
-		foreach ( $this->query_vars as $key => $var ) {
-			if ( isset( $_GET[ $var ] ) ) {
-				$wp->query_vars[ $key ] = $_GET[ $var ];
-			}
-
-			elseif ( isset( $wp->query_vars[ $var ] ) ) {
-				$wp->query_vars[ $key ] = $wp->query_vars[ $var ];
-			}
-		}
 	}
 
 	public static function make_booking_callback( ){

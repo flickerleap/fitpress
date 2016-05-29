@@ -119,15 +119,11 @@ class FP_Membership {
 
     	?>
         <p>
-            <label for="price">Price</label>
-            <input name="price" type="text" value="<?php echo isset( $membership_data['price'] ) ? $membership_data['price'] : ''; ?>">
-        </p>
-
-        <p>
             <label for="credits">Credits</label>
             <input name="credits" type="text" value="<?php echo isset( $membership_data['credits'] ) ? $membership_data['credits'] : ''; ?>">
         </p>
    		<?php  
+   		do_action( 'fitpress_after_membership_fields', $membership_data );
     }
  
     /**
@@ -169,13 +165,11 @@ class FP_Membership {
 
         $membership_data = get_post_meta($post->ID, "membership_data", true); 
 
-	    if(isset($_POST["price"])){
-	        $membership_data['price'] = $_POST["price"];
-	    }
-
 	    if(isset($_POST["credits"])){
 	        $membership_data['credits'] = $_POST["credits"];
 	    }
+
+   		$membership_data = apply_filters( 'fitpress_before_membership_save', $membership_data );
 
 	    update_post_meta($post_id, "membership_data", $membership_data);
 
@@ -228,6 +222,8 @@ class FP_Membership {
 			</td>
 			</tr>
 
+			<?php do_action( 'fitpress_after_membership_profile_fields' );?>
+
 			</table>
 
 		<?php else:?>
@@ -240,27 +236,31 @@ class FP_Membership {
 
 	}
 
-	function save_membership_profile_fields( $user_id ) {
+	function save_membership_profile_fields( $member_id ) {
 
-		if ( !current_user_can( 'edit_user', $user_id ) )
+		if ( !current_user_can( 'edit_user', $member_id ) )
 			return false;
 
 		if( !isset( $_POST['membership_id'] ) || !isset( $_POST['credits'] ) )
 			return;
 
-		$old_membership_id = get_user_meta( $user_id, 'fitpress_membership_id', true );
-		$old_credits = get_user_meta( $user_id, 'fitpress_credits', true );
-		
-		if( $membership_id != $_POST['membership_id'] && ( isset( $_POST['update_credits'] ) || !$membership_id || $membership_id == 0 ) ):
-
-			$credits = FP_Credit::update_member_credits( $_POST['membership_id'], $membership_id, $credits );
-
-		endif;
+		$old_membership_id = get_user_meta( $member_id, 'fitpress_membership_id', true );
+		$old_credits = get_user_meta( $member_id, 'fitpress_credits', true );
 		
 		$membership_id = $_POST['membership_id'];
 
-		update_user_meta( $user_id, 'fitpress_membership_id', $membership_id, $old_membership_id );
-		update_user_meta( $user_id, 'fitpress_credits', $credits, $old_credits );
+		$credits = $_POST['credits'];
+		
+		if( $old_membership_id != $membership_id && ( $_POST['update_credits'] == 1 || !$old_membership_id || $old_membership_id == 0 ) ):
+
+			$credits = FP_Credit::update_member_credits( $_POST['membership_id'], $old_membership_id, $old_credits );
+
+		endif;
+
+   		do_action( 'fitpress_before_membership_profile_save', array( 'member_id' => $member_id, 'old_membership_id' => $old_membership_id ) );
+
+		update_user_meta( $member_id, 'fitpress_membership_id', $membership_id, $old_membership_id );
+		update_user_meta( $member_id, 'fitpress_credits', $credits, $old_credits );
 
 	}
 
@@ -328,13 +328,17 @@ class FP_Membership {
 
 			foreach( $memberships_obj->posts as $membership ):
 
-				$membership_data = get_post_meta( $membership->ID, "membership_data", true); 
+				$membership_data = get_post_meta( $membership->ID, "membership_data", true);
 
 				$memberships[ $membership->ID ] = array(
-					'name' => $membership->post_title,
-					'price' => isset($membership_data['price']) ? $membership_data['price'] : '',
-					'credits' => isset($membership_data['credits']) ? $membership_data['credits'] : '',
+					'name' => $membership->post_title
 				);
+
+				foreach( $membership_data as $key => $value ):
+
+					$memberships[ $membership->ID ][$key] = $value;
+
+				endforeach;
 
 			endforeach;
 

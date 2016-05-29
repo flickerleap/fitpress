@@ -64,6 +64,8 @@ class FP_Account {
 			'lost-password',
 			'member-logout',
 			'book',
+			'make-booking',
+			'cancel-booking',
 		);
 	}
 
@@ -288,11 +290,9 @@ class FP_Account {
 
 		$reset_url = fp_lostpassword_url() . '?login=' . $user_login . '&key=' . $key;
 
-		$message = '<p>Click this link to reset your password: <a href="' . $reset_url . '">' . $reset_url . '</a></p>'; 
+		$FP_Email = new FP_Email( array( 'template' => 'email/default.php' ) );
 
-		$headers = array('Content-Type: text/html; charset=UTF-8');
-
-		wp_mail( $user_email, get_bloginfo( 'name' ) . ' Password Reset Link', $message, $headers );
+		$FP_Email->send_email( $user_email, get_bloginfo( 'name' ) . ' Password Reset Link', array( 'header' => 'Reset Password', 'message' => $message = '<p>Click this link to reset your password: <a href="' . $reset_url . '">' . $reset_url . '</a></p>' ) );
 
 		//wc_add_notice( __( 'Check your e-mail for the confirmation link.', 'woocommerce' ) );
 		return true;

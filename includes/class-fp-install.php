@@ -39,14 +39,18 @@ class FP_Install {
 
 		update_option( 'fitpress_holidays', $holidays );
 
-		$account_page = array(
-			'post_type' => 'page',
-			'post_title' => 'Account',
-			'post_content' => '[fitpress_account]'
-		);
+		if ( !get_page_by_title( 'Account' ) ):
 
-		wp_update_post( $account_page );
+			$account_page = array(
+				'post_type' => 'page',
+				'post_title' => 'Account',
+				'post_content' => '[fitpress_account]'
+			);
+
+			wp_update_post( $account_page );
+
+		endif;
 
 	}
 
-};
+}

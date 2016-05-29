@@ -42,9 +42,9 @@ class FP_Credit {
 	* @version 1.0
 	* @since 0.1
 	*/
-	public static function maybe_reset_credits( ) {
+	public static function maybe_reset_credits( $force = false ) {
 
-		if( date('j') == 28 ):
+		if( date('j') == 1 || $force ):
 
 			$members = FP_Membership::get_members( );
 
@@ -80,14 +80,19 @@ class FP_Credit {
 	*/
 	public static function update_member_credits( $new_membership_id, $current_membership_id, $current_credits ) {
 
-		if( $new_membership_id == '0' )
+		if( $new_membership_id == 0 )
 			return $current_credits;
 
-		$membership_details = FP_Membership::get_membership( array( $new_membership_id, $current_membership_id ) );
+		if( !$current_membership_id ):
+			$current_credits = 0;
+			$membership_details = FP_Membership::get_membership( array( $new_membership_id ) );
+		else:
+			$membership_details = FP_Membership::get_membership( array( $new_membership_id, $current_membership_id ) );
+		endif;
 
 		if( $membership_details ):
 
-			if( $current_membership_id == '0' )
+			if( !$current_membership_id )
 				return $membership_details[ $new_membership_id ]['credits'];
 
 			if( $membership_details[ $new_membership_id ]['credits'] <= $membership_details[ $current_membership_id ]['credits'] )
