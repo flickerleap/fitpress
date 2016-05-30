@@ -30,7 +30,7 @@ class FP_Credit {
 			wp_schedule_event( $start, 'daily', 'maybe_reset_credits_hook' );
 		endif;
 
-		add_action('maybe_reset_credits_hook', array( $this, 'maybe_reset_credits'));
+		add_action('maybe_reset_credits_hook', __CLASS__ . '::maybe_reset_credits' );
 
 	}
 

@@ -115,7 +115,7 @@ class FP_Booking {
 
 	}
 
-	public function booking_response_data( $session_id ){
+	public static function booking_response_data( $session_id ){
 
 		$url = remove_query_arg( array( 'message' ) );
 
@@ -192,7 +192,7 @@ class FP_Booking {
 				fp_make_booking_url()
 			);
 
-			$action = '<a href="' . $url . '" class="button button-flat button-small do-booking" data-subscription-key="' . $subscription_key . '" data-session-id="' . $session->ID . '" data-action="fp_make_booking">Book</a>';
+			$action = '<a href="' . $url . '" class="button button-flat button-small do-booking" data-session-id="' . $session->ID . '" data-action="fp_make_booking">Book</a>';
 
 		endif;
 
@@ -548,14 +548,14 @@ class FP_Booking {
 
 	}
 
-	public static function get_booked_sessions( $params = array('user_id' => null, 'session_id' => null) ){
+	public static function get_booked_sessions( $params = array('member_id' => null, 'session_id' => null) ){
 
 		$booking_data = array();
 
-		if( !isset( $params['user_id'] ) && !isset( $params['session_id'] ) )
+		if( !isset( $params['member_id'] ) && !isset( $params['session_id'] ) )
 			return $booking_data;
 
-		if( isset( $params['user_id'] ) ):
+		if( isset( $params['member_id'] ) ):
 
 			$args = array(
 				'post_type' => 'fp_session',
@@ -578,7 +578,7 @@ class FP_Booking {
 				'meta_query' => array(
 					array(
 						'key'   => '_fp_user_id',
-						'value' => $params['user_id'],
+						'value' => $params['member_id'],
 					),
 					array(
 						'key'     => '_fp_session_id',

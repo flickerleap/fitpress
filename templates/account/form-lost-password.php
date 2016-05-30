@@ -43,7 +43,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<p class="form-row">
 		<input type="hidden" name="fp_reset_password" value="true" />
-		<input type="submit" class="button" value="<?php echo 'lost_password' == $args['form'] ? __( 'Reset Password', 'fitpress' ) : __( 'Save', 'fitpress' ); ?>" />
+		<input type="submit" class="btn" value="<?php echo 'lost_password' == $args['form'] ? __( 'Reset Password', 'fitpress' ) : __( 'Save', 'fitpress' ); ?>" />
 	</p>
 
 	<?php wp_nonce_field( $args['form'] ); ?>

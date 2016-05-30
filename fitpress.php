@@ -174,6 +174,10 @@ class FitPress{
 
 		$this->define( 'FP_TEMPLATE_PATH', $this->template_path() );
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			show_admin_bar( false );
+		}
+
 	}
 
 	/**

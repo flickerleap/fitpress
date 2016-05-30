@@ -34,7 +34,7 @@ class FP_Session {
 			wp_schedule_event( $start, 'daily', 'add_sessions_hook' );
 		endif;
 
-		add_action('add_sessions_hook', array( $this, 'add_sessions'));
+		add_action( 'add_sessions_hook', __CLASS__ . '::add_sessions' );
 
 	}
 

@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<p class="form-row">
 		<?php wp_nonce_field( 'fitpress-login' ); ?>
-		<input type="submit" class="button" name="login" value="<?php _e( 'Login', 'fitpress' ); ?>" />
+		<input type="submit" class="btn" name="login" value="<?php _e( 'Login', 'fitpress' ); ?>" />
 		<label for="rememberme" class="inline">
 			<input name="rememberme" type="checkbox" id="rememberme" value="forever" /> <?php _e( 'Remember me', 'fitpress' ); ?>
 		</label>

@@ -150,7 +150,7 @@ class FP_Account {
 
 		fp_get_template( 'account/account.php', array(
 			'current_user' 	=> get_user_by( 'id', get_current_user_id() ),
-			'booked_sessions' => FP_Booking::get_booked_sessions( array( 'user_id' => get_current_user_id() ) ),
+			'booked_sessions' => FP_Booking::get_booked_sessions( array( 'member_id' => get_current_user_id() ) ),
 		) );
 	}
 
