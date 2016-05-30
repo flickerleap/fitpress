@@ -44,7 +44,7 @@
 			/* add in the day number */
 			$calendar.= '<div class="fp-day-number"><span class="mobile-day">' . date( 'D', $running_day ) . ' - </span>' . date( 'j M', $running_day ) . '</div>';
 
-			do_action( 'fitpress_before_day');
+			$calendar = apply_filters ( 'fitpress_before_day', $calendar, $running_day );
 
 			if( $has_sessions ):
 

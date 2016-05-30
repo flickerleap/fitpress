@@ -21,6 +21,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	?>
 </p>
 
+<?php do_action( 'fitpress_before_account_sessions' );?>
+
 <h2>Currently Booked</h2>
 
 <?php if( !empty( $booked_sessions ) ):?>
@@ -41,4 +43,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	);?>
 	</p>
 <?php endif;?>
+
+<?php do_action( 'fitpress_after_account_sessions' );?>
 
