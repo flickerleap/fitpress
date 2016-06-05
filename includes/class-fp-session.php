@@ -43,7 +43,7 @@ class FP_Session {
 		if( !$start_day )
 			$start_day = strtotime( '+' . self::$book_ahead . ' days' );
 		
-		$end_day = strtotime( '+1 day', strtotime( '+' . self::$book_ahead . ' days' )  );
+		$end_day = strtotime( '+1 second', strtotime( '+' . self::$book_ahead . ' days' )  );
 
 		self::$holidays = get_option( 'fitpress_holidays' );
 

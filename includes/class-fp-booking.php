@@ -560,12 +560,15 @@ class FP_Booking {
 			$args = array(
 				'post_type' => 'fp_session',
 				'fields' => 'ids',
-				array(
-					'key'     => '_fp_start_time',
-					'value'   => current_time( 'timestamp' ),
-					'type'    => 'numeric',
-					'compare' => '>'
+				'meta_query' => array(
+					array(
+						'key'     => '_fp_start_time',
+						'value'   => current_time( 'timestamp' ),
+						'type'    => 'numeric',
+						'compare' => '>'
+					),
 				),
+				'posts_per_page' => -1
 			);
 
 			$session_ids = new WP_Query( $args );
@@ -576,6 +579,7 @@ class FP_Booking {
 			$args = array(
 				'post_type'  => 'fp_booking',
 				'meta_query' => array(
+					'relation' => 'AND',
 					array(
 						'key'   => '_fp_user_id',
 						'value' => $params['member_id'],
@@ -586,6 +590,7 @@ class FP_Booking {
 						'compare' => 'IN'
 					),
 				),
+				'posts_per_page' => -1
 			);
 
 			$bookings = new WP_Query( $args );
@@ -610,7 +615,7 @@ class FP_Booking {
 						'class' => get_the_title( $class_id ),
 						'date' => date( 'l, j F Y', $start_time ),
 						'start_time' => date( 'H:i', $start_time ),
-						'end_time' => date( 'H:i', $start_time ),
+						'end_time' => date( 'H:i', $end_time ),
 						'action'     => '<a href="' . $url . '" class="button button-flat button-small button-cancel">Cancel</a>',
 					);
 
@@ -628,6 +633,7 @@ class FP_Booking {
 						'value' => $params['session_id'],
 					)
 				),
+				'posts_per_page' => -1,
 			);
 
 			$bookings = new WP_Query( $args );

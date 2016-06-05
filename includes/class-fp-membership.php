@@ -24,6 +24,7 @@ class FP_Membership {
 	 * Hook in methods.
 	 */
     public function __construct(){
+
 		add_action( 'init', array( $this, 'register_post_types' ), 5 );
 
 		add_action( 'show_user_profile', array( $this, 'show_membership_profile_fields' ) );
@@ -36,6 +37,87 @@ class FP_Membership {
             add_action( 'load-post.php',     array( $this, 'init_metabox' ) );
             add_action( 'load-post-new.php', array( $this, 'init_metabox' ) );
         }
+
+		if( !wp_get_schedule('maybe_send_member_list_hook') ):
+			$start = strtotime( 'tomorrow' );
+			wp_schedule_event( $start, 'daily', 'maybe_send_member_list_hook' );
+		endif;
+
+		add_action('maybe_send_member_list_hook', __CLASS__ . '::maybe_send_member_list' );
+
+	}
+
+	/**
+	* Adds credits to user if subscription is successfully activated
+	*
+	* @param int $user_id A user ID for the user that the subscription was activated for.
+	* @param mixed $subscription_key The key referring to the activated subscription
+	* @version 1.0
+	* @since 0.1
+	*/
+	public static function maybe_send_member_list( $force = false, $none_members = false ) {
+
+		if( date('j') == 1 || $force ):
+
+			$members = FP_Membership::get_members( 'all', $none_members );
+
+			$memberships = FP_Membership::get_memberships( );
+
+			// Check for results
+			if (!empty($members)):
+
+				$lines[] = array(
+					'ID',
+					'user_email',
+					'first_name',
+					'last_name',
+					'membership',
+					'price',
+				);
+
+			    foreach ( $members as $member ):
+
+			    	$data = array();
+
+					$data['user_id'] = $member->ID;
+					$data['user_email'] = $member->user_email;
+					$data['first_name'] = $member->first_name;
+					$data['last_name'] = $member->last_name;
+
+					if( !$none_members ):
+
+				        $membership_id = get_user_meta( $member->ID, 'fitpress_membership_id', true );
+
+						$data['membership'] = $memberships[ $membership_id ]['name'];
+						$data['membership_price'] = $memberships[ $membership_id ]['price'];
+
+					endif;
+
+					$lines[] = $data;
+
+			    endforeach;
+
+			    $subject = ( $none_members ) ? 'Inactive Members' : 'Active Members';
+
+			    $path = FP_PLUGIN_DIR . 'export/' . date('Y-m-d') . ' ' . $subject . '.csv';
+				
+				$fh = fopen( $path, 'w') or die('Cannot open the file: ' . $path);
+
+				foreach($lines as $line)
+					fputcsv($fh, $line, ',');
+
+				fclose($fh);
+
+				$attachments = array( $path );
+
+				$FP_Email = new FP_Email( );
+
+				$FP_Email->send_email( 'heartbeat@crossfitexanimo.co.za', $subject, array( 'header' => $subject, 'message' => 'Here\'s the member list :)' ), $attachments );
+
+			endif;
+
+		endif;
+
 	}
 
 	/**
@@ -123,7 +205,7 @@ class FP_Membership {
             <input name="credits" type="text" value="<?php echo isset( $membership_data['credits'] ) ? $membership_data['credits'] : ''; ?>">
         </p>
    		<?php  
-   		do_action( 'fitpress_after_membership_fields', $membership_data );
+   		do_action( 'fitpress_after_membership_fields', $membership_data, $post->ID );
     }
  
     /**
@@ -179,7 +261,7 @@ class FP_Membership {
 
 	?>
 
-		<h3>Fitness</h3>
+		<h3>FitPress Membership Details</h3>
 
 		<?php $memberships = $this->get_memberships( true );?>
 
@@ -222,7 +304,7 @@ class FP_Membership {
 			</td>
 			</tr>
 
-			<?php do_action( 'fitpress_after_membership_profile_fields' );?>
+			<?php do_action( 'fitpress_after_membership_profile_fields', $user->ID, $membership_id );?>
 
 			</table>
 
@@ -308,9 +390,13 @@ class FP_Membership {
 
 					$memberships[ $membership->ID ] = array(
 						'name' => $membership->post_title,
-						'price' => isset($membership_data['price']) ? $membership_data['price'] : '',
-						'credits' => isset($membership_data['credits']) ? $membership_data['credits'] : '',
 					);
+
+					foreach( $membership_data as $key => $value ):
+
+						$memberships[ $membership->ID ][$key] = $value;
+
+					endforeach;
 
 				endif;
 
@@ -367,24 +453,43 @@ class FP_Membership {
 
 	}
 
-	public static function get_members( $fields = 'ID' ){
+	public static function get_members( $fields = 'ID', $none_members = false ){
 
-	 	$args = array(
-	 		'meta_query' => array(
-	 			'relation' => 'OR',
-	 			array(
-	 				'key' => 'fitpress_membership_id',
-	 				'value' => 'none',
-	 				'compare' => '!='
-	 			),
-	 			array(
-	 				'key' => 'fitpress_membership_id',
-	 				'value' => '',
-	 				'compare' => 'EXISTS'
-	 			),
-	 		),
-	 		'fields' => $fields
-	 	);
+		if( $none_members ):
+
+		 	$args = array(
+		 		'meta_query' => array(
+		 			'relation' => 'OR',
+		 			array(
+		 				'key' => 'fitpress_membership_id',
+		 				'value' => 0,
+		 				'compare' => '=',
+		 				'type' => 'numeric'
+		 			),
+		 			array(
+		 				'key' => 'fitpress_membership_id',
+		 				'value' => 'blah',
+		 				'compare' => 'NOT EXISTS'
+		 			),
+		 		),
+		 		'fields' => $fields
+		 	);
+
+		else:
+
+		 	$args = array(
+		 		'meta_query' => array(
+		 			array(
+		 				'key' => 'fitpress_membership_id',
+		 				'value' => 0,
+		 				'compare' => '!=',
+		 				'type' => 'numeric'
+		 			)
+		 		),
+		 		'fields' => $fields
+		 	);
+
+		endif;	
 
 	 	$member_query = new WP_User_Query( $args );
 

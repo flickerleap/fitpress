@@ -24,7 +24,7 @@ class FP_Email{
 
 	public $headers = array('Content-Type: text/html; charset=UTF-8');
 
-	public function __construct( $setup ){
+	public function __construct( $setup = array() ){
 
 		if( isset( $setup['template'] ) )
 			$this->template_html = $setup['template'];

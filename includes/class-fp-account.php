@@ -207,7 +207,7 @@ class FP_Account {
 				$args['login'] = esc_attr( $_GET['login'] );
 			}
 		} elseif ( isset( $_GET['reset'] ) ) {
-			//wc_add_notice( __( 'Your password has been reset.', 'woocommerce' ) . ' <a href="' . wc_get_page_permalink( 'myaccount' ) . '">' . __( 'Log in', 'woocommerce' ) . '</a>' );
+			fp_add_flash_message( __( 'Your password has been reset.', 'fitpress' ) . ' <a href="' . fp_get_page_permalink( 'account' ) . '">' . __( 'Log in', 'fitpress' ) . '</a>' );
 		}
 
 		fp_get_template( 'account/form-lost-password.php', $args );
@@ -227,7 +227,7 @@ class FP_Account {
 
 		if ( empty( $_POST['user_login'] ) ) {
 
-			//wc_add_notice( __( 'Enter a username or e-mail address.', 'woocommerce' ), 'error' );
+			fp_add_flash_message( __( 'Enter a username or e-mail address.', 'fitpress' ), 'error' );
 			return false;
 
 		} else {
@@ -244,12 +244,13 @@ class FP_Account {
 		do_action( 'lostpassword_post' );
 
 		if ( ! $user_data ) {
-			//wc_add_notice( __( 'Invalid username or e-mail.', 'woocommerce' ), 'error' );
+
+			fp_add_flash_message( __( 'Invalid username or e-mail.', 'fitpress' ), 'error' );
 			return false;
 		}
 
 		if ( is_multisite() && ! is_user_member_of_blog( $user_data->ID, get_current_blog_id() ) ) {
-			//wc_add_notice( __( 'Invalid username or e-mail.', 'woocommerce' ), 'error' );
+			fp_add_flash_message( __( 'Invalid username or e-mail.', 'fitpress' ), 'error' );
 			return false;
 		}
 
@@ -263,13 +264,13 @@ class FP_Account {
 
 		if ( ! $allow ) {
 
-			//wc_add_notice( __( 'Password reset is not allowed for this user', 'woocommerce' ), 'error' );
+			fp_add_flash_message( __( 'Password reset is not allowed for this user', 'fitpress' ), 'error' );
 
 			return false;
 
 		} elseif ( is_wp_error( $allow ) ) {
 
-			//wc_add_notice( $allow->get_error_message(), 'error' );
+			fp_add_flash_message( $allow->get_error_message(), 'error' );
 
 			return false;
 		}
@@ -294,7 +295,7 @@ class FP_Account {
 
 		$FP_Email->send_email( $user_email, get_bloginfo( 'name' ) . ' Password Reset Link', array( 'header' => 'Reset Password', 'message' => $message = '<p>Click this link to reset your password: <a href="' . $reset_url . '">' . $reset_url . '</a></p>' ) );
 
-		//wc_add_notice( __( 'Check your e-mail for the confirmation link.', 'woocommerce' ) );
+		fp_add_flash_message( __( 'Check your e-mail for the confirmation link.', 'fitpress' ) );
 		return true;
 	}
 
@@ -313,12 +314,12 @@ class FP_Account {
 		$key = preg_replace( '/[^a-z0-9]/i', '', $key );
 
 		if ( empty( $key ) || ! is_string( $key ) ) {
-			wc_add_notice( __( 'Invalid key', 'woocommerce' ), 'error' );
+			fp_add_flash_message( __( 'Invalid key', 'fitpress' ), 'error' );
 			return false;
 		}
 
 		if ( empty( $login ) || ! is_string( $login ) ) {
-			//wc_add_notice( __( 'Invalid key', 'woocommerce' ), 'error' );
+			fp_add_flash_message( __( 'Invalid key', 'fitpress' ), 'error' );
 			return false;
 		}
 
@@ -334,7 +335,7 @@ class FP_Account {
 		}
 
 		if ( empty( $user ) || empty( $valid ) ) {
-			wc_add_notice( __( 'Invalid key', 'woocommerce' ), 'error' );
+			fp_add_flash_message( __( 'Invalid key', 'fitpress' ), 'error' );
 			return false;
 		}
 
@@ -411,7 +412,7 @@ class FP_Account {
 					}
 
 					// Feedback
-					//wc_add_notice( sprintf( __( 'You are now logged in as <strong>%s</strong>', 'woocommerce' ), $user->display_name ) );
+					fp_add_flash_message( sprintf( __( 'You are now logged in as <strong>%s</strong>', 'fitpress' ), $user->display_name ) );
 
 					wp_redirect( $redirect );
 					exit;
@@ -419,7 +420,7 @@ class FP_Account {
 
 			} catch (Exception $e) {
 
-				//wc_add_notice( apply_filters('login_errors', $e->getMessage() ), 'error' );
+				fp_add_flash_message( apply_filters('login_errors', $e->getMessage() ), 'error' );
 
 			}
 		}
@@ -455,11 +456,11 @@ class FP_Account {
 
 		if ( $user instanceof WP_User ) {
 			if ( empty( $posted_fields['password_1'] ) ) {
-				//wc_add_notice( __( 'Please enter your password.', 'woocommerce' ), 'error' );
+				fp_add_flash_message( __( 'Please enter your password.', 'fitpress' ), 'error' );
 			}
 
 			if ( $posted_fields[ 'password_1' ] !== $posted_fields[ 'password_2' ] ) {
-				//wc_add_notice( __( 'Passwords do not match.', 'woocommerce' ), 'error' );
+				fp_add_flash_message( __( 'Passwords do not match.', 'fitpress' ), 'error' );
 			}
 
 			$errors = new WP_Error();
@@ -468,14 +469,14 @@ class FP_Account {
 
 			//wc_add_wp_error_notices( $errors );
 
-			//if ( 0 === wc_notice_count( 'error' ) ) {
+			if ( 0 === fp_flash_message_count( 'error' ) ) {
 				self::reset_password( $user, $posted_fields['password_1'] );
 
 				//do_action( 'woocommerce_customer_reset_password', $user );
 
 				wp_redirect( add_query_arg( 'reset', 'true', remove_query_arg( array( 'key', 'login' ) ) ) );
 				exit;
-			//}
+			}
 		}
 	}
 
@@ -517,34 +518,34 @@ class FP_Account {
 		$user->display_name = $user->first_name;
 
 		if ( empty( $account_first_name ) || empty( $account_last_name ) ) {
-			//wc_add_notice( __( 'Please enter your name.', 'woocommerce' ), 'error' );
+			fp_add_flash_message( __( 'Please enter your name.', 'fitpress' ), 'error' );
 		}
 
 		if ( empty( $account_email ) || ! is_email( $account_email ) ) {
-			//wc_add_notice( __( 'Please provide a valid email address.', 'woocommerce' ), 'error' );
+			fp_add_flash_message( __( 'Please provide a valid email address.', 'fitpress' ), 'error' );
 		} elseif ( email_exists( $account_email ) && $account_email !== $current_user->user_email ) {
-			//wc_add_notice( __( 'This email address is already registered.', 'woocommerce' ), 'error' );
+			fp_add_flash_message( __( 'This email address is already registered.', 'fitpress' ), 'error' );
 		}
 
 		if ( ! empty( $pass1 ) && ! wp_check_password( $pass_cur, $current_user->user_pass, $current_user->ID ) ) {
-			//wc_add_notice( __( 'Your current password is incorrect.', 'woocommerce' ), 'error' );
+			fp_add_flash_message( __( 'Your current password is incorrect.', 'fitpress' ), 'error' );
 			$save_pass = false;
 		}
 
 		if ( ! empty( $pass_cur ) && empty( $pass1 ) && empty( $pass2 ) ) {
-			//wc_add_notice( __( 'Please fill out all password fields.', 'woocommerce' ), 'error' );
+			fp_add_flash_message( __( 'Please fill out all password fields.', 'fitpress' ), 'error' );
 
 			$save_pass = false;
 		} elseif ( ! empty( $pass1 ) && empty( $pass_cur ) ) {
-			//wc_add_notice( __( 'Please enter your current password.', 'woocommerce' ), 'error' );
+			fp_add_flash_message( __( 'Please enter your current password.', 'fitpress' ), 'error' );
 
 			$save_pass = false;
 		} elseif ( ! empty( $pass1 ) && empty( $pass2 ) ) {
-			//wc_add_notice( __( 'Please re-enter your password.', 'woocommerce' ), 'error' );
+			fp_add_flash_message( __( 'Please re-enter your password.', 'fitpress' ), 'error' );
 
 			$save_pass = false;
 		} elseif ( ! empty( $pass1 ) && $pass1 !== $pass2 ) {
-			//wc_add_notice( __( 'Passwords do not match.', 'woocommerce' ), 'error' );
+			fp_add_flash_message( __( 'Passwords do not match.', 'fitpress' ), 'error' );
 
 			$save_pass = false;
 		}
@@ -555,19 +556,20 @@ class FP_Account {
 
 		if ( $errors->get_error_messages() ) {
 			foreach ( $errors->get_error_messages() as $error ) {
-				//wc_add_notice( $error, 'error' );
+				fp_add_flash_message( $error, 'error' );
 			}
 		}
 
-		//if ( wc_notice_count( 'error' ) === 0 ) {
+		if ( fp_flash_message_count( 'error' ) === 0 ) {
 
 			wp_update_user( $user ) ;
 
-			//wc_add_notice( __( 'Account details changed successfully.', 'woocommerce' ) );
+			fp_add_flash_message( __( 'Account details changed successfully.', 'fitpress' ) );
 
 			wp_safe_redirect( fp_get_page_permalink( 'account' ) );
 			exit;
-		//}
+			
+		}
 	}
 
 }

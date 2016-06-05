@@ -34,6 +34,8 @@ class FitPress{
 
 	public $query = '';
 
+	public $flash_message;
+
 	/**
 	 * @var FitPress The single instance of the class
 	 * @since 1.0
@@ -136,6 +138,7 @@ class FitPress{
 
 		$this->define( 'FP_PLUGIN_FILE', __FILE__ );
 		$this->define( 'FP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+		$this->define( 'FP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 		$this->define( 'FP_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 		$this->define( 'FP_VERSION', $this->version );
 
@@ -159,6 +162,7 @@ class FitPress{
 		include_once( 'includes/fp-utilities.php' );
 		include_once( 'includes/class-fp-install.php' );
 		$this->query = include_once( 'includes/class-fp-account.php' );
+		include_once( 'includes/class-fp-flash-message.php' );
 		include_once( 'includes/class-fp-membership.php' );
 		include_once( 'includes/class-fp-credits.php' );
 		include_once( 'includes/class-fp-classes.php' );

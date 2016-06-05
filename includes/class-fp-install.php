@@ -51,6 +51,10 @@ class FP_Install {
 
 		endif;
 
+		if (!file_exists( FP_PLUGIN_DIR . 'export' )):
+			mkdir( FP_PLUGIN_DIR . 'export', 0755, true);
+		endif;
+
 	}
 
 }
