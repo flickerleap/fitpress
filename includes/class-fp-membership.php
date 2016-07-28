@@ -25,7 +25,7 @@ class FP_Membership {
 	 */
     public function __construct(){
 
-		add_action( 'init', array( $this, 'register_post_types' ), 5 );
+		add_action( 'init', array( $this, 'register_post_types' ) );
 
 		add_action( 'show_user_profile', array( $this, 'show_membership_profile_fields' ) );
 		add_action( 'edit_user_profile',  array( $this, 'show_membership_profile_fields' ));
@@ -44,6 +44,32 @@ class FP_Membership {
 		endif;
 
 		add_action('maybe_send_member_list_hook', __CLASS__ . '::maybe_send_member_list' );
+
+		add_action( 'wp_ajax_fp_find_member', array( $this, 'find_member_callback' ) );
+
+	}
+
+	public static function find_member_callback( ){
+
+		$members = self::get_members( array( 'ID', 'display_name' ), false, $_REQUEST['search'] );
+
+		$result = array();
+
+		if( !empty( $members ) ):
+
+			$result['type'] = 'found';
+			$result['members'] = $members;
+
+		else:
+
+			$result['type'] = 'not-found';
+
+		endif;
+
+		$result = json_encode($result);
+		echo $result;
+
+		die();
 
 	}
 
@@ -162,7 +188,8 @@ class FP_Membership {
 				'query_var'           => false,
 				'supports'            => array( 'title' ),
 				'has_archive'         => false,
-				'show_in_nav_menus'   => true
+				'show_in_nav_menus'   => true,
+				'show_in_menu'		  => 'fitpress',
 			)
 		);
 	}
@@ -453,41 +480,87 @@ class FP_Membership {
 
 	}
 
-	public static function get_members( $fields = 'ID', $none_members = false ){
+	public static function get_members( $fields = 'ID', $none_members = false, $search = false ){
+
+		$search = '*'.esc_attr( $search ).'*';
 
 		if( $none_members ):
 
-		 	$args = array(
-		 		'meta_query' => array(
-		 			'relation' => 'OR',
-		 			array(
-		 				'key' => 'fitpress_membership_id',
-		 				'value' => 0,
-		 				'compare' => '=',
-		 				'type' => 'numeric'
-		 			),
-		 			array(
-		 				'key' => 'fitpress_membership_id',
-		 				'value' => 'blah',
-		 				'compare' => 'NOT EXISTS'
-		 			),
-		 		),
-		 		'fields' => $fields
-		 	);
+			if( $search ):
+
+			 	$args = array(
+			 		'meta_query' => array(
+			 			'relation' => 'OR',
+			 			array(
+			 				'key' => 'fitpress_membership_id',
+			 				'value' => 0,
+			 				'compare' => '=',
+			 				'type' => 'numeric'
+			 			),
+			 			array(
+			 				'key' => 'fitpress_membership_id',
+			 				'value' => 'blah',
+			 				'compare' => 'NOT EXISTS'
+			 			),
+			 		),
+			 		'search' => $search,
+			 		'fields' => $fields,
+			 	);
+
+			 else: 	
+
+			 	$args = array(
+			 		'meta_query' => array(
+			 			'relation' => 'OR',
+			 			array(
+			 				'key' => 'fitpress_membership_id',
+			 				'value' => 0,
+			 				'compare' => '=',
+			 				'type' => 'numeric'
+			 			),
+			 			array(
+			 				'key' => 'fitpress_membership_id',
+			 				'value' => 'blah',
+			 				'compare' => 'NOT EXISTS'
+			 			),
+			 		),
+			 		'fields' => $fields,
+			 	);
+
+			endif;
 
 		else:
 
-		 	$args = array(
-		 		'meta_query' => array(
-		 			array(
-		 				'key' => 'fitpress_membership_id',
-		 				'value' => 0,
-		 				'compare' => '!=',
-		 				'type' => 'numeric'
-		 			)
-		 		),
-		 		'fields' => $fields
-		 	);
+			if( $search ):
+
+			 	$args = array(
+			 		'meta_query' => array(
+			 			array(
+			 				'key' => 'fitpress_membership_id',
+			 				'value' => 0,
+			 				'compare' => '!=',
+			 				'type' => 'numeric'
+			 			)
+			 		),
+			 		'search' => $search,
+			 		'fields' => $fields,
+			 	);
+
+			else:
+
+			 	$args = array(
+			 		'meta_query' => array(
+			 			array(
+			 				'key' => 'fitpress_membership_id',
+			 				'value' => 0,
+			 				'compare' => '!=',
+			 				'type' => 'numeric'
+			 			)
+			 		),
+			 		'fields' => $fields,
+			 	);
+
+			endif;
 
 		endif;	
 

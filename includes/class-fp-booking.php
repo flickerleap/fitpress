@@ -670,6 +670,62 @@ class FP_Booking {
 
 	}
 
+	public static function get_day_bookings( $start_time ){
+
+		if( !$start_time )
+			$start_time = strtotime( 'today midnight' );
+
+		$day_sessions = FP_Session::get_sessions( $start_time, null, 'ids' );
+
+		$day_bookings = array();
+
+		if( !empty( $day_sessions->posts ) ):
+
+			foreach( $day_sessions->posts as $session_id ):
+
+				$day_bookings[ get_the_title( $session_id ) ] = array();
+
+				$args = array(
+					'post_type' => 'fp_booking',
+					'meta_query' => array(
+						array(
+							'key' => '_fp_session_id',
+							'value' => $session_id,
+							'type' => 'NUMERIC',
+						)
+					),
+					'posts_per_page' => -1,
+				);
+
+				$bookings = new WP_Query( $args );
+
+				if( $bookings->have_posts() ):
+
+					$booking_data = array();
+
+					foreach( $bookings->posts as $booking ):
+
+						$user_id = get_post_meta( $booking->ID, '_fp_user_id', true );
+						$user = get_user_by( 'id', $user_id );
+
+						$booking_data[] = array(
+							'user' => $user,
+						);
+
+					endforeach;
+
+					$day_bookings[ get_the_title( $session_id ) ] = $booking_data;
+
+				endif;
+
+			endforeach;
+
+		endif;
+
+		return $day_bookings;
+
+	}
+
 }
 
 /**

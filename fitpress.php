@@ -107,8 +107,10 @@ class FitPress{
 	 */
 	public function enqueue_admin_scripts() {
 		
+		wp_enqueue_script( 'select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js' );
 		wp_enqueue_script( 'fitpress-admin-script', FP_PLUGIN_URL . '/assets/js/fitpress-admin.js', array( 'jquery' ) );
 		
+		wp_enqueue_style( 'select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css' );
 		wp_enqueue_style( 'fitpress-admin-style', FP_PLUGIN_URL . '/assets/css/fitpress-admin.css' );
 
 	}
@@ -169,6 +171,13 @@ class FitPress{
 		include_once( 'includes/class-fp-session.php' );
 		include_once( 'includes/class-fp-booking.php' );
 		include_once( 'includes/class-fp-email.php' );
+
+		if( is_admin() ):
+			
+			include_once( 'includes/class-fp-admin.php' );
+
+		endif;
+
 	}
 
 	/**

@@ -75,7 +75,8 @@ class FP_Classes {
 				'query_var'           => false,
 				'supports'            => array( 'title' ),
 				'has_archive'         => false,
-				'show_in_nav_menus'   => true
+				'show_in_nav_menus'   => true,
+				'show_in_menu'		  => 'fitpress',
 			)
 		);
 
@@ -94,41 +95,6 @@ class FP_Classes {
 			)
 		);
 
-		register_post_type( 'fp_session',
-			array(
-				'labels'             => array(
-					'name'                  => __( 'Sessions', 'fitpress' ),
-					'singular_name'         => __( 'Session', 'fitpress' ),
-					'menu_name'             => _x( 'Sessions', 'Admin menu name', 'fitpress' ),
-					'add_new'               => __( 'Add Session', 'fitpress' ),
-					'add_new_item'          => __( 'Add New Session', 'fitpress' ),
-					'edit'                  => __( 'Edit', 'fitpress' ),
-					'edit_item'             => __( 'Edit Session', 'fitpress' ),
-					'new_item'              => __( 'New Session', 'fitpress' ),
-					'view'                  => __( 'View Session', 'fitpress' ),
-					'view_item'             => __( 'View Session', 'fitpress' ),
-					'search_items'          => __( 'Search Products', 'fitpress' ),
-					'not_found'             => __( 'No Sessions found', 'fitpress' ),
-					'not_found_in_trash'    => __( 'No Sessions found in trash', 'fitpress' ),
-					'parent'                => __( 'Parent Session', 'fitpress' ),
-					'featured_image'        => __( 'Session Image', 'fitpress' ),
-					'set_featured_image'    => __( 'Set session image', 'fitpress' ),
-					'remove_featured_image' => __( 'Remove session image', 'fitpress' ),
-					'use_featured_image'    => __( 'Use as session image', 'fitpress' ),
-				),
-				'description'         => __( 'This is where you can add new products to your store.', 'fitpress' ),
-				'public'              => false,
-				'show_ui'             => true,
-				'publicly_queryable'  => false,
-				'exclude_from_search' => false,
-				'hierarchical'        => false,
-				'rewrite'             => false,
-				'query_var'           => false,
-				'has_archive'         => false,
-				'show_in_nav_menus'   => true,
-				'supports'            => array( 'title' ),
-			)
-		);
 	}
 
 	/**
@@ -181,7 +147,6 @@ class FP_Classes {
     public function init_metabox() {
         add_action( 'add_meta_boxes', array( $this, 'add_metabox'  )        );
         add_action( 'save_post',      array( $this, 'save_class_metabox' ), 10, 2 );
-        add_action( 'save_post',      array( $this, 'save_session_metabox' ), 10, 2 );
     }
  
     /**
@@ -194,15 +159,6 @@ class FP_Classes {
             __( 'Class Information', 'fitpress' ),
             array( $this, 'render_class_metabox' ),
             'fp_class',
-            'advanced',
-            'default'
-        );
-    	
-        add_meta_box(
-            'session-info',
-            __( 'Session Information', 'fitpress' ),
-            array( $this, 'render_session_metabox' ),
-            'fp_session',
             'advanced',
             'default'
         );
@@ -310,71 +266,6 @@ class FP_Classes {
    		<p><a class=" add-class-time">Add Class Time</a></p>
    		<?php
 
-    }
- 
-    /**
-     * Renders the meta box.
-     */
-    public function render_session_metabox( $post ) {
-        // Add nonce for security and authentication.
-        wp_nonce_field( FP_PLUGIN_FILE, 'session_nonce' );
-
-        $start_time = get_post_meta( $post->ID, "_fp_start_time", true ); 
-        $date = ($start_time) ? date( 'l, j F Y', $start_time ) : date( 'l, j F Y' );
-        $end_time = get_post_meta( $post->ID, "_fp_end_time", true ); 
-        $class_id = get_post_meta( $post->ID, "_fp_class_id", true ); 
-
-		$args = array(
-			'post_type'  => 'fp_class',
-			'orderby' => 'post_title',
-			'order' => 'ASC'
-		);
-
-		$classes = new WP_Query( $args );
-
-		$bookings = FP_Booking::get_booked_sessions( array( 'session_id' => $post->ID ) );
-
-    	?>
-		<p>
-			<label for="class"></label>
-			<select name="class_id">
-			<?php foreach( $classes->posts as $class):?>
-				<option value="<?php echo $class->ID;?>" <?php selected($class->ID, $class_id);?>><?php echo $class->post_title;?></option>
-			<?php endforeach;?>
-			</select>
-		</p>
-		<p>
-			<label for="date">Date</label>
-			<input type="text" name="date" value="<?php echo ( $date ) ? $date : ''; ?>" />
-		</p>
-        <p>
-            <label for="start-time">Start Time</label>
-            <input placeholder="00:00" name="start_time" type="text" value="<?php echo ( $start_time ) ? date( 'H:i', $start_time ) : ''; ?>" class="small-text">
-        </p>
-        <p>
-            <label for="end-time">End Time</label>
-            <input placeholder="00:00" name="end_time" type="text" value="<?php echo ( $end_time ) ? date( 'H:i', $end_time ) : ''; ?>" class="small-text">
-        </p>
-        <h3>Members Booked</h3>
-        <?php if( !empty( $bookings ) ):?>
-
-        	<ol>
-        		<?php foreach( $bookings as $booking ):?>
-        		<li>
-        			<a href="<?php echo get_edit_user_link( $booking['user']->ID ); ?>"><?php echo $booking['user']->display_name;?></a>
-        			<?php echo $booking['action'];?>
-        		</li>
-        		<?php endforeach;?>
-        	</ol>
-
-    	<?php else:?>
-    		<p>No members have booked yet.</p>
-    	<?php endif;?>
-        <p>
-            <label for="add_member">Add Members (comma separated)</label>
-            <input name="add_member" type="text" class="small-text">
-        </p>
-        <?php
     }
  
     /**
@@ -501,85 +392,6 @@ class FP_Classes {
 	    }
 
 	    update_post_meta($post_id, "fp_class_info", $class_info);
-
-    }
- 
-    /**
-     * Handles saving the meta box.
-     *
-     * @param int     $post_id Post ID.
-     * @param WP_Post $post    Post object.
-     * @return null
-     */
-    public function save_session_metabox( $post_id, $post ) {
- 
-        // Check if nonce is set.
-        if ( $post->post_type != 'fp_session' ) {
-            return;
-        }
-
-        // Add nonce for security and authentication.
-        $nonce_name   = isset( $_POST['session_nonce'] ) ? $_POST['session_nonce'] : '';
-        $nonce_action = FP_PLUGIN_FILE;
- 
-        // Check if nonce is set.
-        if ( ! isset( $nonce_name ) ) {
-            return;
-        }
- 
-        // Check if nonce is valid.
-        if ( ! wp_verify_nonce( $nonce_name, $nonce_action ) ) {
-            return;
-        }
- 
-        // Check if user has permissions to save data.
-        if ( ! current_user_can( 'edit_post', $post_id ) ) {
-            return;
-        }
- 
-        // Check if not an autosave.
-        if ( wp_is_post_autosave( $post_id ) ) {
-            return;
-        }
- 
-        // Check if not a revision.
-        if ( wp_is_post_revision( $post_id ) ) {
-            return;
-        }
-
-        $start_time = get_post_meta( $post->ID, "_fp_start_time", true ); 
-        $end_time = get_post_meta( $post->ID, "_fp_end_time", true ); 
-        $class_id = get_post_meta( $post->ID, "_fp_class_id", true ); 
-
-	    if(isset($_POST["start_time"]))
-	        $start_time = strtotime( $_POST["date"] . ' ' . $_POST["start_time"] );
-
-	    if(isset($_POST["end_time"]))
-	        $end_time = strtotime( $_POST["date"] . ' ' . $_POST["end_time"] );
-
-	    if(isset($_POST["class_id"]))
-	        $class_id = $_POST["class_id"];
-
-	    if( isset( $_POST["add_member"] ) && !empty( $_POST["add_member"] ) ):
-
-	    	$member_ids = array_map( 'trim', explode( ',', $_POST["add_member"] ) );
-
-	    	FP_Booking::add_booking( $post_id, $member_ids );
-
-	    endif;
-
-	    $args = array(
-      		'ID' => $post_id,
-      		'post_title' => get_the_title( $class_id ) . ': ' . $_POST['date'] . ' (' . date( 'H:i', $start_time ) . ') - (' . date( 'H:i', $end_time ) . ')',
-	    );
-
-	    remove_action( 'save_post', array( $this, 'save_session_metabox' ), 10, 2 );
-	    wp_update_post( $args );
-		remove_action( 'save_post', array( $this, 'save_session_metabox' ), 10, 2 );
-
-	    update_post_meta( $post_id, "_fp_start_time", $start_time );
-	    update_post_meta( $post_id, "_fp_end_time", $end_time );
-	    update_post_meta( $post_id, "_fp_class_id", $class_id );
 
     }
 

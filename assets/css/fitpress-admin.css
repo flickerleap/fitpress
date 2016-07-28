@@ -29,3 +29,34 @@
     box-shadow: 0 1px 0 #ccc;
     vertical-align: top;
 }
+
+.find-member{
+    position: relative;
+    width:300px;
+}
+.find-member-search{
+    height: 25px;
+    width:100%;
+    margin:0;
+}
+.find-member-results{
+    position: absolute;
+    top:25px;
+    display: none;
+    padding: 5px;
+    width: calc( 100% - 12px );
+    background: #fafafa;
+    border: 1px solid #eaeaea;
+}
+.find-member-results p{
+    margin:0;padding: 5px;
+}
+.found-member-list{
+    margin:0;padding:0;
+}
+.found-member-list li{
+    margin:0;padding:5px;border-bottom: 1px solid #eaeaea;cursor: pointer;
+}
+.found-member-list li:last-child{
+    border-bottom:none;
+}
