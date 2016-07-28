@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title><?php echo get_bloginfo( 'name', 'display' ); ?></title>
 	</head>
-    <body <?php echo is_rtl() ? 'rightmargin' : 'leftmargin'; ?>="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="color: #000;background: #ccc;">
+    <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="color: #000;background: #ccc;">
     	<div id="wrapper">
         	<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%">
             	<tr>
@@ -100,11 +100,11 @@ if ( ! defined( 'ABSPATH' ) ) {
                                                                     </tbody>
 
                                                                     <tfooter>
- 
+
                                                                         <tr>
                                                                             <th style="text-align: right;padding: 5px;">VAT</th>
                                                                             <th style="text-align: right;padding: 5px;">
-                                                                                R <?php 
+                                                                                R <?php
                                                                                 $VAT = ( ( $total / (1 + 14 / 100) ) - $total ) * -1;
                                                                                 echo number_format( ROUND($VAT, 2), 2, '.', ' ');
                                                                                 ?>
