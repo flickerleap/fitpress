@@ -20,6 +20,21 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class FP_Membership {
 
+    /* We only want a single instance of this class. */
+    private static $instance = null;
+
+    /*
+    * Creates or returns an instance of this class.
+    *
+    * @return  FP_Membership A single instance of this class.
+    */
+    public static function get_instance( ) {
+        if ( null == self::$instance ) {
+            self::$instance = new self;
+        }
+        return self::$instance;
+    } // end get_instance;
+
 	/**
 	 * Hook in methods.
 	 */
@@ -126,7 +141,7 @@ class FP_Membership {
 			    $subject = ( $none_members ) ? 'Inactive Members' : 'Active Members';
 
 			    $path = FP_PLUGIN_DIR . 'export/' . date('Y-m-d') . ' ' . $subject . '.csv';
-				
+
 				$fh = fopen( $path, 'w') or die('Cannot open the file: ' . $path);
 
 				foreach($lines as $line)
@@ -193,7 +208,7 @@ class FP_Membership {
 			)
 		);
 	}
- 
+
     /**
      * Meta box initialization.
      */
@@ -201,7 +216,7 @@ class FP_Membership {
         add_action( 'add_meta_boxes', array( $this, 'add_metabox'  )        );
         add_action( 'save_post',      array( $this, 'save_metabox' ), 10, 2 );
     }
- 
+
     /**
      * Adds the meta box.
      */
@@ -214,9 +229,9 @@ class FP_Membership {
             'advanced',
             'default'
         );
- 
+
     }
- 
+
     /**
      * Renders the meta box.
      */
@@ -224,17 +239,17 @@ class FP_Membership {
         // Add nonce for security and authentication.
         wp_nonce_field( FP_PLUGIN_FILE, 'membership_nonce' );
 
-        $membership_data = get_post_meta($post->ID, "membership_data", true); 
+        $membership_data = get_post_meta($post->ID, "membership_data", true);
 
     	?>
         <p>
             <label for="credits">Credits</label>
             <input name="credits" type="text" value="<?php echo isset( $membership_data['credits'] ) ? $membership_data['credits'] : ''; ?>">
         </p>
-   		<?php  
+   		<?php
    		do_action( 'fitpress_after_membership_fields', $membership_data, $post->ID );
     }
- 
+
     /**
      * Handles saving the meta box.
      *
@@ -246,33 +261,33 @@ class FP_Membership {
         // Add nonce for security and authentication.
         $nonce_name   = isset( $_POST['membership_nonce'] ) ? $_POST['membership_nonce'] : '';
         $nonce_action = FP_PLUGIN_FILE;
- 
+
         // Check if nonce is set.
         if ( ! isset( $nonce_name ) ) {
             return;
         }
- 
+
         // Check if nonce is valid.
         if ( ! wp_verify_nonce( $nonce_name, $nonce_action ) ) {
             return;
         }
- 
+
         // Check if user has permissions to save data.
         if ( ! current_user_can( 'edit_post', $post_id ) ) {
             return;
         }
- 
+
         // Check if not an autosave.
         if ( wp_is_post_autosave( $post_id ) ) {
             return;
         }
- 
+
         // Check if not a revision.
         if ( wp_is_post_revision( $post_id ) ) {
             return;
         }
 
-        $membership_data = get_post_meta($post->ID, "membership_data", true); 
+        $membership_data = get_post_meta($post->ID, "membership_data", true);
 
 	    if(isset($_POST["credits"])){
 	        $membership_data['credits'] = $_POST["credits"];
@@ -355,11 +370,11 @@ class FP_Membership {
 
 		$old_membership_id = get_user_meta( $member_id, 'fitpress_membership_id', true );
 		$old_credits = get_user_meta( $member_id, 'fitpress_credits', true );
-		
+
 		$membership_id = $_POST['membership_id'];
 
 		$credits = $_POST['credits'];
-		
+
 		if( $old_membership_id != $membership_id && ( $_POST['update_credits'] == 1 || !$old_membership_id || $old_membership_id == 0 ) ):
 
 			$credits = FP_Credit::update_member_credits( $_POST['membership_id'], $old_membership_id, $old_credits );
@@ -413,7 +428,7 @@ class FP_Membership {
 
 				else:
 
-					$membership_data = get_post_meta( $membership->ID, "membership_data", true); 
+					$membership_data = get_post_meta( $membership->ID, "membership_data", true);
 
 					$memberships[ $membership->ID ] = array(
 						'name' => $membership->post_title,
@@ -507,7 +522,7 @@ class FP_Membership {
 			 		'fields' => $fields,
 			 	);
 
-			 else: 	
+			 else:
 
 			 	$args = array(
 			 		'meta_query' => array(
@@ -562,7 +577,7 @@ class FP_Membership {
 
 			endif;
 
-		endif;	
+		endif;
 
 	 	$member_query = new WP_User_Query( $args );
 
@@ -576,7 +591,7 @@ class FP_Membership {
  * Extension main function
  */
 function __fp_membership_main() {
-    new FP_Membership();
+    FP_Membership::get_instance();
 }
 
 // Initialize plugin when plugins are loaded
