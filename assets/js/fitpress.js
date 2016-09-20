@@ -4,11 +4,16 @@ jQuery(document).ready(function($) {
 
     e.preventDefault();
 
+    if( $(this).hasClass('disabled') ){
+		return;
+    }
+
     button = $(this);
 
     old_text = $(this).text();
 
     $(this).html('<i class="fa fa-refresh fa-spin"></i>');
+    $(this).addClass('disabled');
 
     jQuery.ajax({
          type : "post",

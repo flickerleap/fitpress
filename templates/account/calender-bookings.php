@@ -1,40 +1,45 @@
-<?php if( $credits <= 0):?>
+<?php if ( $credits <= 0 ) :?>
 	<p>You do not have credits. Why not upgrade your membership?</p>
-<?php else:?>
+<?php else : ?>
 	<p>You currently have <strong><span class="credits"><?php echo $credits;?></span></strong> credits remaining.</p>
 <?php endif;?>
 
-<?php if( count( $sessions ) > 0 ):?>
+<?php if ( count( $sessions ) > 0 ) :?>
 
 	<?php
 	/* draw table */
 	$calendar = '<table cellpadding="0" cellspacing="0" class="fp-calendar">';
 
 	/* table headings */
-	$headings = array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
-	$calendar.= '<thead><tr class="fp-calendar-row"><th class="fp-calendar-day-head">'.implode('</th><th class="fp-calendar-day-head">',$headings).'</th></tr></thead>';
+	$headings = array( 'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday' );
+	$calendar .= '<thead><tr class="fp-calendar-row"><th class="fp-calendar-day-head">' . implode( '</th><th class="fp-calendar-day-head">',$headings ) . '</th></tr></thead>';
 
 	$current_date = strtotime( 'midnight' );
-	$start_date = $running_day = strtotime('sunday last week', strtotime('sunday last week'));
-	$end_date = strtotime('+1 week', strtotime('sunday this week'));
+	if ( 'Sunday' == date( 'l' ) ) :
+		$start_date = $running_day = $current_date;
+		$end_date = strtotime( '+1 week', $current_date );
+	else :
+		$start_date = $running_day = strtotime( 'sunday last week' );
+		$end_date = strtotime( '+1 week', strtotime( 'sunday this week' ) );
+	endif;
 
 	$day_counter = 0;
 
 	/* row for week one */
-	$calendar.= '<tbody><tr class="fp-calendar-row">';
+	$calendar .= '<tbody><tr class="fp-calendar-row">';
 
 	/* keep going with days.... */
-	while( $running_day < $end_date ):
+	while ( $running_day < $end_date ) :
 
 		$day_counter++;
 
-		if( $running_day < $current_date ):
+		if ( $running_day < $current_date ) :
 
-			$calendar.= '<td class="fp-calendar-day-np">';
-			$calendar.= '<div class="fp-day-number">'.date( 'j M', $running_day ).'</div>';
+			$calendar .= '<td class="fp-calendar-day-np">';
+			$calendar .= '<div class="fp-day-number">' . date( 'j M', $running_day ) . '</div>';
 			$calendar.= '</td>';
 
-		else:
+		else :
 
 			$has_sessions = isset( $sessions[date( 'l - j F Y', $running_day )] ) && !empty( $sessions[date( 'l - j F Y', $running_day )]);
 			$day_class = $has_sessions ? 'fp-calendar-day' : 'fp-calendar-day fp-calendar-day-empty';
@@ -49,7 +54,7 @@
 			if( $has_sessions ):
 
 				foreach( $sessions[date( 'l - j F Y', $running_day )] as $day_session ):
-					
+
 					$calendar .= '<div class="day-session">';
 
 					$calendar.= '<p class="class-name">' . $day_session->class_name . '</p>';
@@ -80,17 +85,17 @@
 			endif;
 
 			$calendar.= '</td>';
-			
-			if( $day_counter == 7 ):
 
-				$day_counter = 0;
-				$calendar.= '</tr>';
+		endif;
 
-				if( $running_day != $end_date):
+		if( $day_counter == 7 ):
 
-					$calendar.= '<tr class="fp-calendar-row">';
+			$day_counter = 0;
+			$calendar.= '</tr>';
 
-				endif;
+			if( $running_day != $end_date):
+
+				$calendar.= '<tr class="fp-calendar-row">';
 
 			endif;
 

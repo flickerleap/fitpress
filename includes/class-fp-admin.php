@@ -23,9 +23,15 @@ class FP_Admin {
 	/**
 	 * Hook in methods.
 	 */
-    public function __construct(){
+	public function __construct() {
 
-    	add_action( 'admin_menu', array( $this, 'fitpress_dashboard' ), 5 );
+		add_action( 'admin_menu', array( $this, 'fitpress_dashboard' ), 5 );
+
+		//Setting up columns.
+		add_filter( 'manage_users_columns', array( $this, 'user_column_header' ), 10, 1 );
+		add_action( 'manage_users_custom_column', array( $this, 'user_column_data' ), 15, 3 );
+		add_filter( 'manage_users_sortable_columns', array( $this, 'user_column_sortable' ) );
+		add_action( 'pre_get_users', array( $this, 'sort_by_membership' ) );
 
 	}
 
@@ -119,12 +125,74 @@ class FP_Admin {
 	    ?>
 	    <div class="wrap">
 	        <h2>FitPress Settings</h2>
-	        <p>Coming soon!</p>
+			<p>Booking and Cancellation Limits</p>
+			<?php do_action( '' );?>
 	    </div>
 	    <?php
 
 	}
 
+	/*
+	* Setup Column and data for users page with sortable
+	*/
+	public static function user_column_header( $column ) {
+
+		$column['membership'] = __( 'Membership', 'fitpress-invoices' );
+
+		return $column;
+
+	}
+
+	public function user_column_data( $value, $column_name, $user_id ) {
+
+		if ( 'membership' == $column_name ) :
+			return $this->get_membership( $user_id );
+		endif;
+
+		return $value;
+
+	}
+
+	public function sort_by_membership( $query ) {
+
+		if ( 'membership' == $query->get( 'orderby' ) ) {
+
+			$query->set( 'meta_query', array(
+				'relation' => 'OR',
+				array(
+					'key' => 'fitpress_membership_id',
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key' => 'fitpress_membership_id',
+				),
+			));
+
+			$query->set( 'orderby', 'meta_value_num' );
+			$query->set( 'meta_key', 'fitpress_membership_id' );
+
+		}
+
+	}
+
+	public function user_column_sortable( $columns ) {
+
+		$columns['membership'] = 'membership';
+
+		return $columns;
+
+	}
+
+	public function get_membership( $user_id ) {
+		$membership_id = get_user_meta( $user_id, 'fitpress_membership_id', true );
+
+		if ( ! $membership_id ) :
+			return 'None';
+		else :
+			$membership = FP_Membership::get_membership( array( $membership_id ) );
+			return $membership[ $membership_id ]['name'];
+		endif;
+	}
 }
 
 /**
