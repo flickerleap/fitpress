@@ -28,7 +28,9 @@ class FP_Account {
     public function __construct(){
 
 		add_action( 'init', array( $this, 'add_endpoints' ) );
-		
+
+		add_action( 'init', array( $this, 'maybe_show_details_alert' ) );
+
 		add_action( 'template_redirect', array( $this, 'save_account_details' ) );
 		add_action( 'wp_loaded', array( $this, 'process_login' ), 20 );
 		add_action( 'wp_loaded', array( $this, 'process_lost_password' ), 20 );
@@ -51,6 +53,26 @@ class FP_Account {
 			add_rewrite_endpoint( $var, EP_ROOT | EP_PAGES );
 		}
 
+	}
+
+	public function maybe_show_details_alert(){
+
+		if ( $_SERVER['REQUEST_METHOD'] === 'POST' || is_admin() ) :
+			return;
+		endif;
+
+		$user_id     = (int) get_current_user_id();
+
+		if ( ! get_user_meta( $user_id, 'first_name', true ) | ! get_user_meta( $user_id, 'last_name', true ) | ! get_user_meta( $user_id, 'contact_number', true ) |  ! get_user_meta( $user_id, 'emergency_contact_name', true ) ||  ! get_user_meta( $user_id, 'emergency_contact_number', true ) ) :
+			fp_add_flash_message(
+				sprintf(
+					__( 'We do not have all your details, please update them %shere%s.','fitpress' ),
+					'<a href="' . fp_customer_edit_account_url( ) . '">',
+					'</a>'
+				),
+				'error'
+			);
+		endif;
 	}
 
 	/**
@@ -149,7 +171,7 @@ class FP_Account {
 		), $atts ) );
 
 		fp_get_template( 'account/account.php', array(
-			'current_user' 	=> get_user_by( 'id', get_current_user_id() ),
+			'current_user' 	=> get_userdata( get_current_user_id() ),
 			'booked_sessions' => FP_Booking::get_booked_sessions( array( 'member_id' => get_current_user_id() ) ),
 		) );
 	}
@@ -162,7 +184,7 @@ class FP_Account {
 	private static function account_menu( ) {
 
 		fp_get_template( 'account/menu.php', array(
-			'current_user' 	=> get_user_by( 'id', get_current_user_id() )
+			'current_user' 	=> get_userdata( get_current_user_id() )
 		) );
 
 	}
@@ -171,7 +193,7 @@ class FP_Account {
 	 * Edit account details page
 	 */
 	private static function edit_account() {
-		fp_get_template( 'account/form-update-account.php', array( 'user' => get_user_by( 'id', get_current_user_id() ) ) );
+		fp_get_template( 'account/form-update-account.php', array( 'user' => get_userdata( get_current_user_id() ) ) );
 	}
 
 	/**
@@ -507,6 +529,9 @@ class FP_Account {
 		$account_first_name = ! empty( $_POST[ 'account_first_name' ] ) ? sanitize_text_field( $_POST[ 'account_first_name' ] ) : '';
 		$account_last_name  = ! empty( $_POST[ 'account_last_name' ] ) ? sanitize_text_field( $_POST[ 'account_last_name' ] ) : '';
 		$account_email      = ! empty( $_POST[ 'account_email' ] ) ? sanitize_email( $_POST[ 'account_email' ] ) : '';
+		$contact_number      = ! empty( $_POST[ 'contact_number' ] ) ? sanitize_text_field( $_POST[ 'contact_number' ] ) : '';
+		$emergency_contact_name      = ! empty( $_POST[ 'emergency_contact_name' ] ) ? sanitize_text_field( $_POST[ 'emergency_contact_name' ] ) : '';
+		$emergency_contact_number      = ! empty( $_POST[ 'emergency_contact_number' ] ) ? sanitize_text_field( $_POST[ 'emergency_contact_number' ] ) : '';
 		$pass_cur           = ! empty( $_POST[ 'password_current' ] ) ? $_POST[ 'password_current' ] : '';
 		$pass1              = ! empty( $_POST[ 'password_1' ] ) ? $_POST[ 'password_1' ] : '';
 		$pass2              = ! empty( $_POST[ 'password_2' ] ) ? $_POST[ 'password_2' ] : '';
@@ -525,6 +550,14 @@ class FP_Account {
 			fp_add_flash_message( __( 'Please provide a valid email address.', 'fitpress' ), 'error' );
 		} elseif ( email_exists( $account_email ) && $account_email !== $current_user->user_email ) {
 			fp_add_flash_message( __( 'This email address is already registered.', 'fitpress' ), 'error' );
+		}
+
+		if ( empty( $contact_number ) ) {
+			fp_add_flash_message( __( 'Please enter your contact number.', 'fitpress' ), 'error' );
+		}
+
+		if ( empty( $emergency_contact_name ) || empty( $emergency_contact_number ) ) {
+			fp_add_flash_message( __( 'Please enter an emergency cotnact.', 'fitpress' ), 'error' );
 		}
 
 		if ( ! empty( $pass1 ) && ! wp_check_password( $pass_cur, $current_user->user_pass, $current_user->ID ) ) {
@@ -562,13 +595,17 @@ class FP_Account {
 
 		if ( fp_flash_message_count( 'error' ) === 0 ) {
 
-			wp_update_user( $user ) ;
+			wp_update_user( $user );
+
+			update_user_meta( $user->ID, 'contact_number', $contact_number );
+			update_user_meta( $user->ID, 'emergency_contact_name', $emergency_contact_name );
+			update_user_meta( $user->ID, 'emergency_contact_number', $emergency_contact_number );
 
 			fp_add_flash_message( __( 'Account details changed successfully.', 'fitpress' ) );
 
 			wp_safe_redirect( fp_get_page_permalink( 'account' ) );
 			exit;
-			
+
 		}
 	}
 

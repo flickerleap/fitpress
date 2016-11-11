@@ -303,6 +303,40 @@ class FP_Membership {
 
 	?>
 
+		<h3>Member Contact Details</h3>
+
+		<?php $contact_number = get_user_meta( $user->ID, 'contact_number', true );?>
+		<?php $emergency_contact_name = get_user_meta( $user->ID, 'emergency_contact_name', true );?>
+		<?php $emergency_contact_number = get_user_meta( $user->ID, 'emergency_contact_number', true );?>
+
+		<table class="form-table">
+
+			<tr>
+				<th><label for="contact_number">Contact Number</label></th>
+
+				<td>
+					<input type="text" name="contact_number" id="contact_number" value="<?php echo esc_attr( ($contact_number) ? $contact_number : '' ); ?>" /><br />
+				</td>
+			</tr>
+
+			<tr>
+				<th><label for="emergency_contact_name">Emergency Contact Name</label></th>
+
+				<td>
+					<input type="text" name="emergency_contact_name" id="emergency_contact_name" value="<?php echo esc_attr( ($emergency_contact_name) ? $emergency_contact_name : '' ); ?>" /><br />
+				</td>
+			</tr>
+
+			<tr>
+				<th><label for="emergency_contact_number">Emergency Contact Number</label></th>
+
+				<td>
+					<input type="text" name="emergency_contact_number" id="emergency_contact_number" value="<?php echo esc_attr( ($emergency_contact_number) ? $emergency_contact_number : '' ); ?>" /><br />
+				</td>
+			</tr>
+
+		</table>
+
 		<h3>FitPress Membership Details</h3>
 
 		<?php $memberships = $this->get_memberships( true );?>
@@ -365,26 +399,31 @@ class FP_Membership {
 		if ( !current_user_can( 'edit_user', $member_id ) )
 			return false;
 
-		if( !isset( $_POST['membership_id'] ) || !isset( $_POST['credits'] ) )
-			return;
+		if( isset( $_POST['membership_id'] ) && isset( $_POST['credits'] ) ) :
 
-		$old_membership_id = get_user_meta( $member_id, 'fitpress_membership_id', true );
-		$old_credits = get_user_meta( $member_id, 'fitpress_credits', true );
+			$old_membership_id = get_user_meta( $member_id, 'fitpress_membership_id', true );
+			$old_credits = get_user_meta( $member_id, 'fitpress_credits', true );
 
-		$membership_id = $_POST['membership_id'];
+			$membership_id = $_POST['membership_id'];
 
-		$credits = $_POST['credits'];
+			$credits = $_POST['credits'];
 
-		if( $old_membership_id != $membership_id && ( $_POST['update_credits'] == 1 || !$old_membership_id || $old_membership_id == 0 ) ):
+			if( $old_membership_id != $membership_id && ( $_POST['update_credits'] == 1 || !$old_membership_id || $old_membership_id == 0 ) ):
 
-			$credits = FP_Credit::update_member_credits( $_POST['membership_id'], $old_membership_id, $old_credits );
+				$credits = FP_Credit::update_member_credits( $_POST['membership_id'], $old_membership_id, $old_credits );
+
+			endif;
+
+			do_action( 'fitpress_before_membership_profile_save', array( 'member_id' => $member_id, 'old_membership_id' => $old_membership_id ) );
+
+			update_user_meta( $member_id, 'fitpress_membership_id', $membership_id, $old_membership_id );
+			update_user_meta( $member_id, 'fitpress_credits', $credits, $old_credits );
 
 		endif;
 
-   		do_action( 'fitpress_before_membership_profile_save', array( 'member_id' => $member_id, 'old_membership_id' => $old_membership_id ) );
-
-		update_user_meta( $member_id, 'fitpress_membership_id', $membership_id, $old_membership_id );
-		update_user_meta( $member_id, 'fitpress_credits', $credits, $old_credits );
+		update_user_meta( $member_id, 'contact_number', $_POST['contact_number'] );
+		update_user_meta( $member_id, 'emergency_contact_name', $_POST['emergency_contact_name'] );
+		update_user_meta( $member_id, 'emergency_contact_number', $_POST['emergency_contact_number'] );
 
 	}
 

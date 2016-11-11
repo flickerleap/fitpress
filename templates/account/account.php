@@ -9,7 +9,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
-} 
+}
 
 fp_display_flash_message();
 ?>

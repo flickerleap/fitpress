@@ -58,7 +58,7 @@ class FP_Flash_Message{
 			echo $flash_message;
 
 		endif;
-	
+
 	}
 
 	public static function count( $type ){
@@ -68,7 +68,7 @@ class FP_Flash_Message{
 		if( isset( $_SESSION['fp_flash_message'] ) ):
 
 			foreach( $_SESSION['fp_flash_message'] as $flash ):
-			
+
 				if( $flash['type'] == $type )
 					$type_count++;
 
