@@ -63,7 +63,7 @@ class FP_Account {
 
 		$user_id     = (int) get_current_user_id();
 
-		if ( ! get_user_meta( $user_id, 'first_name', true ) | ! get_user_meta( $user_id, 'last_name', true ) | ! get_user_meta( $user_id, 'contact_number', true ) |  ! get_user_meta( $user_id, 'emergency_contact_name', true ) ||  ! get_user_meta( $user_id, 'emergency_contact_number', true ) ) :
+		if ( $user_id && ( ! get_user_meta( $user_id, 'first_name', true ) || ! get_user_meta( $user_id, 'last_name', true ) || ! get_user_meta( $user_id, 'contact_number', true ) ||  ! get_user_meta( $user_id, 'emergency_contact_name', true ) ||  ! get_user_meta( $user_id, 'emergency_contact_number', true ) ) ) :
 			fp_add_flash_message(
 				sprintf(
 					__( 'We do not have all your details, please update them %shere%s.','fitpress' ),
