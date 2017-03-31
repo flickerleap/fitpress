@@ -53,6 +53,19 @@ class FP_Install {
 
 		endif;
 
+		if ( ! get_page_by_title( 'Sign Up' ) ) :
+
+			$signup_page = array(
+				'post_type' => 'page',
+				'post_title' => 'Sign Up',
+				'post_status' => 'publish',
+				'post_content' => '[fitpress_signup]',
+			);
+
+			wp_insert_post( $signup_page );
+
+		endif;
+
 		add_action( 'init', array( 'FP_Install', 'flush_rewrite_rules' ) );
 
 		if ( ! file_exists( FP_PLUGIN_DIR . 'export' ) ) :

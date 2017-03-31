@@ -272,4 +272,16 @@ function fp_flash_message_count( $type ){
 	return FP_Flash_Message::count( $type );
 
 }
+
+if ( ! function_exists( 'write_log' ) ) {
+	function write_log( $log ) {
+		if( WP_DEBUG && WP_DEBUG_LOG ):
+			if ( is_array( $log ) || is_object( $log ) ) :
+				error_log( print_r( $log, true ) );
+			else :
+				error_log( $log );
+			endif;
+		endif;
+	}
+}
 ?>

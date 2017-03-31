@@ -137,7 +137,9 @@ class FP_Admin {
 	*/
 	public static function user_column_header( $column ) {
 
-		$column['membership'] = __( 'Membership', 'fitpress-invoices' );
+		$column['membership'] = __( 'Membership', 'fitpress' );
+
+		$column['membership_status'] = __( 'Membership Status', 'fitpress' );
 
 		return $column;
 
@@ -147,6 +149,12 @@ class FP_Admin {
 
 		if ( 'membership' == $column_name ) :
 			return $this->get_membership( $user_id );
+		endif;
+
+		if ( 'membership_status' == $column_name ) :
+			$membership_status = new FP_Membership_Status();
+			$membership_status->set_member_id( $user_id );
+			return $membership_status->get_status( );
 		endif;
 
 		return $value;
@@ -173,11 +181,30 @@ class FP_Admin {
 
 		}
 
+		if ( 'membership_status' == $query->get( 'orderby' ) ) {
+
+			$query->set( 'meta_query', array(
+				'relation' => 'OR',
+				array(
+					'key' => 'fitpress_membership_status',
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key' => 'fitpress_membership_status',
+				),
+			));
+
+			$query->set( 'orderby', 'meta_value' );
+			$query->set( 'meta_key', 'fitpress_membership_status' );
+
+		}
+
 	}
 
 	public function user_column_sortable( $columns ) {
 
 		$columns['membership'] = 'membership';
+		$columns['membership_status'] = 'membership_status';
 
 		return $columns;
 

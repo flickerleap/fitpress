@@ -166,19 +166,45 @@ class FitPress{
         $this->query = include_once( 'includes/class-fp-account.php' );
         include_once( 'includes/class-fp-flash-message.php' );
         include_once( 'includes/class-fp-membership.php' );
+        include_once( 'includes/class-fp-membership-status.php' );
         include_once( 'includes/class-fp-credits.php' );
         include_once( 'includes/class-fp-classes.php' );
         include_once( 'includes/class-fp-session.php' );
         include_once( 'includes/class-fp-booking.php' );
         include_once( 'includes/class-fp-email.php' );
 
-        if( is_admin() ):
+        if( $this->is_request( 'admin') ) :
 
             include_once( 'includes/class-fp-admin.php' );
 
         endif;
 
+        if( $this->is_request( 'frontend' ) ) :
+
+        	include_once( 'includes/class-fp-frontend.php' );
+
+        endif;
+
     }
+
+	/**
+	 * What type of request is this?
+	 *
+	 * @param  string $type admin, ajax, cron or frontend.
+	 * @return bool
+	 */
+	private function is_request( $type ) {
+		switch ( $type ) {
+			case 'admin' :
+				return is_admin();
+			case 'ajax' :
+				return defined( 'DOING_AJAX' );
+			case 'cron' :
+				return defined( 'DOING_CRON' );
+			case 'frontend' :
+				return ( ! is_admin() || defined( 'DOING_AJAX' ) ) && ! defined( 'DOING_CRON' );
+		}
+	}
 
     /**
      * Ensure theme and server variable compatibility

@@ -36,10 +36,10 @@ class FP_Account {
 		add_action( 'wp_loaded', array( $this, 'process_lost_password' ), 20 );
 		add_action( 'wp_loaded', array( $this, 'process_reset_password' ), 20 );
 
-		if ( ! is_admin() ) {
+		if ( ! is_admin() ) :
 			add_filter( 'query_vars', array( $this, 'add_query_vars'), 0 );
 			add_action( 'parse_request', array( $this, 'parse_request'), 0 );
-		}
+		endif;
 
 		$this->init_query_vars();
 
