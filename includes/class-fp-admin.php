@@ -20,6 +20,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class FP_Admin {
 
+	protected $settings = null;
+
 	/**
 	 * Hook in methods.
 	 */
@@ -33,30 +35,32 @@ class FP_Admin {
 		add_filter( 'manage_users_sortable_columns', array( $this, 'user_column_sortable' ) );
 		add_action( 'pre_get_users', array( $this, 'sort_by_membership' ) );
 
+		add_action( 'admin_init', array( $this, 'init_settings' ) );
+
 	}
 
 	public function fitpress_dashboard() {
 
-	    //add an item to the menu
-	    add_menu_page (
-	        'FitPress Dashboard',
-	        'FitPress',
-	        'manage_options',
-	        'fitpress',
-	        array( $this, 'fitpress_dashboard_render' ),
-	        'dashicons-heart',
-	        '55.77'
-	    );
+		//add an item to the menu
+		add_menu_page (
+			'FitPress Dashboard',
+			'FitPress',
+			'manage_options',
+			'fitpress',
+			array( $this, 'fitpress_dashboard_render' ),
+			'dashicons-heart',
+			'55.77'
+		);
 
-	    //add an item to the menu
-	    add_submenu_page (
-	    	'fitpress',
-	        'FitPress Settings',
-	        'Settings',
-	        'manage_options',
-	        'fp_settings',
-	        array( $this, 'fitpress_settings_render' )
-	    );
+		//add an item to the menu
+		add_submenu_page (
+			'fitpress',
+			'FitPress Settings',
+			'Settings',
+			'manage_options',
+			'fp_settings',
+			array( $this, 'fitpress_settings_render' )
+		);
 
 	}
 
@@ -64,12 +68,20 @@ class FP_Admin {
 
 		$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'todays-bookings';
 
-	    ?>
-	    <div class="wrap">
-	        <h2>FitPress Dashboard</h2>
-	    	<h2 class="nav-tab-wrapper">
-			    <a href="?page=fitpress&amp;tab=todays-bookings" class="nav-tab <?php echo $active_tab == 'todays-bookings' ? 'nav-tab-active' : ''; ?>">Today's Bookings</a>
-			    <a href="?page=fitpress&amp;tab=tomorrows-bookings" class="nav-tab <?php echo $active_tab == 'tomorrows-bookings' ? 'nav-tab-active' : ''; ?>">Tomorrow's Bookings</a>
+		$tabs = array(
+			'todays-bookings' => 'Today\'s Bookings',
+			'tomorrows-bookings' => 'Tomorrow\'s Bookings',
+		);
+
+		$tabs = apply_filters( 'fitpress_dashboard_tabs', $tabs );
+
+		?>
+		<div class="wrap">
+			<h2>FitPress Dashboard</h2>
+			<h2 class="nav-tab-wrapper">
+				<?php foreach( $tabs as $tab_key => $tab_name ):?>
+					<a href="?page=fitpress&amp;tab=<?php echo $tab_key; ?>" class="nav-tab <?php echo $active_tab == $tab_key ? 'nav-tab-active' : ''; ?>"><?php echo $tab_name; ?></a>
+				<?php endforeach;?>
 			</h2>
 			<?php switch( $active_tab ):
 				case 'tomorrows-bookings':
@@ -81,8 +93,8 @@ class FP_Admin {
 					break;
 
 			endswitch;?>
-	    </div>
-	    <?php
+		</div>
+		<?php
 
 	}
 
@@ -122,14 +134,62 @@ class FP_Admin {
 
 	public function fitpress_settings_render(){
 
-	    ?>
-	    <div class="wrap">
-	        <h2>FitPress Settings</h2>
-			<p>Booking and Cancellation Limits</p>
-			<?php do_action( '' );?>
-	    </div>
-	    <?php
+		?>
+		<div class="wrap">
+			<h2>FitPress Settings</h2>
+			<form method="POST" action="options.php">
+				<?php
+				settings_fields( 'fp_settings' );
+				do_settings_sections( 'fp_settings' );
+				submit_button();
+				?>
+			</form>
+		</div>
+		<?php
 
+	}
+
+	public function init_settings() {
+
+		$this->settings = get_option( 'fitpress_settings' );
+
+	 	add_settings_section(
+			'general_settings',
+			'General settings',
+			array( $this, 'general_settings_callback_function' ),
+			'fp_settings'
+		);
+
+	 	add_settings_field(
+			'booking_time_limit',
+			'Booking Time Limit',
+			array( $this, 'booking_time_limit_callback_function' ),
+			'fp_settings',
+			'general_settings'
+		);
+	 	add_settings_field(
+			'cancellation_time_limit',
+			'Cancellation Time Limit',
+			array( $this, 'cancellation_time_limit_callback_function' ),
+			'fp_settings',
+			'general_settings'
+		);
+
+	 	register_setting( 'fp_settings', 'fitpress_settings' );
+
+	}
+
+	public function general_settings_callback_function() {
+	}
+
+	public function booking_time_limit_callback_function() {
+		$value = (! empty( $this->settings['booking_time_limit'] ) ) ? $this->settings['booking_time_limit'] : '30';
+		echo '<input name="fitpress_settings[booking_time_limit]" id="booking_time_limit" class="small" type="number" value="' . $value . '" /> minutes';
+	}
+
+	public function cancellation_time_limit_callback_function() {
+		$value = (! empty( $this->settings['cancellation_time_limit'] ) ) ? $this->settings['cancellation_time_limit'] : '30';
+		echo '<input name="fitpress_settings[cancellation_time_limit]" id="cancellation_time_limit" class="small" type="number"  value="' . $value . '" /> minutes';
 	}
 
 	/*
@@ -226,7 +286,7 @@ class FP_Admin {
  * Extension main function
  */
 function __fp_admin_main() {
-    new FP_Admin();
+	new FP_Admin();
 }
 
 // Initialize plugin when plugins are loaded

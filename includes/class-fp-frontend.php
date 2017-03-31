@@ -167,7 +167,9 @@ class FP_Frontend {
 				wp_set_current_user( $user_id );
 				wp_set_auth_cookie( $user_id );
 
-				wp_safe_redirect( fp_get_page_permalink( 'account' ) );
+				do_action( 'fitpress_member_signup', $user_id, $membership_id );
+
+				wp_safe_redirect( apply_filters( 'fitpress_signup_redirect', fp_get_page_permalink( 'account' ) ) );
 				exit;
 
 			else :
