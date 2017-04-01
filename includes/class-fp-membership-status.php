@@ -78,7 +78,7 @@ class FP_Membership_Status {
 
 		$this->status = $status;
 
-		update_user_meta( $this->member_id, 'fitpress_membership_status', $this->status, $this->get_status( ) );
+		update_user_meta( $this->get_member_id(), 'fitpress_membership_status', $this->get_status(), get_user_meta( $this->member_id, 'fitpress_membership_status', true ) );
 
 	}
 
@@ -90,7 +90,7 @@ class FP_Membership_Status {
 		$this->member_id = $member_id;
 	}
 
-	function show_membership_statuses( $user_id, $membership_id ) {
+	function show_membership_statuses( $user_id ) {
 
 		$this->set_member_id( $user_id );
 		$this->get_status( );
