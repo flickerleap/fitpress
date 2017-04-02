@@ -173,6 +173,8 @@ class FitPress{
         include_once( 'includes/class-fp-booking.php' );
         include_once( 'includes/class-fp-email.php' );
 
+        include_once( 'includes/class-fp-frontend.php' );
+
         if( $this->is_request( 'admin') ) :
 
             include_once( 'includes/class-fp-admin.php' );
@@ -180,8 +182,6 @@ class FitPress{
         endif;
 
         if( $this->is_request( 'frontend' ) ) :
-
-        	include_once( 'includes/class-fp-frontend.php' );
 
         endif;
 

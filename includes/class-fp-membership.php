@@ -624,6 +624,17 @@ class FP_Membership {
 
 	}
 
+	public static function get_user_membership( $user_id ) {
+		$membership_id = get_user_meta( $user_id, 'fitpress_membership_id', true );
+
+		if ( ! $membership_id ) :
+			return 'None';
+		else :
+			$membership = FP_Membership::get_membership( array( $membership_id ) );
+			return $membership[ $membership_id ];
+		endif;
+	}
+
 }
 
 /**

@@ -20,6 +20,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class FP_Frontend {
 
+	public $query_vars;
+
 	/**
 	 * We only want a single instance of this class.
 	 */
@@ -44,9 +46,72 @@ class FP_Frontend {
 
 		add_shortcode( 'fitpress_memberships', array( $this, 'membership_output' ) );
 
-		add_shortcode( 'fitpress_signup', array( $this, 'signup_output' ) );
+		add_action( 'init', array( $this, 'add_endpoints' ) );
+
 		add_action( 'template_redirect', array( $this, 'process_signup' ) );
 
+		if ( ! is_admin() ) :
+			add_filter( 'query_vars', array( $this, 'add_query_vars'), 0 );
+			add_action( 'parse_request', array( $this, 'parse_request'), 0 );
+		endif;
+
+		$this->init_query_vars();
+
+		add_shortcode( 'fitpress_signup', array( $this, 'signup_output' ) );
+
+	}
+
+	public function add_endpoints(){
+
+		foreach ( $this->query_vars as $var ) {
+			add_rewrite_endpoint( $var, EP_ROOT | EP_PAGES );
+		}
+
+	}
+
+	/**
+	 * Init query vars by loading options.
+	 */
+	public function init_query_vars() {
+		$this->query_vars = array(
+			'checkout',
+			'confirm',
+			'notify',
+			'cancel',
+		);
+	}
+
+	/**
+	 * add_query_vars function.
+	 *
+	 * @access public
+	 * @param array $vars
+	 * @return array
+	 */
+	public function add_query_vars( $vars ) {
+		foreach ( $this->query_vars as $key => $var ) {
+			$vars[] = $key;
+		}
+
+		return $vars;
+	}
+
+	/**
+	 * Parse the request and look for query vars - endpoints may not be supported
+	 */
+	public function parse_request() {
+		global $wp;
+
+		// Map query vars to their keys, or get them if endpoints are not supported
+		foreach ( $this->query_vars as $key => $var ) {
+			if ( isset( $_GET[ $var ] ) ) {
+				$wp->query_vars[ $key ] = $_GET[ $var ];
+			}
+
+			elseif ( isset( $wp->query_vars[ $var ] ) ) {
+				$wp->query_vars[ $key ] = $wp->query_vars[ $var ];
+			}
+		}
 	}
 
 	public function membership_output( $atts ) {
@@ -66,7 +131,104 @@ class FP_Frontend {
 
 	public function signup_output( $atts ) {
 
-		fp_get_template( 'general/sign-up.php' );
+		global $wp;
+
+		if ( isset( $wp->query_vars['checkout'] ) ) :
+
+			self::checkout();
+
+		elseif ( isset( $wp->query_vars['cancel'] ) ) :
+
+			self::cancel();
+
+		elseif ( isset( $wp->query_vars['confirm'] ) ) :
+
+			fp_get_template( 'sign-up/confirm.php' );
+
+		elseif ( isset( $wp->query_vars['notify'] ) ) :
+
+			self::notify();
+
+		else :
+
+			fp_get_template( 'sign-up/sign-up.php' );
+
+		endif;
+
+	}
+
+	/**
+	 * My account page
+	 *
+	 * @param  array $atts
+	 */
+	private static function checkout( ) {
+
+		$payment = new FP_Payment();
+
+		$payment_methods = $payment->get_methods();
+
+		$user_id = get_current_user_id();
+
+		$membership = FP_Membership::get_user_membership( $user_id );
+
+		$current_user = get_userdata( $user_id );
+
+		fp_get_template( 'sign-up/checkout.php', array(
+			'current_user' 	=> $current_user,
+			'membership' => $membership,
+		) );
+
+		foreach( $payment_methods as $method => $name ):
+
+			do_action( 'fitpress_payment_method_' . $method, $membership, $current_user );
+
+		endforeach;
+
+	}
+
+	/**
+	 * My account page
+	 *
+	 * @param  array $atts
+	 */
+	private static function notify( ) {
+
+		$method = $_GET['method'];
+
+		do_action( 'fitpress_payment_notify_' . $method, $_POST );
+
+	}
+
+	/**
+	 * My account page
+	 *
+	 * @param  array $atts
+	 */
+	private static function cancel( ) {
+
+		write_log($_POST);exit;
+
+		$payment = new FP_Payment();
+
+		$payment_methods = $payment->get_methods();
+
+		$user_id = get_current_user_id();
+
+		$membership = FP_Membership::get_user_membership( $user_id );
+
+		$current_user = get_userdata( $user_id );
+
+		fp_get_template( 'sign-up/checkout.php', array(
+			'current_user' 	=> $current_user,
+			'membership' => $membership,
+		) );
+
+		foreach( $payment_methods as $method => $name ):
+
+			do_action( 'fitpress_payment_method_' . $method, $membership, $current_user );
+
+		endforeach;
 
 	}
 

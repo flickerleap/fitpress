@@ -87,7 +87,7 @@ class FP_Account {
 			'member-logout',
 			'book',
 			'make-booking',
-			'cancel-booking',
+			'cancel-booking'
 		);
 	}
 
