@@ -174,9 +174,20 @@ class FP_Admin {
 			'fp_settings',
 			'general_settings'
 		);
+	 	add_settings_field(
+			'setup',
+			'Setup',
+			array( $this, 'setup_callback_function' ),
+			'fp_settings',
+			'general_settings'
+		);
 
 	 	register_setting( 'fp_settings', 'fitpress_settings' );
 
+	}
+
+	public function setup_callback_function(){
+		echo 'If the automated setup did not run, <a href="' . add_query_arg( 'fp-setup', 'run' ) . '">click here to run it</a>.';
 	}
 
 	public function general_settings_callback_function() {
