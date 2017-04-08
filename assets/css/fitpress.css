@@ -41,3 +41,42 @@ table.fp-calendar td .day-session .session-space{font-size: 9px;line-height: 1.2
 .flash-message-error{border-left-color: #dd5555;background: #ffeeee;}
 .flash-message-success{border-left-color: #55dd55;background: #eeffee;}
 
+.form-row{
+    padding: 0 0.7em;
+}
+.form-row.form-row-first, .form-row.form-row-last{
+	width:50%;
+	float:left;
+}
+.form-row.form-row-wide{
+	width:100%;
+}
+.form-row.form-row-first{
+	clear:both;
+}
+.form-row input[type=email], .form-row input[type=text], .form-row input[type=url], .form-row input[type=search], .form-row input[type=password], .form-row input[type=number], .form-row input[type=tel], .form-row input[type=date]{
+    height: 40px!important;
+    margin: 0;
+    padding: 0.7em;
+    border: 1px solid #ddd;
+    color: #666;
+    font-size: 14px;
+    line-height: normal!important;
+}
+.form-row select{
+	height: 40px;
+    margin: 0;
+    padding: 0.7em;
+    border: 1px solid #ddd;
+    color: #666;
+    font-size: 14px;
+    line-height: normal!important;
+}
+.form-row input[type=button], .form-row input[type=submit], .form-row button{
+    height: 40px!important;
+    margin: 0;
+    padding: 0.7em;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    line-height: normal!important;
+}
