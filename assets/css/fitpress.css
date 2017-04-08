@@ -54,6 +54,10 @@ table.fp-calendar td .day-session .session-space{font-size: 9px;line-height: 1.2
 .form-row.form-row-first{
 	clear:both;
 }
+
+.form-row label{
+	display: block;
+}
 .form-row input[type=email], .form-row input[type=text], .form-row input[type=url], .form-row input[type=search], .form-row input[type=password], .form-row input[type=number], .form-row input[type=tel], .form-row input[type=date]{
     height: 40px!important;
     margin: 0;
