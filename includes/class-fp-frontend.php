@@ -308,7 +308,7 @@ class FP_Frontend {
 		elseif ( $username_user_id = username_exists( $account_username ) && $email_user_id = email_exists( $account_email ) && $username_user_id != $email_user_id ):
 			fp_add_flash_message( __( 'A member with that username already exists. Please choose another username.', 'fitpress' ), 'error' );
 		elseif ( $username_user_id = username_exists( $account_username ) && $email_user_id = email_exists( $account_email ) && $username_user_id == $email_user_id ):
-				add_user_to_blog( get_current_blog_id(), $user_id, 'subscriber' );
+				add_user_to_blog( get_current_blog_id(), $username_user_id, 'subscriber' );
 				update_user_meta( $user_id, 'fitpress_membership_id', $membership_id );
 				update_user_meta( $user_id, 'fitpress_membership_status', $membership_status );
 				fp_add_flash_message( __( 'A user account was found with your details. The account has been linked to this membership, please <a href="' . fp_get_page_permalink('account') . '">log in</a> to complete the sign up.', 'fitpress' ), 'error' );
