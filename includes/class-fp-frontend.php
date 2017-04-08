@@ -279,6 +279,9 @@ class FP_Frontend {
 		$pass1              = ! empty( $_POST[ 'password_1' ] ) ? $_POST[ 'password_1' ] : '';
 		$pass2              = ! empty( $_POST[ 'password_2' ] ) ? $_POST[ 'password_2' ] : '';
 
+		$email_user_id = email_exists( $account_email );
+		$username_user_id = username_exists( $account_username );
+
 		if ( empty( $membership_id ) ) :
 			fp_add_flash_message( __( 'Please select a package.', 'fitpress' ), 'error' );
 		endif;
@@ -289,7 +292,7 @@ class FP_Frontend {
 
 		if ( empty( $account_email ) || ! is_email( $account_email ) ) :
 			fp_add_flash_message( __( 'Please provide a valid email address.', 'fitpress' ), 'error' );
-		elseif ( $email_user_id = email_exists( $account_email ) && is_user_member_of_blog( $email_user_id, get_current_blog_id() ) && $account_email !== $current_user->user_email ) :
+		elseif ( $email_user_id && is_user_member_of_blog( $email_user_id, get_current_blog_id() ) && $account_email !== $current_user->user_email ) :
 			fp_add_flash_message( __( 'This email address is already registered.', 'fitpress' ), 'error' );
 		endif;
 
@@ -303,15 +306,14 @@ class FP_Frontend {
 
 		if ( empty( $account_username ) ) :
 			fp_add_flash_message( __( 'Please choose a username.', 'fitpress' ), 'error' );
-		elseif ( $username_user_id = username_exists( $account_username ) && is_user_member_of_blog( $username_user_id, get_current_blog_id() ) ) :
+		elseif ( $username_user_id && is_user_member_of_blog( $username_user_id, get_current_blog_id() ) ) :
 			fp_add_flash_message( __( 'A member with that username already exists. Please choose another username.', 'fitpress' ), 'error' );
 		elseif ( $username_user_id = username_exists( $account_username ) && $email_user_id = email_exists( $account_email ) && $username_user_id != $email_user_id ):
 			fp_add_flash_message( __( 'A member with that username already exists. Please choose another username.', 'fitpress' ), 'error' );
-		elseif ( $username_user_id = username_exists( $account_username ) && $email_user_id = email_exists( $account_email ) && $username_user_id == $email_user_id ):
-				write_log(add_user_to_blog( get_current_blog_id(), $username_user_id, 'subscriber' ));
+		elseif ( $username_user_id && $email_user_id && $username_user_id == $email_user_id ):
 				add_user_to_blog( get_current_blog_id(), $username_user_id, 'subscriber' );
-				update_user_meta( $user_id, 'fitpress_membership_id', $membership_id );
-				update_user_meta( $user_id, 'fitpress_membership_status', $membership_status );
+				update_user_meta( $username_user_id, 'fitpress_membership_id', $membership_id );
+				update_user_meta( $username_user_id, 'fitpress_membership_status', $membership_status );
 				fp_add_flash_message( __( 'A user account was found with your details. The account has been linked to this membership, please <a href="' . fp_get_page_permalink('account') . '">log in</a> to complete the sign up.', 'fitpress' ), 'error' );
 		endif;
 
