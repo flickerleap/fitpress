@@ -66,6 +66,7 @@ table.fp-calendar td .day-session .session-space{font-size: 9px;line-height: 1.2
     color: #666;
     font-size: 14px;
     line-height: normal!important;
+    width:100%;
 }
 .form-row select{
 	height: 40px;
@@ -75,6 +76,7 @@ table.fp-calendar td .day-session .session-space{font-size: 9px;line-height: 1.2
     color: #666;
     font-size: 14px;
     line-height: normal!important;
+    width:100%;
 }
 .form-row input[type=button], .form-row input[type=submit], .form-row button{
     height: 40px!important;
