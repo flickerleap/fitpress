@@ -92,7 +92,7 @@ class FP_Session {
 			)
 		);
 	}
- 
+
     /**
      * Meta box initialization.
      */
@@ -100,12 +100,12 @@ class FP_Session {
         add_action( 'add_meta_boxes', array( $this, 'add_metabox'  )        );
         add_action( 'save_post',      array( $this, 'save_session_metabox' ), 10, 2 );
     }
- 
+
     /**
      * Adds the meta box.
      */
     public function add_metabox() {
-    	
+
         add_meta_box(
             'session-info',
             __( 'Session Information', 'fitpress' ),
@@ -114,9 +114,9 @@ class FP_Session {
             'advanced',
             'default'
         );
- 
+
     }
- 
+
     /**
      * Renders the meta box.
      */
@@ -124,10 +124,10 @@ class FP_Session {
         // Add nonce for security and authentication.
         wp_nonce_field( FP_PLUGIN_FILE, 'session_nonce' );
 
-        $start_time = get_post_meta( $post->ID, "_fp_start_time", true ); 
+        $start_time = get_post_meta( $post->ID, "_fp_start_time", true );
         $date = ($start_time) ? date( 'l, j F Y', $start_time ) : date( 'l, j F Y' );
-        $end_time = get_post_meta( $post->ID, "_fp_end_time", true ); 
-        $class_id = get_post_meta( $post->ID, "_fp_class_id", true ); 
+        $end_time = get_post_meta( $post->ID, "_fp_end_time", true );
+        $class_id = get_post_meta( $post->ID, "_fp_class_id", true );
 
 		$args = array(
 			'post_type'  => 'fp_class',
@@ -183,7 +183,7 @@ class FP_Session {
         </p>
         <?php
     }
- 
+
     /**
      * Handles saving the meta box.
      *
@@ -192,7 +192,7 @@ class FP_Session {
      * @return null
      */
     public function save_session_metabox( $post_id, $post ) {
- 
+
         // Check if nonce is set.
         if ( $post->post_type != 'fp_session' ) {
             return;
@@ -201,35 +201,35 @@ class FP_Session {
         // Add nonce for security and authentication.
         $nonce_name   = isset( $_POST['session_nonce'] ) ? $_POST['session_nonce'] : '';
         $nonce_action = FP_PLUGIN_FILE;
- 
+
         // Check if nonce is set.
         if ( ! isset( $nonce_name ) ) {
             return;
         }
- 
+
         // Check if nonce is valid.
         if ( ! wp_verify_nonce( $nonce_name, $nonce_action ) ) {
             return;
         }
- 
+
         // Check if user has permissions to save data.
         if ( ! current_user_can( 'edit_post', $post_id ) ) {
             return;
         }
- 
+
         // Check if not an autosave.
         if ( wp_is_post_autosave( $post_id ) ) {
             return;
         }
- 
+
         // Check if not a revision.
         if ( wp_is_post_revision( $post_id ) ) {
             return;
         }
 
-        $start_time = get_post_meta( $post->ID, "_fp_start_time", true ); 
-        $end_time = get_post_meta( $post->ID, "_fp_end_time", true ); 
-        $class_id = get_post_meta( $post->ID, "_fp_class_id", true ); 
+        $start_time = get_post_meta( $post->ID, "_fp_start_time", true );
+        $end_time = get_post_meta( $post->ID, "_fp_end_time", true );
+        $class_id = get_post_meta( $post->ID, "_fp_class_id", true );
 
 	    if(isset($_POST["start_time"]))
 	        $start_time = strtotime( $_POST["date"] . ' ' . $_POST["start_time"] );
@@ -264,11 +264,11 @@ class FP_Session {
 
     }
 
-	public static function add_sessions( $start_day = null, $class_id = null ){	
+	public static function add_sessions( $start_day = null, $class_id = null ){
 
 		if( !$start_day )
 			$start_day = strtotime( '+' . self::$book_ahead . ' days' );
-		
+
 		$end_day = strtotime( '+1 second', strtotime( '+' . self::$book_ahead . ' days' )  );
 
 		self::$holidays = get_option( 'fitpress_holidays' );
@@ -299,13 +299,23 @@ class FP_Session {
 				$current_day = $start_day;
 
 				while( $current_day < $end_day ):
-					
+
 					$day_of_week = strtolower( date( 'l', $current_day  ) );
 					$short_date = date( 'j F', $current_day  );
 					$year = date( 'Y', $current_day );
-					$easter = date( 'j F', easter_date( $year ) );
-					$family_day = date( 'j F', strtotime( '+1 day', easter_date( $year ) ) );
-					$good_friday = date( 'j F', strtotime( '-2 days', easter_date( $year ) ) );
+
+					date_default_timezone_set( 'UTC' );
+
+					$easter_object = new DateTime( '@' . easter_date( $year ) );
+					$easter_object->setTimezone( new DateTimeZone( wp_get_timezone_string() ) );
+
+					$easter = $easter_object->format('j F');
+
+					$easter_object->add(DateInterval::createFromDateString('+1 days'));
+					$family_day = $easter->format('j F');
+
+					$easter_object->add(DateInterval::createFromDateString('-3 days'));
+					$good_friday = $easter->format('j F');
 
 					$sunday_public_holiday = $short_date;
 
@@ -362,7 +372,7 @@ class FP_Session {
 
 			$date = date( 'l, j F Y', $current_day );
 
-			$class_time_info = get_post_meta( $class_time->ID, 'fp_class_time_info', true); 
+			$class_time_info = get_post_meta( $class_time->ID, 'fp_class_time_info', true);
 
 			$fitness_session_post = array(
 				'post_title'     => get_the_title( $class_id ) . ': ' . $date . ' (' . $class_time_info['start_time'] . ' - ' . $class_time_info['end_time'] . ')',
@@ -384,7 +394,7 @@ class FP_Session {
 				update_post_meta( $fitness_session_post_id, '_fp_end_time', strtotime( $date . ' ' . $class_time_info['end_time']) );
 
 			endif;
-			
+
 		endforeach;
 
 	}

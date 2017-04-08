@@ -42,7 +42,11 @@ class FP_Membership_Status {
 	/**
 	 * Hook in methods.
 	 */
-    public function __construct(){
+    public function __construct( $member_id = null ){
+
+    	if ( $member_id ) :
+    		$this->set_member_id( $member_id );
+    	endif;
 
 		add_action( 'fitpress_after_membership_profile_fields', array( $this, 'show_membership_statuses' ), 2 );
 
@@ -76,9 +80,9 @@ class FP_Membership_Status {
 
 	public function set_status( $status ){
 
-		$this->status = $status;
+		update_user_meta( $this->member_id, 'fitpress_membership_status', $status, $this->get_status( ) );
 
-		update_user_meta( $this->member_id, 'fitpress_membership_status', $this->status, $this->get_status( ) );
+		$this->status = $status;
 
 	}
 

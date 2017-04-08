@@ -51,8 +51,9 @@ class FP_Frontend {
 		add_action( 'template_redirect', array( $this, 'process_signup' ) );
 
 		if ( ! is_admin() ) :
-			add_filter( 'query_vars', array( $this, 'add_query_vars'), 0 );
-			add_action( 'parse_request', array( $this, 'parse_request'), 0 );
+			add_filter( 'query_vars', array( $this, 'add_query_vars' ), 0 );
+			add_action( 'parse_request', array( $this, 'parse_request' ), 0 );
+			add_action( 'parse_request', array( $this, 'maybe_notification_request' ), 0 );
 		endif;
 
 		$this->init_query_vars();
@@ -114,6 +115,18 @@ class FP_Frontend {
 		}
 	}
 
+	public function maybe_notification_request(){
+
+		global $wp;
+
+		if ( isset( $wp->query_vars['notify'] ) ) :
+
+			self::notify();
+
+		endif;
+
+	}
+
 	public function membership_output( $atts ) {
 
 		$args = array(
@@ -144,10 +157,6 @@ class FP_Frontend {
 		elseif ( isset( $wp->query_vars['confirm'] ) ) :
 
 			fp_get_template( 'sign-up/confirm.php' );
-
-		elseif ( isset( $wp->query_vars['notify'] ) ) :
-
-			self::notify();
 
 		else :
 

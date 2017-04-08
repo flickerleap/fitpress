@@ -165,7 +165,7 @@ function fp_edit_address_i18n( $id, $flip = false ) {
  * @return string
  */
 function fp_lostpassword_url() {
-    return fp_get_endpoint_url( 'lost-password', '', fp_get_page_permalink( 'account' ) );
+	return fp_get_endpoint_url( 'lost-password', '', fp_get_page_permalink( 'account' ) );
 }
 add_filter( 'lostpassword_url',  'fp_lostpassword_url', 10, 0 );
 
@@ -176,7 +176,7 @@ add_filter( 'lostpassword_url',  'fp_lostpassword_url', 10, 0 );
  * @return string
  */
 function fp_book_url() {
-    return fp_get_endpoint_url( 'book', '', fp_get_page_permalink( 'account' ) );
+	return fp_get_endpoint_url( 'book', '', fp_get_page_permalink( 'account' ) );
 }
 add_filter( 'book_url',  'fp_book_url', 10, 0 );
 
@@ -187,7 +187,7 @@ add_filter( 'book_url',  'fp_book_url', 10, 0 );
  * @return string
  */
 function fp_checkout_url() {
-    return fp_get_endpoint_url( 'checkout', '', fp_get_page_permalink( 'sign-up' ) );
+	return fp_get_endpoint_url( 'checkout', '', fp_get_page_permalink( 'sign-up' ) );
 }
 add_filter( 'checkout_url',  'fp_checkout_url', 10, 0 );
 
@@ -198,7 +198,7 @@ add_filter( 'checkout_url',  'fp_checkout_url', 10, 0 );
  * @return string
  */
 function fp_cancel_url() {
-    return fp_get_endpoint_url( 'cancel', '', fp_get_page_permalink( 'sign-up' ) );
+	return fp_get_endpoint_url( 'cancel', '', fp_get_page_permalink( 'sign-up' ) );
 }
 add_filter( 'cancel_url',  'fp_cancel_url', 10, 0 );
 
@@ -209,7 +209,7 @@ add_filter( 'cancel_url',  'fp_cancel_url', 10, 0 );
  * @return string
  */
 function fp_confirm_url() {
-    return fp_get_endpoint_url( 'confirm', '', fp_get_page_permalink( 'sign-up' ) );
+	return fp_get_endpoint_url( 'confirm', '', fp_get_page_permalink( 'sign-up' ) );
 }
 add_filter( 'confirm_url',  'fp_confirm_url', 10, 0 );
 
@@ -220,7 +220,7 @@ add_filter( 'confirm_url',  'fp_confirm_url', 10, 0 );
  * @return string
  */
 function fp_notify_url() {
-    return fp_get_endpoint_url( 'notify', '', fp_get_page_permalink( 'sign-up' ) );
+	return fp_get_endpoint_url( 'notify', '', fp_get_page_permalink( 'sign-up' ) );
 }
 add_filter( 'notify_url',  'fp_notify_url', 10, 0 );
 /**
@@ -230,7 +230,7 @@ add_filter( 'notify_url',  'fp_notify_url', 10, 0 );
  * @return string
  */
 function fp_make_booking_url() {
-    return fp_get_endpoint_url( 'make-booking', '', fp_get_page_permalink( 'account' ) );
+	return fp_get_endpoint_url( 'make-booking', '', fp_get_page_permalink( 'account' ) );
 }
 add_filter( 'make_booking_url',  'fp_make_booking_url', 10, 0 );
 
@@ -241,7 +241,7 @@ add_filter( 'make_booking_url',  'fp_make_booking_url', 10, 0 );
  * @return string
  */
 function fp_cancel_booking_url() {
-    return fp_get_endpoint_url( 'cancel-booking', '', fp_get_page_permalink( 'account' ) );
+	return fp_get_endpoint_url( 'cancel-booking', '', fp_get_page_permalink( 'account' ) );
 }
 add_filter( 'cancel_booking_url',  'fp_cancel_booking_url', 10, 0 );
 
@@ -326,5 +326,47 @@ if ( ! function_exists( 'write_log' ) ) {
 			endif;
 		endif;
 	}
+}
+
+/**
+ * Returns the timezone string for a site, even if it's set to a UTC offset
+ *
+ * Adapted from http://www.php.net/manual/en/function.timezone-name-from-abbr.php#89155
+ *
+ * @return string valid PHP timezone string
+ */
+function wp_get_timezone_string() {
+
+	// if site timezone string exists, return it.
+	if ( $timezone = get_option( 'timezone_string' ) ) :
+		return $timezone;
+	endif;
+
+	// get UTC offset, if it isn't set then return UTC.
+	if ( 0 === ( $utc_offset = get_option( 'gmt_offset', 0 ) ) ) :
+		return 'UTC';
+	endif;
+
+	// adjust UTC offset from hours to seconds.
+	$utc_offset *= 3600;
+
+	// attempt to guess the timezone string from the UTC offset.
+	if ( $timezone = timezone_name_from_abbr( '', $utc_offset, 0 ) ) {
+		return $timezone;
+	}
+
+	// last try, guess timezone string manually.
+	$is_dst = date( 'I' );
+
+	foreach ( timezone_abbreviations_list() as $abbr ) {
+		foreach ( $abbr as $city ) {
+			if ( $city['dst'] == $is_dst && $city['offset'] == $utc_offset ) :
+				return $city['timezone_id'];
+			endif;
+		}
+	}
+
+	// fallback to UTC.
+	return 'UTC';
 }
 ?>
