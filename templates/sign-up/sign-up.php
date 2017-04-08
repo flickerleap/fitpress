@@ -14,4 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 fp_display_flash_message();
 ?>
 
-test
+<form method="post">
+
+	<h3>Member Details</h3>
+
+</form>
