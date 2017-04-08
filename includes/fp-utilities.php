@@ -29,6 +29,18 @@ function fp_get_template( $template_name, $args = array(), $template_path = '', 
 }
 
 /**
+ * Like wc_get_template, but returns the HTML instead of outputting.
+ * @see wc_get_template
+ * @since 2.5.0
+ * @param string $template_name
+ */
+function fp_get_template_html( $template_name, $args = array(), $template_path = '', $default_path = '' ) {
+	ob_start();
+	fp_get_template( $template_name, $args, $template_path, $default_path );
+	return ob_get_clean();
+}
+
+/**
  * Locate a template and return the path for inclusion.
  *
  * This is the load order:

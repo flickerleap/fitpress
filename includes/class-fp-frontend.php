@@ -138,7 +138,7 @@ class FP_Frontend {
 
 		$signup = apply_filters( 'fp_membership_signup_button', array( 'text' => 'Enquire', 'link' => fp_get_page_permalink( 'sign-up' ) ) );
 
-		fp_get_template( 'general/shortcode.php', array( 'memberships' => $memberships, 'signup' => $signup ) );
+		fp_get_template_html( 'general/shortcode.php', array( 'memberships' => $memberships, 'signup' => $signup ) );
 
 	}
 
@@ -146,23 +146,25 @@ class FP_Frontend {
 
 		global $wp;
 
+		$return = '';
+
 		if ( isset( $wp->query_vars['checkout'] ) ) :
 
-			self::checkout();
+			return self::checkout();
 
 		elseif ( isset( $wp->query_vars['cancel'] ) ) :
 
-			self::cancel();
+			return self::cancel();
 
 		elseif ( isset( $wp->query_vars['confirm'] ) ) :
 
-			fp_get_template( 'sign-up/confirm.php' );
+			return fp_get_template_html( 'sign-up/confirm.php' );
 
 		else :
 
 			$memberships = FP_Membership::get_memberships();
 
-			fp_get_template( 'sign-up/sign-up.php', array(
+			return fp_get_template_html( 'sign-up/sign-up.php', array(
 				'memberships' => $memberships,
 			) );
 
@@ -187,16 +189,18 @@ class FP_Frontend {
 
 		$current_user = get_userdata( $user_id );
 
-		fp_get_template( 'sign-up/checkout.php', array(
+		$return =  fp_get_template_html( 'sign-up/checkout.php', array(
 			'current_user' 	=> $current_user,
 			'membership' => $membership,
 		) );
 
 		foreach( $payment_methods as $method => $name ):
 
-			do_action( 'fitpress_payment_method_' . $method, $membership, $current_user );
+			$return .= apply_filters( 'fitpress_payment_method_' . $method, $membership, $current_user );
 
 		endforeach;
+
+		return $return;
 
 	}
 
@@ -220,6 +224,8 @@ class FP_Frontend {
 	 */
 	private static function cancel( ) {
 
+		$return = '';
+
 		$payment = new FP_Payment();
 
 		$payment_methods = $payment->get_methods();
@@ -230,16 +236,18 @@ class FP_Frontend {
 
 		$current_user = get_userdata( $user_id );
 
-		fp_get_template( 'sign-up/checkout.php', array(
+		$return .= fp_get_template( 'sign-up/checkout.php', array(
 			'current_user' 	=> $current_user,
 			'membership' => $membership,
 		) );
 
 		foreach( $payment_methods as $method => $name ):
 
-			do_action( 'fitpress_payment_method_' . $method, $membership, $current_user );
+			$return .= apply_filters( 'fitpress_payment_method_' . $method, $membership, $current_user );
 
 		endforeach;
+
+		return $return;
 
 	}
 

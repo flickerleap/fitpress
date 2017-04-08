@@ -128,36 +128,40 @@ class FP_Account {
 
 		global $wp;
 
+		$return = '';
+
 		if ( ! is_user_logged_in() ) {
 
 			if ( isset( $wp->query_vars['lost-password'] ) ) {
 
-				self::lost_password();
+				$return .=self::lost_password();
 
 			} else {
 
-				fp_get_template( 'account/form-login.php' );
+				$return .= fp_get_template_html( 'account/form-login.php' );
 
 			}
 
 		} else {
 
-			self::account_menu();
+			$return .= self::account_menu();
 
 			if ( isset( $wp->query_vars['update-account'] ) ) {
 
-				self::edit_account();
+				$return .=self::edit_account();
 
 			} elseif ( isset( $wp->query_vars['book'] ) ) {
 
-				self::book_sessions();
+				$return .= self::book_sessions();
 
 			} else {
 
-				self::account( $atts );
+				$return .= self::account( $atts );
 
 			}
 		}
+
+		return $return;
 
 	}
 
@@ -170,7 +174,7 @@ class FP_Account {
 		extract( shortcode_atts( array(
 		), $atts ) );
 
-		fp_get_template( 'account/account.php', array(
+		return fp_get_template_html( 'account/account.php', array(
 			'current_user' 	=> get_userdata( get_current_user_id() ),
 			'booked_sessions' => FP_Booking::get_booked_sessions( array( 'member_id' => get_current_user_id() ) ),
 		) );
@@ -183,7 +187,7 @@ class FP_Account {
 	 */
 	private static function account_menu( ) {
 
-		fp_get_template( 'account/menu.php', array(
+		return fp_get_template_html( 'account/menu.php', array(
 			'current_user' 	=> get_userdata( get_current_user_id() )
 		) );
 
@@ -193,7 +197,7 @@ class FP_Account {
 	 * Edit account details page
 	 */
 	private static function edit_account() {
-		fp_get_template( 'account/form-update-account.php', array( 'user' => get_userdata( get_current_user_id() ) ) );
+		return fp_get_template_html( 'account/form-update-account.php', array( 'user' => get_userdata( get_current_user_id() ) ) );
 	}
 
 	/**
@@ -203,7 +207,7 @@ class FP_Account {
 
 		$session_data = FP_Booking::bookable_sesssion();
 
-		fp_get_template( 'account/calender-bookings.php',  array( 'sessions' => $session_data['sessions'], 'user_id' => $session_data['user_id'], 'credits' => $session_data['credits'] ) );
+		return fp_get_template_html( 'account/calender-bookings.php',  array( 'sessions' => $session_data['sessions'], 'user_id' => $session_data['user_id'], 'credits' => $session_data['credits'] ) );
 
 	}
 
@@ -232,7 +236,7 @@ class FP_Account {
 			fp_add_flash_message( __( 'Your password has been reset.', 'fitpress' ) . ' <a href="' . fp_get_page_permalink( 'account' ) . '">' . __( 'Log in', 'fitpress' ) . '</a>' );
 		}
 
-		fp_get_template( 'account/form-lost-password.php', $args );
+		return fp_get_template_html( 'account/form-lost-password.php', $args );
 	}
 
 	/**
