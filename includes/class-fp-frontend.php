@@ -160,7 +160,11 @@ class FP_Frontend {
 
 		else :
 
-			fp_get_template( 'sign-up/sign-up.php' );
+			$memberships = FP_Membership::get_memberships();
+
+			fp_get_template( 'sign-up/sign-up.php', array(
+				'memberships' => $memberships,
+			) );
 
 		endif;
 
@@ -215,8 +219,6 @@ class FP_Frontend {
 	 * @param  array $atts
 	 */
 	private static function cancel( ) {
-
-		write_log($_POST);exit;
 
 		$payment = new FP_Payment();
 

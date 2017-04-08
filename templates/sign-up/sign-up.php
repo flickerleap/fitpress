@@ -8,7 +8,7 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit; // Exit if accessed directly.
 }
 
 fp_display_flash_message();
@@ -17,6 +17,18 @@ fp_display_flash_message();
 <form method="post">
 
 	<h3>Member Details</h3>
+
+	<p class="form-row form-row-first">
+		<label for="membership_id"><?php _e( 'Membership', 'fitpress' ); ?> <span class="required">*</span></label>
+		<select name="membership_id" id="membership_id">
+			<?php $passed_membership_id = isset( $_GET['membership_id'] ) ? $_GET['membership_id'] : false;?>
+			<?php foreach( $memberships as $membership_id => $membership ) : ?>
+				<option value="<?php echo $membership_id;?>" <?php selected( $membership_id, $passed_membership_id, true ); ?>>
+					<?php echo $membership['name'];?>
+				</option>
+			<?php endforeach;?>
+		</select>
+	</p>
 
 	<p class="form-row form-row-first">
 		<label for="account_first_name"><?php _e( 'First name', 'fitpress' ); ?> <span class="required">*</span></label>
