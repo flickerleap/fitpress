@@ -39,7 +39,9 @@ table.fp-calendar td .day-session .session-space{font-size: 9px;line-height: 1.2
 
 .flash-message{padding:10px;border-left:5px solid;border-radius: 4px;background: #eeeeee;margin-bottom: 10px;}
 .flash-message-error{border-left-color: #dd5555;background: #ffeeee;}
+.flash-message-error a{color:#dd5555;}
 .flash-message-success{border-left-color: #55dd55;background: #eeffee;}
+.flash-message-success a{color:#55dd55;}
 
 .form-row{
     padding: 0.7em;
