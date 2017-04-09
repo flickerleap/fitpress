@@ -25,6 +25,11 @@ jQuery( document ).ready( function( $ ) {
 			$(this).attr('name', 'class_time_days[' + classTimeCount + '][]');
 
 		} ).end();
+		classTime = classTime.clone( ).find( '.class-block' ).each( function( ) {
+
+			$(this).attr('name', 'class_time_days[' + classTimeCount + '][]');
+
+		} ).end();
 
 		$('.add-class-time').before( classTime );
 

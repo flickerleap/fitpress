@@ -266,8 +266,9 @@ class FP_Session {
 
 	public static function add_sessions( $start_day = null, $class_id = null ){
 
-		if( !$start_day )
+		if ( ! $start_day ) :
 			$start_day = strtotime( '+' . self::$book_ahead . ' days' );
+		endif;
 
 		$end_day = strtotime( '+1 second', strtotime( '+' . self::$book_ahead . ' days' )  );
 
@@ -312,15 +313,16 @@ class FP_Session {
 					$easter = $easter_object->format('j F');
 
 					$easter_object->add(DateInterval::createFromDateString('+1 days'));
-					$family_day = $easter->format('j F');
+					$family_day = $easter_object->format('j F');
 
 					$easter_object->add(DateInterval::createFromDateString('-3 days'));
-					$good_friday = $easter->format('j F');
+					$good_friday = $easter_object->format('j F');
 
 					$sunday_public_holiday = $short_date;
 
-					if( $day_of_week == 'monday' )
+					if ( $day_of_week == 'monday' ) :
 						$sunday_public_holiday = date( 'j F', strtotime( '-1 day', $current_day ) );
+					endif;
 
 					if(
 						!array_key_exists( $short_date, self::$holidays )
@@ -374,28 +376,68 @@ class FP_Session {
 
 			$class_time_info = get_post_meta( $class_time->ID, 'fp_class_time_info', true);
 
-			$fitness_session_post = array(
-				'post_title'     => get_the_title( $class_id ) . ': ' . $date . ' (' . $class_time_info['start_time'] . ' - ' . $class_time_info['end_time'] . ')',
-				'post_status'    => 'publish',
-				'ping_status'    => 'closed',
-				'comment_status' => 'closed',
-				'post_type'      => 'fp_session',
-			);
+			if ( isset ( $class_time_info['blocks'] ) && $class_time_info['blocks'] != 'none' ):
 
-			remove_action( 'save_post', 'FP_Class::save_session_metabox' );
-			$fitness_session_post_id = wp_insert_post( $fitness_session_post );
-			add_action( 'save_post', 'FP_Class::save_session_metabox' );
+				$session_start = $class_time_info['start_time'];
+				$session_end = date( 'H:i', strtotime( $class_time_info['blocks'], strtotime( $session_start ) ) );
 
-			if( $fitness_session_post_id ):;
+				while ( $session_end <= $class_time_info['end_time'] ) :
 
-				update_post_meta( $fitness_session_post_id, '_fp_class_id', $class_id );
-				update_post_meta( $fitness_session_post_id, '_fp_class_time_id', $class_time->ID );
-				update_post_meta( $fitness_session_post_id, '_fp_start_time', strtotime( $date . ' ' . $class_time_info['start_time']) );
-				update_post_meta( $fitness_session_post_id, '_fp_end_time', strtotime( $date . ' ' . $class_time_info['end_time']) );
+					$session_data = array(
+						'class_id'		=> $class_id,
+						'start_time'	=> $session_start,
+						'end_time'		=> $session_end,
+						'date'			=> $date,
+						'class_time_id'	=> $class_time->ID,
+					);
+
+					self::create_session_post( $session_data );
+
+					$session_start = date( 'H:i', strtotime( $class_time_info['blocks'], strtotime( $session_start ) ) );
+					$session_end = date( 'H:i', strtotime( $class_time_info['blocks'], strtotime( $session_end ) ) );
+
+				endwhile;
+
+			else:
+
+				$session_data = array(
+					'class_id'		=> $class_id,
+					'start_time'	=> $class_time_info['start_time'],
+					'end_time'		=> $class_time_info['end_time'],
+					'date'			=> $date,
+					'class_time_id'	=> $class_time->ID,
+				);
+
+				self::create_session_post( $session_data );
 
 			endif;
 
 		endforeach;
+
+	}
+
+	public static function create_session_post( $session_data ){
+
+		$fitness_session_post = array(
+			'post_title'     => get_the_title( $session_data['class_id'] ) . ': ' . $session_data['date'] . ' (' . $session_data['start_time'] . ' - ' . $session_data['end_time'] . ')',
+			'post_status'    => 'publish',
+			'ping_status'    => 'closed',
+			'comment_status' => 'closed',
+			'post_type'      => 'fp_session',
+		);
+
+		remove_action( 'save_post', 'FP_Class::save_session_metabox' );
+		$fitness_session_post_id = wp_insert_post( $fitness_session_post );
+		add_action( 'save_post', 'FP_Class::save_session_metabox' );
+
+		if( $fitness_session_post_id ):;
+
+			update_post_meta( $fitness_session_post_id, '_fp_class_id', $session_data['class_id'] );
+			update_post_meta( $fitness_session_post_id, '_fp_class_time_id', $session_data['class_time_id'] );
+			update_post_meta( $fitness_session_post_id, '_fp_start_time', strtotime( $session_data['date'] . ' ' . $session_data['start_time']) );
+			update_post_meta( $fitness_session_post_id, '_fp_end_time', strtotime( $session_data['date'] . ' ' . $session_data['end_time']) );
+
+		endif;
 
 	}
 

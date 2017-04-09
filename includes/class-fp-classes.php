@@ -140,7 +140,7 @@ class FP_Classes {
 		endif;
 
 	}
- 
+
     /**
      * Meta box initialization.
      */
@@ -148,7 +148,7 @@ class FP_Classes {
         add_action( 'add_meta_boxes', array( $this, 'add_metabox'  )        );
         add_action( 'save_post',      array( $this, 'save_class_metabox' ), 10, 2 );
     }
- 
+
     /**
      * Adds the meta box.
      */
@@ -162,9 +162,9 @@ class FP_Classes {
             'advanced',
             'default'
         );
- 
+
     }
- 
+
     /**
      * Renders the meta box.
      */
@@ -228,13 +228,19 @@ class FP_Classes {
 
 				<div class="class-time">
 					<p>
-					Start Time <input name="class_times[<?php echo $class_time->ID;?>][start_time]" type="text" value="<?php echo isset( $class_time_info['start_time'] ) ? $class_time_info['start_time'] : ''; ?>" class="class-start-time" placeholder="00:00" /> - 
+					Start Time <input name="class_times[<?php echo $class_time->ID;?>][start_time]" type="text" value="<?php echo isset( $class_time_info['start_time'] ) ? $class_time_info['start_time'] : ''; ?>" class="class-start-time" placeholder="00:00" /> -
 					<input name="class_times[<?php echo $class_time->ID;?>][end_time]" type="text" value="<?php echo isset( $class_time_info['end_time'] ) ? $class_time_info['end_time'] : ''; ?>" class="class-end-time" placeholder="00:00" /> End Time (Delete? <input type="checkbox" name="class_times[<?php echo $class_time->ID;?>][delete]"  class="regular-check" value="1" />)
 					</p>
 					<p>
 					<?php foreach($days as $day):?>
 						<input type="checkbox" name="class_time_days[<?php echo $class_time->ID;?>][]" <?php if( in_array( $day->term_id, $class_time_term_ids ) ) echo 'checked="checked"';?> class="regular-check class-day" value="<?php echo $day->term_id;?>" /> <?php echo $day->name;?>&nbsp;|&nbsp;
 					<?php endforeach;?>
+					</p>
+					<p>
+					Split session into blocks:
+					<?php $class_time_info['blocks'] = isset($class_time_info['blocks']) ? $class_time_info['blocks'] : 'none';?>
+					None <input name="class_times[<?php echo $class_time->ID;?>][blocks]" type="radio" value="none" class="class-block" <?php checked( $class_time_info['blocks'], 'none' );?> />
+					Every Hour <input name="class_times[<?php echo $class_time->ID;?>][blocks]" type="radio" value="+1 hour" class="class-block" <?php checked( $class_time_info['blocks'], '+1 hour' );?> />
 					</p>
 				</div>
 
@@ -248,13 +254,18 @@ class FP_Classes {
 
 			<div class="class-time">
 				<p>
-				Start Time <input name="class_times[0][start_time]" type="text" value="" class="class-start-time" placeholder="00:00" /> - 
+				Start Time <input name="class_times[0][start_time]" type="text" value="" class="class-start-time" placeholder="00:00" /> -
 				<input name="class_times[0][end_time]" type="text" value="" class="class-end-time" placeholder="00:00" /> End Time (Delete? <input type="checkbox" name="class_times[0][delete]"  class="regular-check" value="1" />)
 				</p>
 				<p>
 				<?php foreach($days as $day):?>
 					<input type="checkbox" name="class_time_days[0][]" class="regular-check class-day" value="<?php echo $day->term_id;?>" /> <?php echo $day->name;?>&nbsp;|&nbsp;
 				<?php endforeach;?>
+				</p>
+				<p>
+				Session blocks:
+				None <input name="class_times[0][blocks]" type="radio" value="none" class="class-block" checked="checked" />
+				Every Hour <input name="class_times[0][blocks]" type="radio" value="+1 hour" class="class-block"  />
 				</p>
 			</div>
 
@@ -267,7 +278,7 @@ class FP_Classes {
    		<?php
 
     }
- 
+
     /**
      * Handles saving the meta box.
      *
@@ -279,36 +290,36 @@ class FP_Classes {
         // Add nonce for security and authentication.
         $nonce_name   = isset( $_POST['class_nonce'] ) ? $_POST['class_nonce'] : '';
         $nonce_action = FP_PLUGIN_FILE;
- 
+
         // Check if nonce is set.
         if ( ! isset( $nonce_name ) ) {
             return;
         }
- 
+
         // Check if nonce is valid.
         if ( ! wp_verify_nonce( $nonce_name, $nonce_action ) ) {
             return;
         }
- 
+
         // Check if user has permissions to save data.
         if ( ! current_user_can( 'edit_post', $post_id ) ) {
             return;
         }
- 
+
         // Check if not an autosave.
         if ( wp_is_post_autosave( $post_id ) ) {
             return;
         }
- 
+
         // Check if not a revision.
         if ( wp_is_post_revision( $post_id ) ) {
             return;
         }
-	   	
-	   	$class_info = get_post_meta( $post_id , "fp_class_info", true); 
+
+	   	$class_info = get_post_meta( $post_id , "fp_class_info", true);
 
 	    if( isset( $_POST["class_times"] ) && isset( $_POST['class_time_days'] ) ){
-		        
+
 	        remove_action( 'save_post',      array( $this, 'save_class_metabox' ), 10, 2 );
 	        remove_action( 'save_post',      array( $this, 'save_session_metabox' ), 10, 2 );
 
@@ -316,7 +327,7 @@ class FP_Classes {
 
 	    		if( $class_time_id > 0 && !isset( $_POST['class_times'][$class_time_id]['delete'] ) ):
 
-	    			$class_time_info = get_post_meta( $class_time_id, 'fp_class_time_info', true); 
+	    			$class_time_info = get_post_meta( $class_time_id, 'fp_class_time_info', true);
       				$class_time_term_ids = wp_get_post_terms( $class_time_id, 'fp_day', array( 'fields' => 'ids' ) );
 
 	    			$post = array(
@@ -330,6 +341,10 @@ class FP_Classes {
 
 				    if(isset($_POST['class_times'][$class_time_id]["end_time"])){
 				        $class_time_info['end_time'] = $_POST['class_times'][$class_time_id]["end_time"];
+				    }
+
+				    if(isset($_POST['class_times'][$class_time_id]["blocks"])){
+				        $class_time_info['blocks'] = $_POST['class_times'][$class_time_id]["blocks"];
 				    }
 
 	    			wp_update_post( $post );
@@ -359,6 +374,10 @@ class FP_Classes {
 
 				    if(isset($_POST['class_times'][$class_time_id]["end_time"])){
 				        $class_time_info['end_time'] = $_POST['class_times'][$class_time_id]["end_time"];
+				    }
+
+				    if(isset($_POST['class_times'][$class_time_id]["blocks"])){
+				        $class_time_info['blocks'] = $_POST['class_times'][$class_time_id]["blocks"];
 				    }
 
 	    			$new_post_id = wp_insert_post( $post );
