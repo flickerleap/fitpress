@@ -1,10 +1,11 @@
 jQuery( document ).ready( function( $ ) {
 
+	var classTimeCount = 0;
+
 	$( '.add-member' ).data( 'added-members', [] );
 
 	$( 'body' ).on( 'click', '.add-class-time', function( e ) {
 
-		var classTimeCount = 0;
 		var template = $( '.class-time:last' ).clone( );
 
 		e.preventDefault();
