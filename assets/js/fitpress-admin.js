@@ -28,7 +28,7 @@ jQuery( document ).ready( function( $ ) {
 		} ).end();
 		classTime = classTime.clone( ).find( '.class-block' ).each( function( ) {
 
-			$(this).attr('name', 'class_time_days[' + classTimeCount + '][]');
+			$(this).attr('name', 'class_time_days[' + classTimeCount + '][block]');
 
 		} ).end();
 
