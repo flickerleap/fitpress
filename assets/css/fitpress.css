@@ -11,7 +11,7 @@ table.fp-calendar td .day-session{clear:both;position: relative;margin-bottom: 0
 table.fp-calendar td .day-session:nth-child(odd){background:#eee;}
 table.fp-calendar td .day-session .class-name{font-size: 9px;margin: 0;}
 table.fp-calendar td .day-session .session-time{font-size:11px;font-weight: bold;margin:0;}
-table.fp-calendar td .day-session .session-book{margin:0;width:50%;display: inline-block;}
+table.fp-calendar td .day-session .session-book{font-size: 9px;line-height: 1.2em;margin:0;width:50%;display: inline-block;}
 table.fp-calendar td .day-session .session-space{font-size: 9px;line-height: 1.2em;margin:0;width:50%;display: inline-block;}
 
 .page table.fp-calendar td .button{font-weight: bold; font-size: 11px;text-transform: uppercase;text-decoration: none;display: inline-block;background: #eee;color: #222;border:none;line-height: 1.5em;padding: 0 5px;border-radius: 4px;margin: 0;box-shadow: none;}
