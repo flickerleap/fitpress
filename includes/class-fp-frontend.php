@@ -273,7 +273,7 @@ class FP_Frontend {
 		$emergency_contact_number      = ! empty( $_POST[ 'emergency_contact_number' ] ) ? sanitize_text_field( $_POST[ 'emergency_contact_number' ] ) : '';
 		$account_username      = ! empty( $_POST[ 'account_username' ] ) ? sanitize_text_field( $_POST[ 'account_username' ] ) : '';
 
-		$membership_id		= ! empty( $_GET[ 'membership_id' ] ) ? $_GET[ 'membership_id' ] : '';
+		$membership_id		= ! empty( $_POST[ 'membership_id' ] ) ? $_POST[ 'membership_id' ] : '';
 		$membership_status	= 'on-hold';
 
 		$pass1              = ! empty( $_POST[ 'password_1' ] ) ? $_POST[ 'password_1' ] : '';
