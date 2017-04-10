@@ -349,6 +349,7 @@ class FP_Membership {
 
 			<?php $membership_id = get_user_meta( $user->ID, 'fitpress_membership_id', true ); ?>
 			<?php $credits = get_user_meta( $user->ID, 'fitpress_credits', true ); ?>
+			<?php $membership_date = get_user_meta( $user->ID, 'fitpress_membership_date', true ); ?>
 
 			<table class="form-table">
 
@@ -384,6 +385,14 @@ class FP_Membership {
 			</td>
 			</tr>
 
+			<tr>
+			<th><label for="membership_date">Membership Start Date</label></th>
+
+			<td>
+				<input type="text" name="membership_date" id="membership_date" value="<?php echo esc_attr( ($membership_date) ? $membership_date : date('j F Y') ); ?>" class="regular-text" />
+			</td>
+			</tr>
+
 			<?php do_action( 'fitpress_after_membership_profile_fields', $user->ID, $membership_id );?>
 
 			</table>
@@ -403,14 +412,17 @@ class FP_Membership {
 		if ( !current_user_can( 'edit_user', $member_id ) )
 			return false;
 
-		if( isset( $_POST['membership_id'] ) && isset( $_POST['credits'] ) ) :
+		if( isset( $_POST['membership_id'] ) && isset( $_POST['credits'] ) && isset( $_POST['membership_date'] ) ) :
 
 			$old_membership_id = get_user_meta( $member_id, 'fitpress_membership_id', true );
 			$old_credits = get_user_meta( $member_id, 'fitpress_credits', true );
+			$old_membership_date = get_user_meta( $member_id, 'fitpress_membership_date', true );
 
 			$membership_id = $_POST['membership_id'];
 
 			$credits = $_POST['credits'];
+
+			$membership_date = $_POST['membership_date'];
 
 			if( $old_membership_id != $membership_id && ( $_POST['update_credits'] == 1 || !$old_membership_id || $old_membership_id == 0 ) ):
 
@@ -422,6 +434,7 @@ class FP_Membership {
 
 			update_user_meta( $member_id, 'fitpress_membership_id', $membership_id, $old_membership_id );
 			update_user_meta( $member_id, 'fitpress_credits', $credits, $old_credits );
+			update_user_meta( $member_id, 'fitpress_membership_date', $membership_date, $old_membership_date );
 
 		endif;
 
