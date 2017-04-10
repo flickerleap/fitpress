@@ -350,6 +350,7 @@ class FP_Frontend {
 
 				update_user_meta( $user_id, 'fitpress_membership_id', $membership_id );
 				update_user_meta( $user_id, 'fitpress_membership_status', $membership_status );
+				update_user_meta( $user_id, 'fitpress_membership_date', strtotime( date('j F Y') ) );
 
 				fp_add_flash_message( __( 'Sign up complete.', 'fitpress' ) );
 

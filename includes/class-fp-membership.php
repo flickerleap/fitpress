@@ -349,7 +349,8 @@ class FP_Membership {
 
 			<?php $membership_id = get_user_meta( $user->ID, 'fitpress_membership_id', true ); ?>
 			<?php $credits = get_user_meta( $user->ID, 'fitpress_credits', true ); ?>
-			<?php $membership_date = get_user_meta( $user->ID, 'fitpress_membership_date', true ); ?>
+			<?php $membership_date_timestamp = get_user_meta( $user->ID, 'fitpress_membership_date', true );?>
+			<?php $membership_date = date( 'j F Y', $membership_date_timestamp ? intval( $membership_date_timestamp ) : strtotime( 'NOW' ) ); ?>
 
 			<table class="form-table">
 
@@ -389,7 +390,7 @@ class FP_Membership {
 			<th><label for="membership_date">Membership Start Date</label></th>
 
 			<td>
-				<input type="text" name="membership_date" id="membership_date" value="<?php echo esc_attr( ($membership_date) ? $membership_date : date('j F Y') ); ?>" class="regular-text" />
+				<input type="text" name="membership_date" id="membership_date" value="<?php echo esc_attr( $membership_date ); ?>" class="regular-text" />
 			</td>
 			</tr>
 
@@ -422,7 +423,7 @@ class FP_Membership {
 
 			$credits = $_POST['credits'];
 
-			$membership_date = $_POST['membership_date'];
+			$membership_date = strtotime( $_POST['membership_date'] );
 
 			if( $old_membership_id != $membership_id && ( $_POST['update_credits'] == 1 || !$old_membership_id || $old_membership_id == 0 ) ):
 
