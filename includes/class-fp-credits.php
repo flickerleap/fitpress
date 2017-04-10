@@ -35,16 +35,15 @@ class FP_Credit {
 	}
 
 	/**
-	* Adds credits to user if subscription is successfully activated
-	*
-	* @param int $user_id A user ID for the user that the subscription was activated for.
-	* @param mixed $subscription_key The key referring to the activated subscription
-	* @version 1.0
-	* @since 0.1
-	*/
+	 * Adds credits to user if subscription is successfully activated
+	 *
+	 * @param Bool $force Force the reset to happen now.
+	 */
 	public static function maybe_reset_credits( $force = false ) {
 
-		if( date('j') == 1 || $force ):
+		$reset_date = apply_filters( 'fitpress_credit_reset_date', 1 );
+
+		if ( date( 'j' ) == $reset_date || $force ) :
 
 			$members = FP_Membership::get_members( );
 
@@ -97,7 +96,7 @@ class FP_Credit {
 
 			if( $membership_details[ $new_membership_id ]['credits'] <= $membership_details[ $current_membership_id ]['credits'] )
 				return $current_credits;
-			
+
 			$credits_difference = $membership_details[ $new_membership_id ]['credits'] - $membership_details[ $current_membership_id ]['credits'];
 
 			return $current_credits + $credits_difference;

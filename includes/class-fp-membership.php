@@ -20,25 +20,29 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class FP_Membership {
 
-    /* We only want a single instance of this class. */
-    private static $instance = null;
+	/**
+	 * We only want a single instance of this class.
+	 *
+	 * @var Object $instance
+	 */
+	private static $instance = null;
 
-    /*
-    * Creates or returns an instance of this class.
-    *
-    * @return  FP_Membership A single instance of this class.
-    */
-    public static function get_instance( ) {
-        if ( null == self::$instance ) {
-            self::$instance = new self;
-        }
-        return self::$instance;
-    } // end get_instance;
+	/**
+	 * Creates or returns an instance of this class.
+	 *
+	 * @return  FP_Membership A single instance of this class.
+	 */
+	public static function get_instance() {
+		if ( null == self::$instance ) {
+			self::$instance = new self;
+		}
+		return self::$instance;
+	} // end get_instance;
 
 	/**
 	 * Hook in methods.
 	 */
-    public function __construct(){
+	public function __construct(){
 
 		add_action( 'init', array( $this, 'register_post_types' ) );
 
@@ -48,10 +52,10 @@ class FP_Membership {
 		add_action( 'personal_options_update', array( $this, 'save_membership_profile_fields' ) );
 		add_action( 'edit_user_profile_update', array( $this, 'save_membership_profile_fields' ) );
 
-        if ( is_admin() ) {
-            add_action( 'load-post.php',     array( $this, 'init_metabox' ) );
-            add_action( 'load-post-new.php', array( $this, 'init_metabox' ) );
-        }
+		if ( is_admin() ) {
+			add_action( 'load-post.php',     array( $this, 'init_metabox' ) );
+			add_action( 'load-post-new.php', array( $this, 'init_metabox' ) );
+		}
 
 		if( !wp_get_schedule('maybe_send_member_list_hook') ):
 			$start = strtotime( 'tomorrow' );
@@ -116,9 +120,9 @@ class FP_Membership {
 					'price',
 				);
 
-			    foreach ( $members as $member ):
+				foreach ( $members as $member ):
 
-			    	$data = array();
+					$data = array();
 
 					$data['user_id'] = $member->ID;
 					$data['user_email'] = $member->user_email;
@@ -127,7 +131,7 @@ class FP_Membership {
 
 					if( !$none_members ):
 
-				        $membership_id = get_user_meta( $member->ID, 'fitpress_membership_id', true );
+						$membership_id = get_user_meta( $member->ID, 'fitpress_membership_id', true );
 
 						$data['membership'] = $memberships[ $membership_id ]['name'];
 						$data['membership_price'] = $memberships[ $membership_id ]['price'];
@@ -136,11 +140,11 @@ class FP_Membership {
 
 					$lines[] = $data;
 
-			    endforeach;
+				endforeach;
 
-			    $subject = ( $none_members ) ? 'Inactive Members' : 'Active Members';
+				$subject = ( $none_members ) ? 'Inactive Members' : 'Active Members';
 
-			    $path = FP_PLUGIN_DIR . 'export/' . date('Y-m-d') . ' ' . $subject . '.csv';
+				$path = FP_PLUGIN_DIR . 'export/' . date('Y-m-d') . ' ' . $subject . '.csv';
 
 				$fh = fopen( $path, 'w') or die('Cannot open the file: ' . $path);
 
@@ -209,95 +213,95 @@ class FP_Membership {
 		);
 	}
 
-    /**
-     * Meta box initialization.
-     */
-    public function init_metabox() {
-        add_action( 'add_meta_boxes', array( $this, 'add_metabox'  )        );
-        add_action( 'save_post',      array( $this, 'save_metabox' ), 10, 2 );
-    }
+	/**
+	 * Meta box initialization.
+	 */
+	public function init_metabox() {
+		add_action( 'add_meta_boxes', array( $this, 'add_metabox'  )        );
+		add_action( 'save_post',      array( $this, 'save_metabox' ), 10, 2 );
+	}
 
-    /**
-     * Adds the meta box.
-     */
-    public function add_metabox() {
-        add_meta_box(
-            'membership-data',
-            __( 'Membership Data', 'fit-press' ),
-            array( $this, 'render_metabox' ),
-            'membership',
-            'advanced',
-            'default'
-        );
+	/**
+	 * Adds the meta box.
+	 */
+	public function add_metabox() {
+		add_meta_box(
+			'membership-data',
+			__( 'Membership Data', 'fit-press' ),
+			array( $this, 'render_metabox' ),
+			'membership',
+			'advanced',
+			'default'
+		);
 
-    }
+	}
 
-    /**
-     * Renders the meta box.
-     */
-    public function render_metabox( $post ) {
-        // Add nonce for security and authentication.
-        wp_nonce_field( FP_PLUGIN_FILE, 'membership_nonce' );
+	/**
+	 * Renders the meta box.
+	 */
+	public function render_metabox( $post ) {
+		// Add nonce for security and authentication.
+		wp_nonce_field( FP_PLUGIN_FILE, 'membership_nonce' );
 
-        $membership_data = get_post_meta($post->ID, "membership_data", true);
+		$membership_data = get_post_meta($post->ID, "membership_data", true);
 
-    	?>
-        <p>
-            <label for="credits">Credits</label>
-            <input name="credits" type="text" value="<?php echo isset( $membership_data['credits'] ) ? $membership_data['credits'] : ''; ?>">
-        </p>
-   		<?php
-   		do_action( 'fitpress_after_membership_fields', $membership_data, $post->ID );
-    }
+		?>
+		<p>
+			<label for="credits">Credits</label>
+			<input name="credits" type="text" value="<?php echo isset( $membership_data['credits'] ) ? $membership_data['credits'] : ''; ?>">
+		</p>
+		<?php
+		do_action( 'fitpress_after_membership_fields', $membership_data, $post->ID );
+	}
 
-    /**
-     * Handles saving the meta box.
-     *
-     * @param int     $post_id Post ID.
-     * @param WP_Post $post    Post object.
-     * @return null
-     */
-    public function save_metabox( $post_id, $post ) {
-        // Add nonce for security and authentication.
-        $nonce_name   = isset( $_POST['membership_nonce'] ) ? $_POST['membership_nonce'] : '';
-        $nonce_action = FP_PLUGIN_FILE;
+	/**
+	 * Handles saving the meta box.
+	 *
+	 * @param int     $post_id Post ID.
+	 * @param WP_Post $post    Post object.
+	 * @return null
+	 */
+	public function save_metabox( $post_id, $post ) {
+		// Add nonce for security and authentication.
+		$nonce_name   = isset( $_POST['membership_nonce'] ) ? $_POST['membership_nonce'] : '';
+		$nonce_action = FP_PLUGIN_FILE;
 
-        // Check if nonce is set.
-        if ( ! isset( $nonce_name ) ) {
-            return;
-        }
+		// Check if nonce is set.
+		if ( ! isset( $nonce_name ) ) {
+			return;
+		}
 
-        // Check if nonce is valid.
-        if ( ! wp_verify_nonce( $nonce_name, $nonce_action ) ) {
-            return;
-        }
+		// Check if nonce is valid.
+		if ( ! wp_verify_nonce( $nonce_name, $nonce_action ) ) {
+			return;
+		}
 
-        // Check if user has permissions to save data.
-        if ( ! current_user_can( 'edit_post', $post_id ) ) {
-            return;
-        }
+		// Check if user has permissions to save data.
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
 
-        // Check if not an autosave.
-        if ( wp_is_post_autosave( $post_id ) ) {
-            return;
-        }
+		// Check if not an autosave.
+		if ( wp_is_post_autosave( $post_id ) ) {
+			return;
+		}
 
-        // Check if not a revision.
-        if ( wp_is_post_revision( $post_id ) ) {
-            return;
-        }
+		// Check if not a revision.
+		if ( wp_is_post_revision( $post_id ) ) {
+			return;
+		}
 
-        $membership_data = get_post_meta($post->ID, "membership_data", true);
+		$membership_data = get_post_meta($post->ID, "membership_data", true);
 
-	    if(isset($_POST["credits"])){
-	        $membership_data['credits'] = $_POST["credits"];
-	    }
+		if(isset($_POST["credits"])){
+			$membership_data['credits'] = $_POST["credits"];
+		}
 
-   		$membership_data = apply_filters( 'fitpress_before_membership_save', $membership_data );
+		$membership_data = apply_filters( 'fitpress_before_membership_save', $membership_data );
 
-	    update_post_meta($post_id, "membership_data", $membership_data);
+		update_post_meta($post_id, "membership_data", $membership_data);
 
-    }
+	}
 
 	function show_membership_profile_fields( $user ) {
 
@@ -434,7 +438,7 @@ class FP_Membership {
 
 		$credits = FP_Credit::update_member_credits( $membership_id, 0, 0 );
 
-   		do_action( 'fitpress_before_membership_profile_save', array( 'member_id' => $member_id, 'old_membership_id' => false ) );
+		do_action( 'fitpress_before_membership_profile_save', array( 'member_id' => $member_id, 'old_membership_id' => false ) );
 
 		update_user_meta( $member_id, 'fitpress_membership_id', $membership_id );
 		update_user_meta( $member_id, 'fitpress_credits', $credits );
@@ -534,93 +538,86 @@ class FP_Membership {
 
 	}
 
-	public static function get_members( $fields = 'ID', $none_members = false, $search = false ){
+	/**
+	 * Get a list of active or non-active members. Can also search.
+	 *
+	 * @param Mixed $fields Fields to return. Defaults to ID.
+	 * @param Bool  $none_members Set to true to return none members.
+	 * @param Mixed $search Set to string to search for a specific member.
+	 */
+	public static function get_members( $fields = 'ID', $none_members = false, $search = false ) {
 
-		$search = '*'.esc_attr( $search ).'*';
+		if ( $search ) :
+			$search = '*' . esc_attr( $search ) . '*';
+		endif;
 
-		if( $none_members ):
+		if ( $none_members ) :
 
-			if( $search ):
+			if ( $search ) :
 
-			 	$args = array(
-			 		'meta_query' => array(
-			 			'relation' => 'OR',
-			 			array(
-			 				'key' => 'fitpress_membership_id',
-			 				'value' => 0,
-			 				'compare' => '=',
-			 				'type' => 'numeric'
-			 			),
-			 			array(
-			 				'key' => 'fitpress_membership_id',
-			 				'value' => 'blah',
-			 				'compare' => 'NOT EXISTS'
-			 			),
-			 		),
-			 		'search' => $search,
-			 		'fields' => $fields,
-			 	);
+				$args = array(
+					'meta_query' => array(
+						array(
+							'key' => 'fitpress_membership_status',
+							'value' => 'active',
+							'compare' => '!=',
+						),
+					),
+					'search' => $search,
+					'fields' => $fields,
+				);
 
-			 else:
+			else :
 
-			 	$args = array(
-			 		'meta_query' => array(
-			 			'relation' => 'OR',
-			 			array(
-			 				'key' => 'fitpress_membership_id',
-			 				'value' => 0,
-			 				'compare' => '=',
-			 				'type' => 'numeric'
-			 			),
-			 			array(
-			 				'key' => 'fitpress_membership_id',
-			 				'value' => 'blah',
-			 				'compare' => 'NOT EXISTS'
-			 			),
-			 		),
-			 		'fields' => $fields,
-			 	);
+				$args = array(
+					'meta_query' => array(
+						array(
+							'key' => 'fitpress_membership_status',
+							'value' => 'active',
+							'compare' => '!=',
+						),
+					),
+					'fields' => $fields,
+				);
 
 			endif;
 
-		else:
+		else :
 
-			if( $search ):
+			if ( $search ) :
 
-			 	$args = array(
-			 		'meta_query' => array(
-			 			array(
-			 				'key' => 'fitpress_membership_id',
-			 				'value' => 0,
-			 				'compare' => '!=',
-			 				'type' => 'numeric'
-			 			)
-			 		),
-			 		'search' => $search,
-			 		'fields' => $fields,
-			 	);
+				$args = array(
+					'meta_query' => array(
+						array(
+							'key' => 'fitpress_membership_status',
+							'value' => 'active',
+							'compare' => '=',
+						),
+					),
+					'search' => $search,
+					'fields' => $fields,
+				);
 
-			else:
+			else :
 
-			 	$args = array(
-			 		'meta_query' => array(
-			 			array(
-			 				'key' => 'fitpress_membership_id',
-			 				'value' => 0,
-			 				'compare' => '!=',
-			 				'type' => 'numeric'
-			 			)
-			 		),
-			 		'fields' => $fields,
-			 	);
+				$args = array(
+					'meta_query' => array(
+						array(
+							'key' => 'fitpress_membership_status',
+							'value' => 'active',
+							'compare' => '=',
+						),
+					),
+					'fields' => $fields,
+				);
 
 			endif;
 
 		endif;
 
-	 	$member_query = new WP_User_Query( $args );
+		$member_query = new WP_User_Query( $args );
 
-	 	return $member_query->get_results();
+		return $member_query->get_results();
 
 	}
 
@@ -641,7 +638,7 @@ class FP_Membership {
  * Extension main function
  */
 function __fp_membership_main() {
-    FP_Membership::get_instance();
+	FP_Membership::get_instance();
 }
 
 // Initialize plugin when plugins are loaded

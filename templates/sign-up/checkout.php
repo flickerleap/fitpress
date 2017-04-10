@@ -1,3 +1,18 @@
+<?php
+/**
+ * Edit account form
+ *
+ * @author 		WooThemes
+ * @package 	WooCommerce/Templates
+ * @version     2.2.7
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
+fp_display_flash_message();
+?>
 <h2>Membership Payment</h2>
 
 <table>

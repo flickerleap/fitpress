@@ -198,6 +198,17 @@ add_filter( 'book_url',  'fp_book_url', 10, 0 );
  * @access public
  * @return string
  */
+function fp_membership_url() {
+	return fp_get_endpoint_url( 'membership', '', fp_get_page_permalink( 'account' ) );
+}
+add_filter( 'book_url',  'fp_membership_url', 10, 0 );
+
+/**
+ * Returns the url to the lost password endpoint url
+ *
+ * @access public
+ * @return string
+ */
 function fp_checkout_url() {
 	return fp_get_endpoint_url( 'checkout', '', fp_get_page_permalink( 'sign-up' ) );
 }

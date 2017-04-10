@@ -79,15 +79,14 @@ class FP_Account {
 	 * Init query vars by loading options.
 	 */
 	public function init_query_vars() {
-		// Query vars to add to WP
 		$this->query_vars = array(
-			// My account actions
 			'update-account',
 			'lost-password',
 			'member-logout',
 			'book',
 			'make-booking',
-			'cancel-booking'
+			'cancel-booking',
+			'membership',
 		);
 	}
 
@@ -154,6 +153,10 @@ class FP_Account {
 
 				$return .= self::book_sessions();
 
+			} elseif ( isset( $wp->query_vars['membership'] ) ) {
+
+				$return .= self::membership();
+
 			} else {
 
 				$return .= self::account( $atts );
@@ -177,6 +180,21 @@ class FP_Account {
 		return fp_get_template_html( 'account/account.php', array(
 			'current_user' 	=> get_userdata( get_current_user_id() ),
 			'booked_sessions' => FP_Booking::get_booked_sessions( array( 'member_id' => get_current_user_id() ) ),
+		) );
+	}
+
+	/**
+	 * My account page
+	 *
+	 * @param  array $atts
+	 */
+	private static function membership( ) {
+
+		$membership = FP_Membership::get_user_membership( get_current_user_id() );
+
+		return fp_get_template_html( 'account/membership.php', array(
+			'membership' => $membership,
+			'member_id' => get_current_user_id(),
 		) );
 	}
 

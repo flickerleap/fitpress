@@ -13,5 +13,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 fp_display_flash_message();
 ?>
-<h2>Confirmed</h2>
-<p>Your membership has been confirmed. Head to your <a href="<?php echo fp_get_page_permalink( 'account' );?>">account</a> to book a session.</p>
+<p>
+Current Membership:
+<?php
+if ( 'None' == $membership ) :
+	echo $membership;
+else :
+	echo $membership['name'];
+endif;
+?>
+</p>
+
+<?php do_action( 'fitpress_after_membership', $member_id );?>
