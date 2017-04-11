@@ -29,7 +29,7 @@ class FP_Account {
 
 		add_action( 'init', array( $this, 'add_endpoints' ) );
 
-		add_action( 'init', array( $this, 'maybe_show_details_alert' ) );
+		add_action( 'template_redirect', array( $this, 'maybe_show_details_alert' ) );
 
 		add_action( 'template_redirect', array( $this, 'save_account_details' ) );
 		add_action( 'wp_loaded', array( $this, 'process_login' ), 20 );
@@ -57,13 +57,17 @@ class FP_Account {
 
 	public function maybe_show_details_alert(){
 
+		global $wp;
+		global $wp_query;
+
 		if ( $_SERVER['REQUEST_METHOD'] === 'POST' || is_admin() ) :
 			return;
 		endif;
 
 		$user_id     = (int) get_current_user_id();
+		$details_page = isset( $wp->query_vars['update-account'] ) || get_page_by_path( 'sign-up' )->ID == $wp_query->queried_object_id;
 
-		if ( $user_id && ( ! get_user_meta( $user_id, 'first_name', true ) || ! get_user_meta( $user_id, 'last_name', true ) || ! get_user_meta( $user_id, 'contact_number', true ) ||  ! get_user_meta( $user_id, 'emergency_contact_name', true ) ||  ! get_user_meta( $user_id, 'emergency_contact_number', true ) ) ) :
+		if ( $user_id && ! $details_page && ( ! get_user_meta( $user_id, 'first_name', true ) || ! get_user_meta( $user_id, 'last_name', true ) || ! get_user_meta( $user_id, 'contact_number', true ) ||  ! get_user_meta( $user_id, 'emergency_contact_name', true ) ||  ! get_user_meta( $user_id, 'emergency_contact_number', true ) ) ) :
 			fp_add_flash_message(
 				sprintf(
 					__( 'We do not have all your details, please update them %shere%s.','fitpress' ),
@@ -447,8 +451,8 @@ class FP_Account {
 					throw new Exception( $user->get_error_message() );
 				} else {
 
-					if ( ! empty( $_POST['redirect'] ) ) {
-						$redirect = $_POST['redirect'];
+					if ( ! empty( $_POST['redirect_to'] ) ) {
+						$redirect = $_POST['redirect_to'];
 					} elseif ( wp_get_referer() ) {
 						$redirect = wp_get_referer();
 					} else {

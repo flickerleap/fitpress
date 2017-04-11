@@ -166,6 +166,7 @@ class FP_Frontend {
 
 			return fp_get_template_html( 'sign-up/sign-up.php', array(
 				'memberships' => $memberships,
+				'current_user' 	=> get_userdata( get_current_user_id() ),
 			) );
 
 		endif;
@@ -264,6 +265,8 @@ class FP_Frontend {
 		$errors       = new WP_Error();
 		$user         = new stdClass();
 
+		$user->ID     = (int) get_current_user_id();
+
 		$account_first_name = ! empty( $_POST[ 'account_first_name' ] ) ? sanitize_text_field( $_POST[ 'account_first_name' ] ) : '';
 		$account_last_name  = ! empty( $_POST[ 'account_last_name' ] ) ? sanitize_text_field( $_POST[ 'account_last_name' ] ) : '';
 		$account_email      = ! empty( $_POST[ 'account_email' ] ) ? sanitize_email( $_POST[ 'account_email' ] ) : '';
@@ -279,9 +282,6 @@ class FP_Frontend {
 		$pass1              = ! empty( $_POST[ 'password_1' ] ) ? $_POST[ 'password_1' ] : '';
 		$pass2              = ! empty( $_POST[ 'password_2' ] ) ? $_POST[ 'password_2' ] : '';
 
-		$email_user_id = email_exists( $account_email );
-		$username_user_id = username_exists( $account_username );
-
 		if ( empty( $membership_id ) ) :
 			fp_add_flash_message( __( 'Please select a package.', 'fitpress' ), 'error' );
 		endif;
@@ -292,8 +292,6 @@ class FP_Frontend {
 
 		if ( empty( $account_email ) || ! is_email( $account_email ) ) :
 			fp_add_flash_message( __( 'Please provide a valid email address.', 'fitpress' ), 'error' );
-		elseif ( $email_user_id && is_user_member_of_blog( $email_user_id, get_current_blog_id() ) && $account_email !== $current_user->user_email ) :
-			fp_add_flash_message( __( 'This email address is already registered.', 'fitpress' ), 'error' );
 		endif;
 
 		if ( empty( $contact_number ) ) :
@@ -301,26 +299,45 @@ class FP_Frontend {
 		endif;
 
 		if ( empty( $emergency_contact_name ) || empty( $emergency_contact_number ) ) :
-			fp_add_flash_message( __( 'Please enter an emergency cotnact.', 'fitpress' ), 'error' );
+			fp_add_flash_message( __( 'Please enter an emergency contact.', 'fitpress' ), 'error' );
 		endif;
 
-		if ( empty( $account_username ) ) :
-			fp_add_flash_message( __( 'Please choose a username.', 'fitpress' ), 'error' );
-		elseif ( $username_user_id && is_user_member_of_blog( $username_user_id, get_current_blog_id() ) ) :
-			fp_add_flash_message( __( 'A member with that username already exists. Please choose another username.', 'fitpress' ), 'error' );
-		elseif ( $username_user_id && $email_user_id && $username_user_id != $email_user_id ):
-			fp_add_flash_message( __( 'A member with that username already exists. Please choose another username.', 'fitpress' ), 'error' );
-		elseif ( $username_user_id && $email_user_id && $username_user_id == $email_user_id ):
-				add_user_to_blog( get_current_blog_id(), $username_user_id, 'subscriber' );
-				update_user_meta( $username_user_id, 'fitpress_membership_id', $membership_id );
-				update_user_meta( $username_user_id, 'fitpress_membership_status', $membership_status );
-				fp_add_flash_message( __( 'A user account was found with your details. The account has been linked to this membership, please <a href="' . fp_get_page_permalink('account') . '">log in</a> to complete the sign up.', 'fitpress' ), 'error' );
-		endif;
+		if ( $user->ID <= 0 ) :
 
-		if ( empty( $pass1 ) || empty( $pass2 ) ) :
-			fp_add_flash_message( __( 'Please fill out all password fields.', 'fitpress' ), 'error' );
-		elseif ( ! empty( $pass1 ) && $pass1 !== $pass2 ) :
-			fp_add_flash_message( __( 'Passwords do not match.', 'fitpress' ), 'error' );
+			$email_user_id = email_exists( $account_email );
+			$username_user_id = username_exists( $account_username );
+
+			if ( $email_user_id && is_user_member_of_blog( $email_user_id, get_current_blog_id() ) ) :
+				fp_add_flash_message( __( 'This email address is already registered.', 'fitpress' ), 'error' );
+			endif;
+
+			if ( empty( $account_username ) ) :
+				fp_add_flash_message( __( 'Please choose a username.', 'fitpress' ), 'error' );
+			elseif ( $username_user_id && is_user_member_of_blog( $username_user_id, get_current_blog_id() ) ) :
+				fp_add_flash_message( __( 'A member with that username already exists. Please choose another username.', 'fitpress' ), 'error' );
+			elseif ( $username_user_id && $email_user_id && $username_user_id != $email_user_id ):
+				fp_add_flash_message( __( 'A member with that username already exists. Please choose another username.', 'fitpress' ), 'error' );
+			elseif ( $username_user_id && $email_user_id && $username_user_id == $email_user_id ):
+					add_user_to_blog( get_current_blog_id(), $username_user_id, 'subscriber' );
+					update_user_meta( $username_user_id, 'fitpress_membership_id', $membership_id );
+					update_user_meta( $username_user_id, 'fitpress_membership_status', $membership_status );
+					fp_add_flash_message( __( 'A user account was found with your details. The account has been linked to this membership, please <a href="' . fp_get_page_permalink('account') . '">log in</a> to complete the sign up.', 'fitpress' ), 'error' );
+			endif;
+
+			if ( empty( $pass1 ) || empty( $pass2 ) ) :
+				fp_add_flash_message( __( 'Please fill out all password fields.', 'fitpress' ), 'error' );
+			elseif ( ! empty( $pass1 ) && $pass1 !== $pass2 ) :
+				fp_add_flash_message( __( 'Passwords do not match.', 'fitpress' ), 'error' );
+			endif;
+
+		else :
+
+			$current_user = get_user_by( 'id', $user->ID );
+
+			if ( $email_user_id && is_user_member_of_blog( $email_user_id, get_current_blog_id() ) && $account_email !== $current_user->user_email ) :
+				fp_add_flash_message( __( 'This email address is already registered.', 'fitpress' ), 'error' );
+			endif;
+
 		endif;
 
 		if ( $errors->get_error_messages() ) :
@@ -331,14 +348,27 @@ class FP_Frontend {
 
 		if ( fp_flash_message_count( 'error' ) === 0 ) :
 
-			$user = array(
-				'user_login' 	=> $account_username,
-				'user_email' 	=> $account_email,
-				'display_name'	=> $account_first_name . ' ' . $account_last_name,
-				'user_pass'		=> $pass1,
-			);
+			if ( $user->ID <= 0 ) :
 
-			$user_id = wp_insert_user( $user );
+				$user = array(
+					'user_login' 	=> $account_username,
+					'user_email' 	=> $account_email,
+					'display_name'	=> $account_first_name . ' ' . $account_last_name,
+					'user_pass'		=> $pass1,
+				);
+
+				$user_id = wp_insert_user( $user );
+
+			else :
+
+				$current_user = get_user_by( 'id', $user->ID );
+
+				$user->user_email = $account_email;
+				$user->display_name = $account_first_name . ' ' . $account_last_name;
+
+				$user_id = wp_update_user( $user );
+
+			endif;
 
 			if ( ! is_wp_error( $user_id ) ) :
 
