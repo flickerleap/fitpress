@@ -18,26 +18,34 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * FP_Post_Types Class.
  */
-class FP_Email{
+class FP_Email {
 
 	public $template_html = 'email/default.php';
 
 	public $headers = array('Content-Type: text/html; charset=UTF-8');
 
+	protected $email_settings = array();
+
 	public function __construct( $setup = array() ){
 
-		if( isset( $setup['template'] ) )
+		if ( isset( $setup['template'] ) ) :
 			$this->template_html = $setup['template'];
+		endif;
 
-		if( isset( $setup['headers'] ) )
+		if ( isset( $setup['headers'] ) ) :
 			$this->headers = array_merge( $this->headers, $setup['headers'] );
+		endif;
 
-		add_filter('wp_mail_from', array( $this, 'email_from' ) );
-		add_filter('wp_mail_from_name', array( $this, 'email_from_name' ) );
+		$this->email_settings = get_option( 'fitpress_email_settings' );
+
+		add_filter( 'wp_mail_from', array( $this, 'email_from' ) );
+		add_filter( 'wp_mail_from_name', array( $this, 'email_from_name' ) );
 
 	}
 
 	public function send_email( $to, $subject = 'Test', $data = array(), $attachments = null){
+
+		$data = array_merge( $data, array( 'email_settings' => $this->email_settings ) );
 
 		$content = $this->get_content_html( $data );
 
@@ -47,13 +55,13 @@ class FP_Email{
 
 	function email_from( $old ) {
 
-		return 'heartbeat@crossfitexanimo.co.za';
+		return $this->email_settings['from_address'];
 
 	}
 
 	function email_from_name( $old ) {
 
-		return get_bloginfo( 'name' );
+		return $this->email_settings['from_name'];
 
 	}
 

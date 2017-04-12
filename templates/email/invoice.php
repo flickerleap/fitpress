@@ -18,29 +18,24 @@ if ( ! defined( 'ABSPATH' ) ) {
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title><?php echo get_bloginfo( 'name', 'display' ); ?></title>
 	</head>
-    <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="color: #000;background: #ccc;">
+    <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="color: <?php echo $email_settings['text_color'];?>;background: <?php echo $email_settings['background_color'];?>;">
     	<div id="wrapper">
         	<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%">
             	<tr>
                 	<td align="center" valign="top">
-                    	<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_container" style="background: #fff;">
+                    	<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_container" style="background: <?php echo $email_settings['body_background_color'];?>;">
                         	<tr>
                             	<td align="center" valign="top">
                                     <!-- Header -->
-                                	<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_header" style="background-color: #000;padding:10px;">
+                                	<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_header" style="background-color: <?php echo $email_settings['header_background_color'];?>;color:<?php echo $email_settings['header_text_color'];?>;padding:10px;">
                                         <tr>
-                                            <td style="text-align: left;color: #fff;">
-                                            	<a href="http://cfxa.co.za"><img src="http://cfxa.co.za/wp-content/uploads/2015/05/ExAnimo_logo.png" title="CrossFit Ex Animo" alt="CrossFit Ex Animo" style="width:300px;" width="300" /></a><br />
-                                                <h2><?php $header;?></h2>
+                                            <td style="text-align: center;">
+                                            	<?php if ( ! empty ( $email_settings['header_image'] ) ) : ?>
+                                            		<img src="<?php echo $email_settings['header_image'];?>" title="<?php echo $header;?>" alt="<?php echo $header;?>" />
+                                            	<?php endif;?>
+                                                <h2><?php echo $header;?></h2>
                                             </td>
                                             <td style="text-align: right;color: #fff;font-size: 11px;">
-
-                                                <p>P.O Box 48 Linbro Park 2065</p>
-
-                                                <p>Tel: 082 373 4946<br />
-                                                Email: heartbeat@crossfitexanimo.co.za<br />
-                                                Registration No: 2014/107380/07<br />
-                                                VAT No: 4700272299</p>
 
                                             </td>
                                         </tr>
@@ -140,20 +135,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                                                 <table border="0" cellpadding="10" cellspacing="0" width="100%">
                                                     <tr>
                                                         <td colspan="2" valign="middle" id="credit">
-                                                            <p>
-                                                                <strong>Banking Details:</strong><br />
-                                                                Fitness Ex Animo (Pty) Ltd<br />
-                                                                FNB Hyde Park<br />
-                                                                Account Number: 624 7658 8250<br />
-                                                                Branch: 255 805<br />
-                                                                Please use your name and surname as reference.
-                                                            </p>
-                                                            <p>
-                                                                <strong>CrossFit Ex Animo</strong><br />
-                                                                Shop 21 A Valley Centre, 396 Jan Smuts Avenue, Craighall Park, 2196<br /><br />
-                                                                Steven: 082 561 2602 / steven@crossfitexanimo.co.za<br />
-                                                                Bronwyn: 060 974 9186 / bronwyn@crossfitexanimo.co.za
-                                                            </p>
+                                                            <?php echo $email_settings['footer'];?>
                                                         </td>
                                                     </tr>
                                                 </table>

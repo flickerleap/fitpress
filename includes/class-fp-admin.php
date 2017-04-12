@@ -21,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class FP_Admin {
 
 	protected $settings = null;
+	protected $email_settings = null;
 
 	/**
 	 * Hook in methods.
@@ -137,10 +138,29 @@ class FP_Admin {
 		?>
 		<div class="wrap">
 			<h2>FitPress Settings</h2>
+			<?php $active_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'general';?>
+			<?php $tabs = apply_filters( 'fitpress_settings_tabs', array( 'general' => 'General', 'email' => 'Email' ) );?>
+			<h2 class="nav-tab-wrapper">
+				<?php foreach ( $tabs as $tab => $name ) : ?>
+					<a href="?page=fp_settings&tab=<?php echo $tab;?>" class="nav-tab <?php echo $active_tab == $tab ? 'nav-tab-active' : ''; ?>"><?php echo $name;?></a>
+				<?php endforeach;?>
+			</h2>
 			<form method="POST" action="options.php">
 				<?php
-				settings_fields( 'fp_settings' );
-				do_settings_sections( 'fp_settings' );
+				switch ( $active_tab ) :
+					case 'email':
+						$this->email_settings = get_option( 'fitpress_email_settings' );
+						settings_fields( 'fp_email_settings' );
+						do_settings_sections( 'fp_email_settings' );
+						break;
+					case 'general':
+						$this->settings = get_option( 'fitpress_settings' );
+						settings_fields( 'fp_settings' );
+						do_settings_sections( 'fp_settings' );
+						break;
+				endswitch;
+				?>
+				<?php
 				submit_button();
 				?>
 			</form>
@@ -150,8 +170,6 @@ class FP_Admin {
 	}
 
 	public function init_settings() {
-
-		$this->settings = get_option( 'fitpress_settings' );
 
 	 	add_settings_section(
 			'general_settings',
@@ -182,7 +200,87 @@ class FP_Admin {
 			'general_settings'
 		);
 
+	 	add_settings_section(
+			'email_settings',
+			'Email settings',
+			array( $this, 'email_settings_callback_function' ),
+			'fp_email_settings'
+		);
+
+	 	add_settings_field(
+			'background_color',
+			'Email Background Colour',
+			array( $this, 'email_background_color_callback_function' ),
+			'fp_email_settings',
+			'email_settings'
+		);
+
+	 	add_settings_field(
+			'body_background_color',
+			'Body Background Colour',
+			array( $this, 'email_body_background_color_callback_function' ),
+			'fp_email_settings',
+			'email_settings'
+		);
+
+	 	add_settings_field(
+			'text_color',
+			'Text Colour',
+			array( $this, 'email_text_color_callback_function' ),
+			'fp_email_settings',
+			'email_settings'
+		);
+
+	 	add_settings_field(
+			'header_background_color',
+			'Header Background Colour',
+			array( $this, 'email_header_background_color_callback_function' ),
+			'fp_email_settings',
+			'email_settings'
+		);
+
+	 	add_settings_field(
+			'header_text_color',
+			'Header Text Colour',
+			array( $this, 'email_header_text_color_callback_function' ),
+			'fp_email_settings',
+			'email_settings'
+		);
+
+	 	add_settings_field(
+			'header_image',
+			'Header Image',
+			array( $this, 'email_header_image_callback_function' ),
+			'fp_email_settings',
+			'email_settings'
+		);
+
+	 	add_settings_field(
+			'footer',
+			'Footer',
+			array( $this, 'email_footer_callback_function' ),
+			'fp_email_settings',
+			'email_settings'
+		);
+
+	 	add_settings_field(
+			'email_from_name',
+			'Email From Name',
+			array( $this, 'email_from_name_callback_function' ),
+			'fp_email_settings',
+			'email_settings'
+		);
+
+	 	add_settings_field(
+			'email_from_address',
+			'Email From Address',
+			array( $this, 'email_from_address_callback_function' ),
+			'fp_email_settings',
+			'email_settings'
+		);
+
 	 	register_setting( 'fp_settings', 'fitpress_settings' );
+	 	register_setting( 'fp_email_settings', 'fitpress_email_settings' );
 
 	}
 
@@ -193,13 +291,61 @@ class FP_Admin {
 	public function general_settings_callback_function() {
 	}
 
+	public function email_settings_callback_function() {
+	}
+
+	public function email_background_color_callback_function() {
+		$value = ( ! empty( $this->email_settings['background_color'] ) ) ? $this->email_settings['background_color'] : '#eeeeee';
+		echo '<input name="fitpress_email_settings[background_color]" id="background_color" class="small" type="text" value="' . $value . '" />';
+	}
+
+	public function email_body_background_color_callback_function() {
+		$value = ( ! empty( $this->email_settings['body_background_color'] ) ) ? $this->email_settings['body_background_color'] : '#ffffff';
+		echo '<input name="fitpress_email_settings[body_background_color]" id="body_background_color" class="small" type="text" value="' . $value . '" />';
+	}
+
+	public function email_text_color_callback_function() {
+		$value = ( ! empty( $this->email_settings['text_color'] ) ) ? $this->email_settings['text_color'] : '#333333';
+		echo '<input name="fitpress_email_settings[text_color]" id="text_color" class="small" type="text" value="' . $value . '" />';
+	}
+
+	public function email_header_background_color_callback_function() {
+		$value = ( ! empty( $this->email_settings['header_background_color'] ) ) ? $this->email_settings['header_background_color'] : '#ffffff';
+		echo '<input name="fitpress_email_settings[header_background_color]" id="header_background_color" class="small" type="text" value="' . $value . '" />';
+	}
+
+	public function email_header_text_color_callback_function() {
+		$value = ( ! empty( $this->email_settings['header_text_color'] ) ) ? $this->email_settings['header_text_color'] : '#444444';
+		echo '<input name="fitpress_email_settings[header_text_color]" id="header_text_color" class="small" type="text" value="' . $value . '" />';
+	}
+
+	public function email_header_image_callback_function() {
+		$value = ( ! empty( $this->email_settings['header_image'] ) ) ? $this->email_settings['header_image'] : '';
+		echo '<input name="fitpress_email_settings[header_image]" id="header_image" class="small" type="text" value="' . $value . '" />';
+	}
+
+	public function email_footer_callback_function() {
+		$value = ( ! empty( $this->email_settings['footer'] ) ) ? $this->email_settings['footer'] : 'Powered by FitPress';
+		echo '<textarea name="fitpress_email_settings[footer]" id="footer">' . $value . '</textarea>';
+	}
+
+	public function email_from_name_callback_function() {
+		$value = ( ! empty( $this->email_settings['from_name'] ) ) ? $this->email_settings['from_name'] : get_bloginfo( 'name' );
+		echo '<input name="fitpress_email_settings[from_name]" id="from_name" class="small" type="text" value="' . $value . '" />';
+	}
+
+	public function email_from_address_callback_function() {
+		$value = ( ! empty( $this->email_settings['from_address'] ) ) ? $this->email_settings['from_address'] : get_bloginfo( 'admin_email' );
+		echo '<input name="fitpress_email_settings[from_address]" id="from_address" class="small" type="text" value="' . $value . '" />';
+	}
+
 	public function booking_time_limit_callback_function() {
-		$value = (! empty( $this->settings['booking_time_limit'] ) ) ? $this->settings['booking_time_limit'] : '30';
+		$value = ( ! empty( $this->settings['booking_time_limit'] ) ) ? $this->settings['booking_time_limit'] : '30';
 		echo '<input name="fitpress_settings[booking_time_limit]" id="booking_time_limit" class="small" type="number" value="' . $value . '" /> minutes';
 	}
 
 	public function cancellation_time_limit_callback_function() {
-		$value = (! empty( $this->settings['cancellation_time_limit'] ) ) ? $this->settings['cancellation_time_limit'] : '30';
+		$value = ( ! empty( $this->settings['cancellation_time_limit'] ) ) ? $this->settings['cancellation_time_limit'] : '30';
 		echo '<input name="fitpress_settings[cancellation_time_limit]" id="cancellation_time_limit" class="small" type="number"  value="' . $value . '" /> minutes';
 	}
 

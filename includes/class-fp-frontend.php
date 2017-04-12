@@ -302,10 +302,10 @@ class FP_Frontend {
 			fp_add_flash_message( __( 'Please enter an emergency contact.', 'fitpress' ), 'error' );
 		endif;
 
-		if ( $user->ID <= 0 ) :
+		$email_user_id = email_exists( $account_email );
+		$username_user_id = username_exists( $account_username );
 
-			$email_user_id = email_exists( $account_email );
-			$username_user_id = username_exists( $account_username );
+		if ( $user->ID <= 0 ) :
 
 			if ( $email_user_id && is_user_member_of_blog( $email_user_id, get_current_blog_id() ) ) :
 				fp_add_flash_message( __( 'This email address is already registered.', 'fitpress' ), 'error' );
