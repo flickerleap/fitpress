@@ -29,7 +29,7 @@ fp_display_flash_message();
 
 	<p class="form-row">
 		<?php wp_nonce_field( 'fitpress-login' ); ?>
-		<?php if ( $_GET['redirect_to'] || $_POST['redirect_to'] ):?>
+		<?php if ( isset( $_GET['redirect_to'] ) && ! empty( $_GET['redirect_to'] ) || $_POST['redirect_to'] && ! empty( $_POST['redirect_to'] ) ):?>
 			<input name="redirect_to" value="<?php echo esc_attr( isset( $_POST['redirect_to'] ) ? $_POST['redirect_to'] : $_GET['redirect_to'] ); ?>" hidden />
 		<?php endif;?>
 		<input type="submit" class="btn" name="login" value="<?php _e( 'Login', 'fitpress' ); ?>" />

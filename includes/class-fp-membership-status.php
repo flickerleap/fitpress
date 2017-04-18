@@ -61,7 +61,8 @@ class FP_Membership_Status {
 			'active'    => 'Active',
 			'suspended' => 'Suspended',
 			'cancelled' => 'Cancelled',
-			'on-hold'   => 'On-hold'
+			'on-hold'   => 'On-hold',
+			'no-membership'   => 'No Membership',
 		);
 
 		return $statuses;
@@ -98,6 +99,10 @@ class FP_Membership_Status {
 
 		$this->set_member_id( $user_id );
 		$this->get_status( );
+
+		if ( ! $this->status ) :
+			$this->set_status( 'no-membership' );
+		endif;
 
 		?>
 

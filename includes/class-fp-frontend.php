@@ -188,6 +188,10 @@ class FP_Frontend {
 
 		$membership = FP_Membership::get_user_membership( $user_id );
 
+		if ( ! $membership ) :
+			wp_redirect( fp_get_page_permalink( 'sign-up' ) );
+		endif;
+
 		$current_user = get_userdata( $user_id );
 
 		$return =  fp_get_template_html( 'sign-up/checkout.php', array(

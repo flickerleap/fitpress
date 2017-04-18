@@ -157,7 +157,7 @@ class FP_Membership {
 
 				$FP_Email = new FP_Email( );
 
-				$FP_Email->send_email( 'heartbeat@crossfitexanimo.co.za', $subject, array( 'header' => $subject, 'message' => 'Here\'s the member list :)' ), $attachments );
+				$FP_Email->send_email( get_bloginfo( 'admin_email' ), $subject, array( 'header' => $subject, 'message' => 'Here\'s the member list :)' ), $attachments );
 
 			endif;
 

@@ -168,6 +168,7 @@ if ( ! class_exists( 'FitPress' ) ) :
 			include_once( 'includes/class-fp-install.php' );
 			$this->query = include_once( 'includes/class-fp-account.php' );
 			include_once( 'includes/class-fp-flash-message.php' );
+			include_once( 'includes/class-fp-member.php' );
 			include_once( 'includes/class-fp-membership.php' );
 			include_once( 'includes/class-fp-membership-status.php' );
 			include_once( 'includes/class-fp-credits.php' );
@@ -178,13 +179,13 @@ if ( ! class_exists( 'FitPress' ) ) :
 
 			include_once( 'includes/class-fp-frontend.php' );
 
-			if( $this->is_request( 'admin') ) :
+			if ( $this->is_request( 'admin') ) :
 
 				include_once( 'includes/class-fp-admin.php' );
 
 			endif;
 
-			if( $this->is_request( 'frontend' ) ) :
+			if ( $this->is_request( 'frontend' ) ) :
 
 			endif;
 
