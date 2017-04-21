@@ -143,8 +143,6 @@ class FP_Install {
 
 				endif;
 
-				exit;
-
 				self::flush_rewrite_rules();
 
 				update_option( 'fitpress_version', FP_VERSION );
