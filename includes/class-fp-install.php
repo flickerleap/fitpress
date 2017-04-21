@@ -149,6 +149,8 @@ class FP_Install {
 
 				update_option( 'fitpress_version', FP_VERSION );
 
+				wp_redirect( remove_query_arg( 'fp_update' ) );
+
 			endif;
 
 		endif;
