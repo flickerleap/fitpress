@@ -83,4 +83,76 @@ class FP_Install {
 
 	}
 
+
+	public static function maybe_update() {
+
+		if ( isset( $_GET['fp_update'] ) ) :
+
+			$version = get_option( 'fitpress_version', '1.0.0' );
+
+			if ( version_compare( $version, FP_VERSION ) ) :
+
+				if ( version_compare( $version, '1.1.0' ) ) :
+
+					$args = array(
+						'fields' => 'ID',
+					);
+
+					$member_query = new WP_User_Query( $args );
+
+					$users = $member_query->get_results();
+
+					foreach ( $users as $user_id ) :
+
+						$old_membership = FP_Membership::get_user_membership( $user_id );
+
+						if ( ! $old_membership ) :
+
+							$package_id = get_user_meta( $user_id, 'fitpress_membership_id', true );
+
+							if ( $package_id && $package_id !== 0 ) :
+
+								$credits = get_user_meta( $user_id, 'fitpress_credits', true );
+								$membership_start_date = get_user_meta( $user_id, 'fitpress_membership_date', true );
+								$renewal_date = get_user_meta( $user_id, 'fitpress_next_invoice_date', true );
+								$membership_status = get_user_meta( $user_id, 'fitpress_membership_status', true );
+
+								$membership_post = array(
+									'post_title' => 'Membership for user id: ' . $user_id,
+									'post_content' => '',
+									'post_status'    => 'publish',
+									'post_type'    => 'fp_member',
+								);
+
+								$membership_id = wp_insert_post( $membership_post );
+
+								update_post_meta( $membership_id, '_fp_user_id', $user_id );
+								update_post_meta( $membership_id, '_fp_membership_status', $membership_status );
+								update_post_meta( $membership_id, '_fp_package_id', $package_id );
+								update_post_meta( $membership_id, '_fp_credits', $credits );
+								update_post_meta( $membership_id, '_fp_membership_start_date', $membership_start_date );
+								if ( $renewal_date && 0 !== $renewal_date ) :
+									update_post_meta( $membership_id, '_fp_renewal_date', $renewal_date );
+								endif;
+
+							endif;
+
+						endif;
+
+					endforeach;
+
+				endif;
+
+				exit;
+
+				self::flush_rewrite_rules();
+
+				update_option( 'fitpress_version', FP_VERSION );
+
+			endif;
+
+		endif;
+
+	}
+
 }

@@ -41,12 +41,12 @@ endif;
 	<h3>Member Details</h3>
 
 	<p class="form-row form-row-wide">
-		<label for="membership_id"><?php _e( 'Membership', 'fitpress' ); ?> <span class="required">*</span></label>
-		<select name="membership_id" id="membership_id">
+		<label for="package_id"><?php _e( 'Membership', 'fitpress' ); ?> <span class="required">*</span></label>
+		<select name="package_id" id="membership_id">
 			<?php $passed_membership_id = isset( $_GET['membership_id'] ) ? $_GET['membership_id'] : false;?>
-			<?php foreach( $memberships as $membership_id => $membership ) : ?>
-				<option value="<?php echo $membership_id;?>" <?php selected( $membership_id, $passed_membership_id, true ); ?>>
-					<?php echo $membership['name'];?>
+			<?php foreach( $packages as $package_id => $package ) : ?>
+				<option value="<?php echo $package_id;?>" <?php selected( $package_id, $passed_membership_id, true ); ?>>
+					<?php echo $package['name'];?>
 				</option>
 			<?php endforeach;?>
 		</select>

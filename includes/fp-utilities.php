@@ -303,7 +303,11 @@ function fp_maybe_manual_run(){
 		wp_redirect( $url );
 	elseif( isset( $_GET['force_create_sessions'] ) ):
 		$FP_Session = new FP_Session();
-		$FP_Session->add_sessions( strtotime( 'tomorrow midnight' ), $_GET['force_create_sessions'] );
+		if ( isset( $_GET['start_day'] ) && ! empty( $_GET['start_day'] ) ) :
+			$FP_Session->add_sessions( $_GET['start_day'], $_GET['force_create_sessions'] );
+		else :
+			$FP_Session->add_sessions( strtotime( 'tomorrow midnight' ), $_GET['force_create_sessions'] );
+		endif;
 		$url = remove_query_arg( array( 'force_create_sessions' ) );
 		wp_redirect( $url );
 	elseif( isset( $_GET['member_id'] ) && isset( $_GET['membership_id'] ) ):

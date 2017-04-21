@@ -178,24 +178,24 @@ class FP_Membership {
 		register_post_type( 'membership',
 			array(
 				'labels'             => array(
-					'name'                  => __( 'Memberships', 'fitpress' ),
-					'singular_name'         => __( 'Membership', 'fitpress' ),
-					'menu_name'             => _x( 'Memberships', 'Admin menu name', 'fitpress' ),
-					'add_new'               => __( 'Add Membership', 'fitpress' ),
-					'add_new_item'          => __( 'Add New Membership', 'fitpress' ),
+					'name'                  => __( 'Packages', 'fitpress' ),
+					'singular_name'         => __( 'Package', 'fitpress' ),
+					'menu_name'             => _x( 'Packages', 'Admin menu name', 'fitpress' ),
+					'add_new'               => __( 'Add Package', 'fitpress' ),
+					'add_new_item'          => __( 'Add New Package', 'fitpress' ),
 					'edit'                  => __( 'Edit', 'fitpress' ),
-					'edit_item'             => __( 'Edit Membership', 'fitpress' ),
-					'new_item'              => __( 'New Membership', 'fitpress' ),
-					'view'                  => __( 'View Membership', 'fitpress' ),
-					'view_item'             => __( 'View Membership', 'fitpress' ),
+					'edit_item'             => __( 'Edit Package', 'fitpress' ),
+					'new_item'              => __( 'New Package', 'fitpress' ),
+					'view'                  => __( 'View Package', 'fitpress' ),
+					'view_item'             => __( 'View Package', 'fitpress' ),
 					'search_items'          => __( 'Search Products', 'fitpress' ),
-					'not_found'             => __( 'No Memberships found', 'fitpress' ),
-					'not_found_in_trash'    => __( 'No Memberships found in trash', 'fitpress' ),
-					'parent'                => __( 'Parent Membership', 'fitpress' ),
-					'featured_image'        => __( 'Membership Image', 'fitpress' ),
-					'set_featured_image'    => __( 'Set membership image', 'fitpress' ),
-					'remove_featured_image' => __( 'Remove membership image', 'fitpress' ),
-					'use_featured_image'    => __( 'Use as membership image', 'fitpress' ),
+					'not_found'             => __( 'No packages found', 'fitpress' ),
+					'not_found_in_trash'    => __( 'No packages found in trash', 'fitpress' ),
+					'parent'                => __( 'Parent Package', 'fitpress' ),
+					'featured_image'        => __( 'Package Image', 'fitpress' ),
+					'set_featured_image'    => __( 'Set package image', 'fitpress' ),
+					'remove_featured_image' => __( 'Remove package image', 'fitpress' ),
+					'use_featured_image'    => __( 'Use as package image', 'fitpress' ),
 				),
 				'description'         => __( 'This is where you can add new memberships to your website.', 'fitpress' ),
 				'public'              => false,
@@ -243,15 +243,25 @@ class FP_Membership {
 		// Add nonce for security and authentication.
 		wp_nonce_field( FP_PLUGIN_FILE, 'membership_nonce' );
 
-		$membership_data = get_post_meta($post->ID, "membership_data", true);
+		$package_data = get_post_meta($post->ID, "membership_data", true);
 
 		?>
 		<p>
 			<label for="credits">Credits</label>
-			<input name="credits" type="text" value="<?php echo isset( $membership_data['credits'] ) ? $membership_data['credits'] : ''; ?>">
+			<input name="credits" type="text" value="<?php echo isset( $package_data['credits'] ) ? $package_data['credits'] : ''; ?>">
 		</p>
+        <p>
+            <label for="expiration_date">Expiration Date</label>
+            <select name="expiration_date">
+                <option value="Once Off" <?php selected( isset( $package_data['expiration_date'] ) ? $package_data['expiration_date'] : '', 'None');?>>None</option>
+                <option value="+1 month" <?php selected( isset( $package_data['expiration_date'] ) ? $package_data['expiration_date'] : '', '+1 month');?>>+1 Month</option>
+                <option value="+3 months" <?php selected( isset( $package_data['expiration_date'] ) ? $package_data['expiration_date'] : '', '+3 months');?>>+3 Months</option>
+                <option value="+6 months" <?php selected( isset( $package_data['expiration_date'] ) ? $package_data['expiration_date'] : '', '+6 months');?>>+6 Months</option>
+                <option value="+1 year" <?php selected( isset( $package_data['expiration_date'] ) ? $package_data['expiration_date'] : '', '+1 year');?>>+1 Year</option>
+            </select>
+        </p>
 		<?php
-		do_action( 'fitpress_after_membership_fields', $membership_data, $post->ID );
+		do_action( 'fitpress_after_package_fields', $package_data, $post->ID );
 	}
 
 	/**
@@ -291,15 +301,19 @@ class FP_Membership {
 			return;
 		}
 
-		$membership_data = get_post_meta($post->ID, "membership_data", true);
+		$package_data = get_post_meta( $post->ID, 'membership_data', true );
 
 		if(isset($_POST["credits"])){
-			$membership_data['credits'] = $_POST["credits"];
+			$package_data['credits'] = $_POST["credits"];
 		}
 
-		$membership_data = apply_filters( 'fitpress_before_membership_save', $membership_data );
+		if ( isset( $_POST['expiration_date'] ) ) {
+			$package_data['expiration_date'] = $_POST['expiration_date'];
+		}
 
-		update_post_meta($post_id, "membership_data", $membership_data);
+		$package_data = apply_filters( 'fitpress_before_package_save', $package_data );
+
+		update_post_meta( $post_id, "membership_data", $package_data );
 
 	}
 
@@ -459,41 +473,38 @@ class FP_Membership {
 
 	}
 
-	public static function get_memberships( $select = false ){
+	public static function get_memberships( $select = false ) {
 
 		$args = array(
 			'post_type' => 'membership',
 			'orderby' => 'post_title',
 			'order' => 'ASC',
-			'posts_per_page' => '-1'
+			'posts_per_page' => '-1',
 		);
 
 		$memberships_obj = new WP_Query( $args );
 
-		if($memberships_obj->have_posts()):
+		if ( $memberships_obj->have_posts() ) :
 
 			$memberships = array();
 
-			if( $select )
-				$memberships = array( 0 => 'None' );
+			foreach ( $memberships_obj->posts as $membership ) :
 
-			foreach( $memberships_obj->posts as $membership ):
-
-				if( $select ):
+				if ( $select ) :
 
 					$memberships[ $membership->ID ] = $membership->post_title;
 
-				else:
+				else :
 
-					$membership_data = get_post_meta( $membership->ID, "membership_data", true);
+					$membership_data = get_post_meta( $membership->ID, 'membership_data', true );
 
 					$memberships[ $membership->ID ] = array(
 						'name' => $membership->post_title,
 					);
 
-					foreach( $membership_data as $key => $value ):
+					foreach ( $membership_data as $key => $value ) :
 
-						$memberships[ $membership->ID ][$key] = $value;
+						$memberships[ $membership->ID ][ $key ] = $value;
 
 					endforeach;
 
@@ -503,7 +514,7 @@ class FP_Membership {
 
 			return $memberships;
 
-		else:
+		else :
 
 			return false;
 
@@ -512,6 +523,10 @@ class FP_Membership {
 	}
 
 	public static function get_membership( $membership_ids = array() ){
+
+		if ( ! is_array( $membership_ids ) ) :
+			$membership_ids = array( $membership_ids );
+		endif;
 
 		$args = array(
 			'post_type' => 'membership',
@@ -572,7 +587,7 @@ class FP_Membership {
 				$args = array(
 					'meta_query' => array(
 						array(
-							'key' => 'fitpress_membership_status',
+							'key' => '_fp_membership_status',
 							'value' => 'active',
 							'compare' => '!=',
 						),
@@ -586,7 +601,7 @@ class FP_Membership {
 				$args = array(
 					'meta_query' => array(
 						array(
-							'key' => 'fitpress_membership_status',
+							'key' => '_fp_membership_status',
 							'value' => 'active',
 							'compare' => '!=',
 						),
@@ -603,7 +618,7 @@ class FP_Membership {
 				$args = array(
 					'meta_query' => array(
 						array(
-							'key' => 'fitpress_membership_status',
+							'key' => '_fp_membership_status',
 							'value' => 'active',
 							'compare' => '=',
 						),
@@ -617,7 +632,7 @@ class FP_Membership {
 				$args = array(
 					'meta_query' => array(
 						array(
-							'key' => 'fitpress_membership_status',
+							'key' => '_fp_membership_status',
 							'value' => 'active',
 							'compare' => '=',
 						),
@@ -629,20 +644,41 @@ class FP_Membership {
 
 		endif;
 
-		$member_query = new WP_User_Query( $args );
+		$args['post_type'] = 'fp_member';
 
-		return $member_query->get_results();
+		$membership_query = new WP_Query( $args );
+
+		return $membership_query->posts;
 
 	}
 
 	public static function get_user_membership( $user_id ) {
-		$membership_id = get_user_meta( $user_id, 'fitpress_membership_id', true );
 
-		if ( ! $membership_id ) :
-			return 'None';
+		$args = array(
+			'post_type' => 'fp_member',
+			'meta_query' => array(
+				array(
+					'key' => '_fp_user_id',
+					'value' => $user_id,
+				),
+			),
+		);
+
+		$membership_obj = new WP_Query( $args );
+
+		if ( $membership_obj->found_posts ) :
+
+			$package_id = get_post_meta( $membership_obj->posts[0]->ID, '_fp_package_id', true );
+
+			$package = FP_Membership::get_membership( $package_id );
+
+			$package[ $package_id ]['membership_id'] = $membership_obj->posts[0]->ID;
+			$package[ $package_id ]['package_id'] = $package_id;
+
+			return $package[ $package_id ];
+
 		else :
-			$membership = FP_Membership::get_membership( array( $membership_id ) );
-			return $membership[ $membership_id ];
+			return false;
 		endif;
 	}
 

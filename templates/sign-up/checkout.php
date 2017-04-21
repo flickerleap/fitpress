@@ -28,8 +28,24 @@ fp_display_flash_message();
 		<td><?php echo $membership['term'];?></td>
 		<td style="text-align: right;">R <?php echo $membership['price'];?></td>
 	</tr>
-	<tr>
-		<td colspan="3" style="text-align: right; font-weight: bold;">Total</td>
-		<td style="text-align: right; font-weight: bold;">R <?php echo $membership['price'];?></td>
-	</tr>
+	<?php if( 'Once Off' == $membership['term'] ):?>
+		<tr>
+			<td colspan="3" style="text-align: right; font-weight: bold;">Due Now</td>
+			<td style="text-align: right; font-weight: bold;">R <?php echo $membership['price'];?></td>
+		</tr>
+	<?php elseif ( $pay_now !== false ) :?>
+		<tr>
+			<td colspan="3" style="text-align: right; font-weight: bold;">Due Now</td>
+			<td style="text-align: right; font-weight: bold;">R <?php echo $pay_now;?></td>
+		</tr>
+		<tr>
+			<td colspan="3" style="text-align: right; font-weight: bold;">Future Recurring Amount</td>
+			<td style="text-align: right; font-weight: bold;">R <?php echo $membership['price'];?></td>
+		</tr>
+	<?php else :?>
+		<tr>
+			<td colspan="3" style="text-align: right; font-weight: bold;">Recurring Amount</td>
+			<td style="text-align: right; font-weight: bold;">R <?php echo $membership['price'];?></td>
+		</tr>
+	<?php endif;?>
 </table>

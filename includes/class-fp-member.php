@@ -34,6 +34,16 @@ class FP_Member {
 
 		add_action( 'add_sessions_hook', __CLASS__ . '::add_sessions' );
 
+		add_action( 'init', array( $this, 'validate_query' ) );
+
+	}
+
+	public function validate_query(){
+
+		if ( isset( $_GET['post_type'] ) && $_GET['post_type'] == 'fp_member' && ! isset( $_GET['user_id'] ) ) :
+			wp_redirect( get_admin_url( null, 'users.php' ) );
+		endif;
+
 	}
 
 	/**
@@ -47,24 +57,24 @@ class FP_Member {
 		register_post_type( 'fp_member',
 			array(
 				'labels'             => array(
-					'name'                  => __( 'Members', 'fitpress' ),
-					'singular_name'         => __( 'Member', 'fitpress' ),
-					'menu_name'             => _x( 'Members', 'Admin menu name', 'fitpress' ),
-					'add_new'               => __( 'Add Member', 'fitpress' ),
-					'add_new_item'          => __( 'Add New Member', 'fitpress' ),
+					'name'                  => __( 'Memberships', 'fitpress' ),
+					'singular_name'         => __( 'Membership', 'fitpress' ),
+					'menu_name'             => _x( 'Memberships', 'Admin menu name', 'fitpress' ),
+					'add_new'               => __( 'Add Membership', 'fitpress' ),
+					'add_new_item'          => __( 'Add New Membership', 'fitpress' ),
 					'edit'                  => __( 'Edit', 'fitpress' ),
-					'edit_item'             => __( 'Edit Member', 'fitpress' ),
-					'new_item'              => __( 'New Member', 'fitpress' ),
-					'view'                  => __( 'View Member', 'fitpress' ),
-					'view_item'             => __( 'View Member', 'fitpress' ),
-					'search_items'          => __( 'Search Members', 'fitpress' ),
+					'edit_item'             => __( 'Edit Membership', 'fitpress' ),
+					'new_item'              => __( 'New Membership', 'fitpress' ),
+					'view'                  => __( 'View Membership', 'fitpress' ),
+					'view_item'             => __( 'View Membership', 'fitpress' ),
+					'search_items'          => __( 'Search Memberships', 'fitpress' ),
 					'not_found'             => __( 'No members found', 'fitpress' ),
 					'not_found_in_trash'    => __( 'No members found in trash', 'fitpress' ),
-					'parent'                => __( 'Parent Member', 'fitpress' ),
-					'featured_image'        => __( 'Member Image', 'fitpress' ),
-					'set_featured_image'    => __( 'Set member image', 'fitpress' ),
-					'remove_featured_image' => __( 'Remove member image', 'fitpress' ),
-					'use_featured_image'    => __( 'Use as member image', 'fitpress' ),
+					'parent'                => __( 'Parent Membership', 'fitpress' ),
+					'featured_image'        => __( 'Membership Image', 'fitpress' ),
+					'set_featured_image'    => __( 'Set membership image', 'fitpress' ),
+					'remove_featured_image' => __( 'Remove membership image', 'fitpress' ),
+					'use_featured_image'    => __( 'Use as membership image', 'fitpress' ),
 				),
 				'description'         => __( 'This is where you can add new members to your site.', 'fitpress' ),
 				'public'              => true,
@@ -76,8 +86,8 @@ class FP_Member {
 				'query_var'           => false,
 				'has_archive'         => false,
 				'show_in_nav_menus'   => false,
-				'show_in_menu'        => true,
-				'supports'            => array( 'title' ),
+				'show_in_menu'        => false,
+				'supports'            => false,
 			)
 		);
 	}
@@ -98,9 +108,18 @@ class FP_Member {
 		add_meta_box(
 			'member-data',
 			__( 'Member Information', 'fitpress' ),
-			array( $this, 'render_session_metabox' ),
+			array( $this, 'render_member_metabox' ),
 			'fp_member',
 			'advanced',
+			'default'
+		);
+
+		add_meta_box(
+			'member-actions',
+			__( 'Member Actions', 'fitpress' ),
+			array( $this, 'render_actions_metabox' ),
+			'fp_member',
+			'side',
 			'default'
 		);
 
@@ -109,68 +128,130 @@ class FP_Member {
 	/**
 	 * Renders the meta box.
 	 */
-	public function render_session_metabox( $post ) {
+	public function render_member_metabox( $post ) {
 		// Add nonce for security and authentication.
 		wp_nonce_field( FP_PLUGIN_FILE, 'session_nonce' );
 
-		$start_time = get_post_meta( $post->ID, "_fp_start_time", true );
-		$date = ($start_time) ? date( 'l, j F Y', $start_time ) : date( 'l, j F Y' );
-		$end_time = get_post_meta( $post->ID, "_fp_end_time", true );
-		$class_id = get_post_meta( $post->ID, "_fp_class_id", true );
+		$packages = FP_Membership::get_memberships( true );
 
-		$args = array(
-			'post_type'  => 'fp_class',
-			'orderby' => 'post_title',
-			'order' => 'ASC'
-		);
+		$user_id = get_post_meta( $post->ID, '_fp_user_id', true );
 
-		$classes = new WP_Query( $args );
+		$user_id = $user_id ? $user_id : $_GET['user_id'];?>
 
-		$bookings = FP_Booking::get_booked_sessions( array( 'session_id' => $post->ID ) );
+		<input type="hidden" name="user_id" value="<?php echo $user_id;?>" />
+
+		<?php if ( $packages ) :
+
+			// get existing user id
+
+			$package_id = get_post_meta( $post->ID, '_fp_package_id', true );
+
+			$user = get_userdata( $user_id );
+			?>
+
+			<p>
+				<label for="package_id">Package</label>
+				<select name="package_id" id="package_id">
+				<?php foreach( $packages as $id => $package):?>
+					<option value="<?php echo $id;?>" <?php echo selected( $id, ($package_id) ? $package_id : '' );?>><?php echo $package;?></option>
+				<?php endforeach;?>
+				</select>
+			</p>
+
+			<?php if ( $package_id ) :?>
+
+				<?php
+				$credits = get_post_meta( $post->ID, '_fp_credits', true );
+				$membership_start_date = date( 'j F Y', get_post_meta( $post->ID, '_fp_membership_start_date', true ) );
+				$expiration_date = get_post_meta( $post->ID, '_fp_expiration_date', true );
+				$renewal_date = get_post_meta( $post->ID, '_fp_renewal_date', true );
+				?>
+
+				<p>
+					<label for="credits">Credits</label>
+					<input type="text" name="credits" value="<?php echo ( $credits ) ? $credits : ''; ?>" />
+				</p>
+
+				<p>
+					<label for="membership_start_date">Start Date</label>
+					<input type="text" name="membership_start_date" value="<?php echo ( $membership_start_date ) ? $membership_start_date : ''; ?>" />
+				</p>
+
+				<p>
+					<label for="expiration_date">Expiration Date</label>
+					<?php if ( $expiration_date && 'N/A' != $expiration_date ) :?>
+						<input type="text" name="expiration_date" value="<?php echo ( $expiration_date ) ? date( 'j F Y', $expiration_date ) : ''; ?>" />
+					<?php else : ?>
+						<input type="text" name="expiration_date" value="N/A" />
+					<?php endif;?>
+				</p>
+
+				<?php do_action( 'fitpress_after_membership_fields', $post->ID, $user_id );?>
+
+			<?php endif;?>
+
+			<p>
+				<label for="username"><?php _e( 'Username', 'fitpress' ); ?></label>
+				<input type="text" class="input-text" name="username" id="username" value="<?php echo esc_attr( isset( $user->user_login ) ? $user->user_login : '' ); ?>" disabled="disabled" />
+			</p>
+
+			<p>
+				<label for="account_first_name"><?php _e( 'First name', 'fitpress' ); ?></label>
+				<input type="text" class="input-text" name="account_first_name" id="account_first_name" value="<?php echo esc_attr( isset( $user->first_name ) ? $user->first_name : '' ); ?>" />
+			</p>
+
+			<p>
+				<label for="account_last_name"><?php _e( 'Last name', 'fitpress' ); ?></label>
+				<input type="text" class="input-text" name="account_last_name" id="account_last_name" value="<?php echo esc_attr( isset( $user->last_name ) ? $user->last_name : '' ); ?>" />
+			</p>
+
+			<p>
+				<label for="account_email"><?php _e( 'Email address', 'fitpress' ); ?></label>
+				<input type="email" class="input-text" name="account_email" id="account_email" value="<?php echo esc_attr( isset( $user->user_email ) ? $user->user_email : '' ); ?>" />
+			</p>
+
+			<p>
+				<label for="contact_number"><?php _e( 'Contact Number', 'fitpress' ); ?></label>
+				<input type="tel" class="input-text" name="contact_number" id="contact_number" value="<?php echo esc_attr( isset( $user->contact_number ) ? $user->contact_number : '' ); ?>" />
+			</p>
+
+			<p>
+				<label for="emergency_contact_name"><?php _e( 'Emergency Contact Name', 'fitpress' ); ?></label>
+				<input type="text" class="input-text" name="emergency_contact_name" id="emergency_contact_name" value="<?php echo esc_attr( isset( $user->emergency_contact_name ) ? $user->emergency_contact_name : '' ); ?>" />
+			</p>
+
+			<p>
+				<label for="emergency_contact_number"><?php _e( 'Emergency Contact Number', 'fitpress' ); ?></label>
+				<input type="text" class="input-text" name="emergency_contact_number" id="emergency_contact_number" value="<?php echo esc_attr( isset( $user->emergency_contact_number ) ? $user->emergency_contact_number : '' ); ?>" />
+			</p>
+
+		<?php
+		endif;
+	}
+
+	public function render_actions_metabox( $post ){
+
+		$user_id = get_post_meta( $post->ID, '_fp_user_id', true );
+
+		$user_id = $user_id ? $user_id : $_GET['user_id'];
+
+		$package_id = get_post_meta( $post->ID, '_fp_package_id', true );
 
 		?>
-		<p>
-			<label for="class"></label>
-			<select name="class_id">
-			<?php foreach( $classes->posts as $class):?>
-				<option value="<?php echo $class->ID;?>" <?php selected($class->ID, $class_id);?>><?php echo $class->post_title;?></option>
-			<?php endforeach;?>
-			</select>
-		</p>
-		<p>
-			<label for="date">Date</label>
-			<input type="text" name="date" value="<?php echo ( $date ) ? $date : ''; ?>" />
-		</p>
-		<p>
-			<label for="start-time">Start Time</label>
-			<input placeholder="00:00" name="start_time" type="text" value="<?php echo ( $start_time ) ? date( 'H:i', $start_time ) : ''; ?>" class="small-text">
-		</p>
-		<p>
-			<label for="end-time">End Time</label>
-			<input placeholder="00:00" name="end_time" type="text" value="<?php echo ( $end_time ) ? date( 'H:i', $end_time ) : ''; ?>" class="small-text">
-		</p>
-		<h3>Members Booked</h3>
-		<?php if( !empty( $bookings ) ):?>
 
-			<ol>
-				<?php foreach( $bookings as $booking ):?>
-				<li>
-					<a href="<?php echo get_edit_user_link( $booking['user']->ID ); ?>"><?php echo $booking['user']->display_name;?></a>
-					<?php echo $booking['action'];?>
-				</li>
-				<?php endforeach;?>
-			</ol>
+		<?php if ( $package_id ) : ?>
 
-		<?php else:?>
-			<p>No members have booked yet.</p>
+			<p>
+				<label for="update_credits">Update Credits?</label>
+				<input type="checkbox" name="update_credits" value="1" />
+			</p>
+
 		<?php endif;?>
-		<p>
-			<label for="add_member">Add Member</label>
-			<select class="find-member-search" name="add_member[]" multiple="multiple">
-				<option></option>
-			</select>
-		</p>
+
+		<?php do_action( 'fitpress_after_membership_actions' );?>
+
 		<?php
+
 	}
 
 	/**
@@ -180,10 +261,10 @@ class FP_Member {
 	 * @param WP_Post $post    Post object.
 	 * @return null
 	 */
-	public function save_session_metabox( $post_id, $post ) {
+	public function save_session_metabox( $membership_id, $post ) {
 
 		// Check if nonce is set.
-		if ( $post->post_type != 'fp_session' ) {
+		if ( 'fp_member' != $post->post_type ) {
 			return;
 		}
 
@@ -202,285 +283,82 @@ class FP_Member {
 		}
 
 		// Check if user has permissions to save data.
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		if ( ! current_user_can( 'edit_post', $membership_id ) ) {
 			return;
 		}
 
 		// Check if not an autosave.
-		if ( wp_is_post_autosave( $post_id ) ) {
+		if ( wp_is_post_autosave( $membership_id ) ) {
 			return;
 		}
 
 		// Check if not a revision.
-		if ( wp_is_post_revision( $post_id ) ) {
+		if ( wp_is_post_revision( $membership_id ) ) {
 			return;
 		}
 
-		$start_time = get_post_meta( $post->ID, "_fp_start_time", true );
-		$end_time = get_post_meta( $post->ID, "_fp_end_time", true );
-		$class_id = get_post_meta( $post->ID, "_fp_class_id", true );
+		$member_id = $_POST['user_id'];
 
-		if(isset($_POST["start_time"]))
-			$start_time = strtotime( $_POST["date"] . ' ' . $_POST["start_time"] );
+		if ( isset( $_POST['package_id'] ) && ! empty( $_POST['package_id'] ) ) :
 
-		if(isset($_POST["end_time"]))
-			$end_time = strtotime( $_POST["date"] . ' ' . $_POST["end_time"] );
+			$old_package_id = get_post_meta( $membership_id, '_fp_package_id', true );
+			$old_credits = get_post_meta( $membership_id, '_fp_credits', true );
+			$old_membership_start_date = get_post_meta( $membership_id, '_fp_membership_start_date', true );
+			$old_expiration_date = get_post_meta( $membership_id, '_fp_expiration_date', true );
 
-		if(isset($_POST["class_id"]))
-			$class_id = $_POST["class_id"];
+			$package_id = $_POST['package_id'];
 
-		if( isset( $_POST["add_member"] ) && !empty( $_POST["add_member"] ) ):
+			$credits = isset( $_POST['credits'] ) ? $_POST['credits'] : '';
 
-			//$member_ids = array_map( 'trim', explode( ',', $_POST["add_member"] ) );
-			$member_ids = $_POST["add_member"];
+			$update_credits = isset( $_POST['update_credits'] ) ? $_POST['update_credits'] : 0;
 
-			FP_Booking::add_booking( $post_id, $member_ids );
+			if ( $old_package_id != $package_id && ( 1 == $update_credits || ! $old_package_id || 0 == $old_package_id ) ) :
 
-		endif;
-
-		$args = array(
-			'ID' => $post_id,
-			'post_title' => get_the_title( $class_id ) . ': ' . $_POST['date'] . ' (' . date( 'H:i', $start_time ) . ') - (' . date( 'H:i', $end_time ) . ')',
-		);
-
-		remove_action( 'save_post', array( $this, 'save_session_metabox' ), 10, 2 );
-		wp_update_post( $args );
-		remove_action( 'save_post', array( $this, 'save_session_metabox' ), 10, 2 );
-
-		update_post_meta( $post_id, "_fp_start_time", $start_time );
-		update_post_meta( $post_id, "_fp_end_time", $end_time );
-		update_post_meta( $post_id, "_fp_class_id", $class_id );
-
-	}
-
-	public static function add_sessions( $start_day = null, $class_id = null ){
-
-		if ( ! $start_day ) :
-			$start_day = strtotime( '+' . self::$book_ahead . ' days' );
-		endif;
-
-		$end_day = strtotime( '+1 second', strtotime( '+' . self::$book_ahead . ' days' )  );
-
-		self::$holidays = get_option( 'fitpress_holidays' );
-
-		if( $class_id ):
-
-			$args = array(
-				'post_type'  => 'fp_class',
-				'p' => $class_id
-			);
-
-		else:
-
-			$args = array(
-				'post_type'  => 'fp_class'
-			);
-
-		endif;
-
-		$classes = new WP_Query( $args );
-
-		if( !empty( $classes->posts ) ):
-
-			foreach( $classes->posts as $class ):
-
-				$class_id = $class->ID;
-
-				$current_day = $start_day;
-
-				while( $current_day < $end_day ):
-
-					$day_of_week = strtolower( date( 'l', $current_day  ) );
-					$short_date = date( 'j F', $current_day  );
-					$year = date( 'Y', $current_day );
-
-					date_default_timezone_set( 'UTC' );
-
-					$easter_object = new DateTime( '@' . easter_date( $year ) );
-					$easter_object->setTimezone( new DateTimeZone( wp_get_timezone_string() ) );
-
-					$easter = $easter_object->format('j F');
-
-					$easter_object->add(DateInterval::createFromDateString('+1 days'));
-					$family_day = $easter_object->format('j F');
-
-					$easter_object->add(DateInterval::createFromDateString('-3 days'));
-					$good_friday = $easter_object->format('j F');
-
-					$sunday_public_holiday = $short_date;
-
-					if ( $day_of_week == 'monday' ) :
-						$sunday_public_holiday = date( 'j F', strtotime( '-1 day', $current_day ) );
-					endif;
-
-					if(
-						!array_key_exists( $short_date, self::$holidays )
-						&& !array_key_exists( $sunday_public_holiday, self::$holidays )
-						&& $short_date != $easter
-						&& $short_date != $easter
-						&& $short_date != $family_day
-						&& $short_date != $good_friday ):
-
-						$args = array(
-							'post_type'  => 'fp_class_time',
-							'meta_query' => array(
-								array(
-									'key' => 'fp_class_id',
-									'value' => $class_id,
-									'type' => 'NUMERIC'
-								)
-							),
-							'tax_query' => array(
-								array(
-									'taxonomy' => 'fp_day',
-									'field' => 'slug',
-									'terms' => array( $day_of_week )
-								)
-							),
-						);
-
-						$class_times = new WP_Query( $args );
-
-						if( !empty($class_times->posts) )
-							self::create_session_posts( $class_id, $class_times->posts, $current_day );
-
-					endif;
-
-					// moves the counter 1 day
-					$current_day = strtotime( 'midnight tomorrow', $current_day );
-
-				endwhile;
-
-			endforeach;
-
-		endif;
-
-	}
-
-	public static function create_session_posts( $class_id, $class_times, $current_day ){
-
-		foreach( $class_times as $class_time):
-
-			$date = date( 'l, j F Y', $current_day );
-
-			$class_time_info = get_post_meta( $class_time->ID, 'fp_class_time_info', true);
-
-			if ( isset ( $class_time_info['blocks'] ) && $class_time_info['blocks'] != 'none' ):
-
-				$session_start = $class_time_info['start_time'];
-				$session_end = date( 'H:i', strtotime( $class_time_info['blocks'], strtotime( $session_start ) ) );
-
-				while ( $session_end <= $class_time_info['end_time'] ) :
-
-					$session_data = array(
-						'class_id'		=> $class_id,
-						'start_time'	=> $session_start,
-						'end_time'		=> $session_end,
-						'date'			=> $date,
-						'class_time_id'	=> $class_time->ID,
-					);
-
-					self::create_session_post( $session_data );
-
-					$session_start = date( 'H:i', strtotime( $class_time_info['blocks'], strtotime( $session_start ) ) );
-					$session_end = date( 'H:i', strtotime( $class_time_info['blocks'], strtotime( $session_end ) ) );
-
-				endwhile;
-
-			else:
-
-				$session_data = array(
-					'class_id'		=> $class_id,
-					'start_time'	=> $class_time_info['start_time'],
-					'end_time'		=> $class_time_info['end_time'],
-					'date'			=> $date,
-					'class_time_id'	=> $class_time->ID,
-				);
-
-				self::create_session_post( $session_data );
+				$credits = FP_Credit::update_member_credits( $package_id, $old_package_id, $old_credits );
 
 			endif;
 
-		endforeach;
+			if ( isset( $_POST['membership_start_date'] ) ) :
+				$membership_start_date = strtotime( $_POST['membership_start_date'] );
+			else :
+				$membership_start_date = strtotime( 'today' );
+			endif;
 
-	}
+			if ( isset( $_POST['expiration_date'] ) && $old_package_id == $package_id  ) :
+				$expiration_date = strtotime( $_POST['expiration_date'] );
+			elseif ( $old_package_id != $package_id ) :
+				$package_data = FP_Membership::get_membership( $package_id );
+				if ( 'Once Off' != $package_data[ $package_id ]['term'] ) :
+					$expiration_date = 'N/A';
+				else :
+					$expiration_date = strtotime( $package_data[ $package_id ]['expiration_date'], $membership_start_date );
+				endif;
+			endif;
 
-	public static function create_session_post( $session_data ){
+			do_action( 'fitpress_before_membership_save', array( 'membership_id' => $post->ID, 'package_id' => $package_id, 'old_package_id' => $old_package_id ) );
 
-		$fitness_session_post = array(
-			'post_title'     => get_the_title( $session_data['class_id'] ) . ': ' . $session_data['date'] . ' (' . $session_data['start_time'] . ' - ' . $session_data['end_time'] . ')',
-			'post_status'    => 'publish',
-			'ping_status'    => 'closed',
-			'comment_status' => 'closed',
-			'post_type'      => 'fp_session',
-		);
+			update_post_meta( $membership_id, '_fp_user_id', $member_id, $member_id );
+			update_post_meta( $membership_id, '_fp_package_id', $package_id, $old_package_id );
+			update_post_meta( $membership_id, '_fp_credits', $credits, $old_credits );
+			update_post_meta( $membership_id, '_fp_membership_start_date', $membership_start_date, $old_membership_start_date );
+			update_post_meta( $membership_id, '_fp_expiration_date', $expiration_date, $old_expiration_date );
 
-		remove_action( 'save_post', 'FP_Class::save_session_metabox' );
-		$fitness_session_post_id = wp_insert_post( $fitness_session_post );
-		add_action( 'save_post', 'FP_Class::save_session_metabox' );
-
-		if( $fitness_session_post_id ):;
-
-			update_post_meta( $fitness_session_post_id, '_fp_class_id', $session_data['class_id'] );
-			update_post_meta( $fitness_session_post_id, '_fp_class_time_id', $session_data['class_time_id'] );
-			update_post_meta( $fitness_session_post_id, '_fp_start_time', strtotime( $session_data['date'] . ' ' . $session_data['start_time']) );
-			update_post_meta( $fitness_session_post_id, '_fp_end_time', strtotime( $session_data['date'] . ' ' . $session_data['end_time']) );
+			do_action( 'fitpress_after_membership_save', array( 'membership_id' => $post->ID, 'package_id' => $package_id, 'old_package_id' => $old_package_id ) );
 
 		endif;
 
-	}
+		update_user_meta( $member_id, 'contact_number', $_POST['contact_number'] );
+		update_user_meta( $member_id, 'emergency_contact_name', $_POST['emergency_contact_name'] );
+		update_user_meta( $member_id, 'emergency_contact_number', $_POST['emergency_contact_number'] );
 
-	public static function get_session(){
+		$user = get_user_by( 'id', $member_id );
 
-		$args = array(
-			'post_type'  => 'fp_session',
-			'meta_query' => array(
-				array(
-					'key'    => '_fp_start_time',
-					'value'  => current_time( 'timestamp' ),
-					'compare'=> '>',
-					'type'   => 'numeric',
-				),
-			),
-			'posts_per_page' => -1,
-			'order'     => 'ASC',
-			'orderby'   => 'meta_value_num',
-			'meta_key'  => '_fp_start_time',
-		);
+		$user->first_name = $_POST['account_first_name'];
+		$user->last_name = $_POST['account_last_name'];
+		$user->user_email = $_POST['account_email'];
+		$user->display_name = $_POST['account_first_name'] . ' ' . $_POST['account_last_name'];
 
-		return new WP_Query( $args );
-
-	}
-
-	public static function get_sessions( $start_time = null, $end_time = null, $fields = 'all' ){
-
-		if( !$start_time )
-			$start_time = strtotime( 'today midnight' );
-
-		if( !$end_time )
-			$end_time = strtotime( 'tomorrow midnight', $start_time);
-
-		$args = array(
-			'post_type'  => 'fp_session',
-			'meta_query' => array(
-				array(
-					'key'    => '_fp_start_time',
-					'value'  => array(
-						$start_time,
-						$end_time
-					),
-					'compare'=> 'BETWEEN',
-					'type'   => 'numeric',
-				),
-			),
-			'posts_per_page' => -1,
-			'order'     => 'ASC',
-			'orderby'   => 'meta_value_num',
-			'meta_key'  => '_fp_start_time',
-			'fields'	=> $fields,
-		);
-
-		return new WP_Query( $args );
+		wp_update_user( $user );
 
 	}
 

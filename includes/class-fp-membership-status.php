@@ -25,7 +25,7 @@ class FP_Membership_Status {
 
     protected $status = null;
 
-    protected $member_id = null;
+    protected $membership_id = null;
 
     /*
     * Creates or returns an instance of this class.
@@ -42,16 +42,14 @@ class FP_Membership_Status {
 	/**
 	 * Hook in methods.
 	 */
-    public function __construct( $member_id = null ){
+    public function __construct( $membership_id = null ){
 
-    	if ( $member_id ) :
-    		$this->set_member_id( $member_id );
+    	if ( $membership_id ) :
+    		$this->set_membership_id( $membership_id );
     	endif;
 
-		add_action( 'fitpress_after_membership_profile_fields', array( $this, 'show_membership_statuses' ), 2 );
-
-		add_action( 'personal_options_update', array( $this, 'save_membership_status_fields' ) );
-		add_action( 'edit_user_profile_update', array( $this, 'save_membership_status_fields' ) );
+		add_action( 'fitpress_after_membership_fields', array( $this, 'show_membership_statuses' ), 2 );
+		add_action( 'fitpress_after_membership_save', array( $this, 'save_membership_status' ), 2 );
 
 	}
 
@@ -61,8 +59,8 @@ class FP_Membership_Status {
 			'active'    => 'Active',
 			'suspended' => 'Suspended',
 			'cancelled' => 'Cancelled',
+			'expired' => 'Expired',
 			'on-hold'   => 'On-hold',
-			'no-membership'   => 'No Membership',
 		);
 
 		return $statuses;
@@ -72,7 +70,7 @@ class FP_Membership_Status {
 	public function get_status( ){
 
 		if ( ! $this->status ) :
-			$this->status = get_user_meta( $this->member_id, 'fitpress_membership_status', true );
+			$this->status = get_post_meta( $this->membership_id, '_fp_membership_status', true );
 		endif;
 
 		return $this->status;
@@ -81,58 +79,55 @@ class FP_Membership_Status {
 
 	public function set_status( $status ){
 
-		update_user_meta( $this->member_id, 'fitpress_membership_status', $status, $this->get_status( ) );
+		update_post_meta( $this->membership_id, '_fp_membership_status', $status, $this->get_status( ) );
 
 		$this->status = $status;
 
 	}
 
-	public function get_member_id( ){
-		return $this->member_id;
+	public function get_membership_id( ){
+		return $this->membership_id;
 	}
 
-	public function set_member_id( $member_id ){
-		$this->member_id = $member_id;
+	public function set_membership_id( $membership_id ){
+		$this->membership_id = $membership_id;
 	}
 
-	function show_membership_statuses( $user_id ) {
+	function show_membership_statuses( $membership_id ) {
 
-		$this->set_member_id( $user_id );
+		$this->set_membership_id( $membership_id );
 		$this->get_status( );
-
-		if ( ! $this->status ) :
-			$this->set_status( 'no-membership' );
-		endif;
 
 		?>
 
-		<tr>
-		<th><label for="membership_status">Membership Status</label></th>
-
-		<td>
+		<p>
+			<label for="membership_status">Membership Status</label>
 			<select name="membership_status" id="membership_status">
 			<?php foreach( $this->get_statuses() as $key => $status ):?>
 				<option value="<?php echo $key;?>" <?php echo selected( $key, $this->status );?>><?php echo $status;?></option>
 			<?php endforeach;?>
 			</select>
-		</td>
-		</tr>
+		</p>
 
 	<?php
 
 	}
 
-	function save_membership_status_fields( $member_id ) {
+	function save_membership_status( $membership ) {
 
-		if ( ! current_user_can( 'edit_user', $member_id ) ) :
+		if ( ! current_user_can( 'edit_user', $membership['membership_id'] ) ) :
 			return false;
 		endif;
 
+		$this->set_membership_id( $membership['membership_id'] );
+
 		if ( isset( $_POST['membership_status'] ) ) :
 
-			$this->set_member_id( $member_id );
-
 			$this->set_status( $_POST['membership_status'] );
+
+		else :
+
+			$this->set_status( 'on-hold' );
 
 		endif;
 

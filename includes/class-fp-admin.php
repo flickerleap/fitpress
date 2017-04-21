@@ -31,7 +31,7 @@ class FP_Admin {
 		add_action( 'admin_menu', array( $this, 'fitpress_dashboard' ), 5 );
 
 		//Setting up columns.
-		add_filter( 'manage_users_columns', array( $this, 'user_column_header' ), 10, 1 );
+		add_filter( 'manage_users_columns', array( $this, 'user_column_header' ), 9, 1 );
 		add_action( 'manage_users_custom_column', array( $this, 'user_column_data' ), 15, 3 );
 		add_filter( 'manage_users_sortable_columns', array( $this, 'user_column_sortable' ) );
 		add_action( 'pre_get_users', array( $this, 'sort_by_membership' ) );
@@ -356,7 +356,9 @@ class FP_Admin {
 
 		$column['membership'] = __( 'Membership', 'fitpress' );
 
-		$column['membership_status'] = __( 'Membership Status', 'fitpress' );
+		$column['membership_status'] = __( 'Status', 'fitpress' );
+
+		$column['expiration_date'] = __( 'Expiration Date', 'fitpress' );
 
 		return $column;
 
@@ -369,9 +371,13 @@ class FP_Admin {
 		endif;
 
 		if ( 'membership_status' == $column_name ) :
-			$membership_status = new FP_Membership_Status();
-			$membership_status->set_member_id( $user_id );
-			return $membership_status->get_status( );
+			$membership = FP_Membership::get_user_membership( $user_id );
+			$membership_status = new FP_Membership_Status( $membership['membership_id'] );
+			return '<span class="pill pill-' . $membership_status->get_status( ) . '">' . $membership_status->get_status( ) . '</span>';
+		endif;
+
+		if ( 'expiration_date' == $column_name ) :
+			return $this->get_expiration_date( $user_id );
 		endif;
 
 		return $value;
@@ -420,22 +426,32 @@ class FP_Admin {
 
 	public function user_column_sortable( $columns ) {
 
-		$columns['membership'] = 'membership';
-		$columns['membership_status'] = 'membership_status';
-
 		return $columns;
 
 	}
 
 	public function get_membership( $user_id ) {
-		$membership_id = get_user_meta( $user_id, 'fitpress_membership_id', true );
+		$membership = FP_Membership::get_user_membership( $user_id );
 
-		if ( ! $membership_id ) :
-			return 'None';
+		if ( ! $membership ) :
+			return '<a href="' . get_admin_url( null, 'post-new.php?post_type=fp_member&user_id=' . $user_id ) . '" class="button button-primary">Add</a>';
 		else :
-			$membership = FP_Membership::get_membership( array( $membership_id ) );
-			return $membership[ $membership_id ]['name'];
+			return '<a href="' . get_admin_url( null, 'post.php?post=' . $membership['membership_id'] . '&action=edit' ) . '" class="button button-primary">Edit</a> <span class="pill">' . $membership['name'] . '</span>';
 		endif;
+	}
+
+	public function get_expiration_date( $user_id ) {
+		$membership = FP_Membership::get_user_membership( $user_id );
+
+		$expiration_date = get_post_meta( $membership['membership_id'], '_fp_expiration_date', true );
+
+		if ( $expiration_date && $expiration_date != 'N/A' ) :
+
+			return date( 'j F Y', intval( $expiration_date ) );
+
+		endif;
+
+		return '';
 	}
 }
 

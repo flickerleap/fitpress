@@ -30,7 +30,7 @@ if ( ! class_exists( 'FitPress' ) ) :
 		/**
 		 * @var string
 		 */
-		public $version = '1.0';
+		public $version = '1.1';
 
 		public $query = '';
 
@@ -94,6 +94,8 @@ if ( ! class_exists( 'FitPress' ) ) :
 
 			register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
 			register_activation_hook( __FILE__, array( 'FP_Install', 'install' ) );
+
+			add_action( 'init', array( 'FP_Install', 'maybe_update' ) );
 
 			add_action( 'after_setup_theme', array( $this, 'setup_environment' ) );
 

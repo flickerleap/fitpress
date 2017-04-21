@@ -36,6 +36,8 @@ class FP_Account {
 		add_action( 'wp_loaded', array( $this, 'process_lost_password' ), 20 );
 		add_action( 'wp_loaded', array( $this, 'process_reset_password' ), 20 );
 
+		add_action( 'template_redirect', array( $this, 'update_membership' ) );
+
 		if ( ! is_admin() ) :
 			add_filter( 'query_vars', array( $this, 'add_query_vars'), 0 );
 			add_action( 'parse_request', array( $this, 'parse_request'), 0 );
@@ -159,7 +161,7 @@ class FP_Account {
 
 			} elseif ( isset( $wp->query_vars['membership'] ) ) {
 
-				$return .= self::membership();
+				$return .= self::membership( );
 
 			} else {
 
@@ -194,10 +196,19 @@ class FP_Account {
 	 */
 	private static function membership( ) {
 
+		$packages = FP_Membership::get_memberships( );
+
 		$membership = FP_Membership::get_user_membership( get_current_user_id() );
+
+		$membership_status = new FP_Membership_Status( $membership['membership_id'] );
+
+		$membership['status'] = $membership_status->get_status();
+		$membership['renewal_date'] = get_post_meta( $membership[ 'membership_id' ], '_fp_renewal_date', true );
+		$membership['expiration'] = get_post_meta( $membership[ 'membership_id' ], '_fp_expiration_date', true );
 
 		return fp_get_template_html( 'account/membership.php', array(
 			'membership' => $membership,
+			'packages' => $packages,
 			'member_id' => get_current_user_id(),
 		) );
 	}
@@ -526,6 +537,32 @@ class FP_Account {
 				exit;
 			}
 		}
+	}
+
+
+	/**
+	 * Save the password/account details and redirect back to the my account page.
+	 */
+	public static function update_membership() {
+
+		if ( 'POST' !== strtoupper( $_SERVER[ 'REQUEST_METHOD' ] ) ) {
+			return;
+		}
+
+		if ( empty( $_POST[ 'action' ] ) || 'update_membership' !== $_POST[ 'action' ] || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'update_membership' ) ) {
+			return;
+		}
+
+		$member_id = get_current_user_id();
+
+		$membership = FP_Membership::get_user_membership( $member_id );
+
+		$membership_id = $membership['membership_id'];
+
+		$package_id = sanitize_text_field( $_POST[ 'package_id' ] );
+
+		update_post_meta( $membership_id, '_fp_package_id', $package_id );
+
 	}
 
 	/**
