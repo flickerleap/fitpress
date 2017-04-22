@@ -119,15 +119,15 @@ class FP_Booking {
 
 		$url = remove_query_arg( array( 'message' ) );
 
-		$user_id = get_current_user_id( );
-
-		$credits = get_user_meta( $user_id, 'fitpress_credits', true );
+		$user_id = get_current_user_id();
+		$membership = FP_Membership::get_user_membership( $user_id );
+		$credits = get_post_meta( $membership['membership_id'], '_fp_credits', true );
 
 		$session = get_post( $session_id );
-		$session->start_time = get_post_meta( $session->ID, '_fp_start_time', true);
-		$session->end_time = get_post_meta( $session->ID, '_fp_end_time', true);
-		$session_class_id = get_post_meta( $session->ID, '_fp_class_id', true);
-		$class_info = get_post_meta( $session_class_id, 'fp_class_info', true);
+		$session->start_time = get_post_meta( $session->ID, '_fp_start_time', true );
+		$session->end_time = get_post_meta( $session->ID, '_fp_end_time', true );
+		$session_class_id = get_post_meta( $session->ID, '_fp_class_id', true );
+		$class_info = get_post_meta( $session_class_id, 'fp_class_info', true );
 		$session->class_limit = $class_info['limit'];
 
 		$args = array(
@@ -135,10 +135,10 @@ class FP_Booking {
 			'meta_query' => array(
 				array(
 					'key'    => '_fp_session_id',
-					'value'  => $session->ID
-				)
+					'value'  => $session->ID,
+				),
 			),
-			'posts_per_page' => -1
+			'posts_per_page' => -1,
 		);
 
 		$bookings = new WP_Query( $args );
@@ -202,10 +202,11 @@ class FP_Booking {
 
 	public static function bookable_sesssion( ){
 
-		$user_id = get_current_user_id();
 		$credits = 0;
 
-		$credits = get_user_meta( $user_id, 'fitpress_credits', true );
+		$user_id = get_current_user_id();
+		$membership = FP_Membership::get_user_membership( $user_id );
+		$credits = get_post_meta( $membership['membership_id'], '_fp_credits', true );
 
 		$raw_sessions = FP_Session::get_session();
 

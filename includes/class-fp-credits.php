@@ -111,11 +111,12 @@ class FP_Credit {
 
 	public static function modify_credits( $change, $member_id ){
 
-		$current_credits = get_user_meta( $member_id, 'fitpress_credits', true );
+		$membership = FP_Membership::get_user_membership( $member_id );
+		$current_credits = get_post_meta( $membership['membership_id'], '_fp_credits', true );
 
 		$new_credits = $current_credits + $change;
 
-		update_user_meta( $member_id, 'fitpress_credits', $new_credits, $current_credits );
+		update_post_meta( $membership['membership_id'], '_fp_credits', $new_credits, $current_credits );
 
 	}
 
