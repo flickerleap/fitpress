@@ -117,6 +117,7 @@ class FP_Membership {
 					'first_name',
 					'last_name',
 					'package',
+					'status',
 					'expiration_date',
 					'renewal_date',
 				);
@@ -125,7 +126,8 @@ class FP_Membership {
 
 					$data = array();
 
-					$user = get_user_by( 'ID', $member->ID );
+					$user_id = get_post_meta( $member->ID, '_fp_user_id', true );
+					$user = get_user_by( 'ID', $user_id );
 
 					$data['member_id'] = $member->ID;
 					$data['user_email'] = $user->user_email;
@@ -136,9 +138,12 @@ class FP_Membership {
 
 						$package_id = get_post_meta( $member->ID, '_fp_package_id', true );
 
+						$membership_status = new FP_Membership_Status( $member->ID );
+
+						$data['status'] = $membership_status->get_status();
 						$data['membership'] = $memberships[ $membership_id ]['name'];
-						$data['expiration_date'] = get_post_meta( $member->ID, '_fp_expiration_date', true );
-						$data['renewal_date'] = get_post_meta( $member->ID, '_fp_renewal_date', true );
+						$data['expiration_date'] = date( 'j F Y', get_post_meta( $member->ID, '_fp_expiration_date', true ) );
+						$data['renewal_date'] = date( 'j F Y', get_post_meta( $member->ID, '_fp_renewal_date', true ) );
 
 					endif;
 
@@ -599,6 +604,7 @@ class FP_Membership {
 					),
 					'search' => $search,
 					'fields' => $fields,
+					'posts_per_page' => '-1',
 				);
 
 			else :
@@ -612,6 +618,7 @@ class FP_Membership {
 						),
 					),
 					'fields' => $fields,
+					'posts_per_page' => '-1',
 				);
 
 			endif;
@@ -630,6 +637,7 @@ class FP_Membership {
 					),
 					'search' => $search,
 					'fields' => $fields,
+					'posts_per_page' => '-1',
 				);
 
 			else :
@@ -643,6 +651,7 @@ class FP_Membership {
 						),
 					),
 					'fields' => $fields,
+					'posts_per_page' => '-1',
 				);
 
 			endif;
