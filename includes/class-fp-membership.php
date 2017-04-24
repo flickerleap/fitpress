@@ -102,39 +102,43 @@ class FP_Membership {
 	*/
 	public static function maybe_send_member_list( $force = false, $none_members = false ) {
 
-		if( date('j') == 1 || $force ):
+		if ( 1 == date( 'j' ) || $force ) :
 
 			$members = FP_Membership::get_members( 'all', $none_members );
 
 			$memberships = FP_Membership::get_memberships( );
 
 			// Check for results
-			if (!empty($members)):
+			if ( ! empty( $members ) ) :
 
 				$lines[] = array(
-					'ID',
+					'member_id',
 					'user_email',
 					'first_name',
 					'last_name',
-					'membership',
-					'price',
+					'package',
+					'expiration_date',
+					'renewal_date',
 				);
 
 				foreach ( $members as $member ):
 
 					$data = array();
 
-					$data['user_id'] = $member->ID;
-					$data['user_email'] = $member->user_email;
-					$data['first_name'] = $member->first_name;
-					$data['last_name'] = $member->last_name;
+					$user = get_user_by( 'ID', $member->ID );
 
-					if( !$none_members ):
+					$data['member_id'] = $member->ID;
+					$data['user_email'] = $user->user_email;
+					$data['first_name'] = $user->first_name;
+					$data['last_name'] = $user->last_name;
 
-						$membership_id = get_user_meta( $member->ID, 'fitpress_membership_id', true );
+					if( ! $none_members ):
+
+						$package_id = get_post_meta( $member->ID, '_fp_package_id', true );
 
 						$data['membership'] = $memberships[ $membership_id ]['name'];
-						$data['membership_price'] = $memberships[ $membership_id ]['price'];
+						$data['expiration_date'] = get_post_meta( $member->ID, '_fp_expiration_date', true );
+						$data['renewal_date'] = get_post_meta( $member->ID, '_fp_renewal_date', true );
 
 					endif;
 
@@ -144,20 +148,21 @@ class FP_Membership {
 
 				$subject = ( $none_members ) ? 'Inactive Members' : 'Active Members';
 
-				$path = FP_PLUGIN_DIR . 'export/' . date('Y-m-d') . ' ' . $subject . '.csv';
+				$path = FP_PLUGIN_DIR . 'export/' . date( 'Y-m-d' ) . ' ' . $subject . '.csv';
 
-				$fh = fopen( $path, 'w') or die('Cannot open the file: ' . $path);
+				$fh = fopen( $path, 'w' ) or die( 'Cannot open the file: ' . $path );
 
-				foreach($lines as $line)
-					fputcsv($fh, $line, ',');
+				foreach ( $lines as $line ) :
+					fputcsv( $fh, $line, ',' );
+				endforeach;
 
-				fclose($fh);
+				fclose( $fh );
 
 				$attachments = array( $path );
 
-				$FP_Email = new FP_Email( );
+				$fp_email = new FP_Email();
 
-				$FP_Email->send_email( get_bloginfo( 'admin_email' ), $subject, array( 'header' => $subject, 'message' => 'Here\'s the member list :)' ), $attachments );
+				$fp_email->send_email( get_bloginfo( 'admin_email' ), $subject, array( 'header' => $subject, 'message' => 'Here\'s the member list :)' ), $attachments );
 
 			endif;
 
