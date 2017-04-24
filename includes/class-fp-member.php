@@ -308,7 +308,7 @@ class FP_Member {
 
 			$package_id = $_POST['package_id'];
 
-			$credits = isset( $_POST['credits'] ) ? $_POST['credits'] : '';
+			$credits = isset( $_POST['credits'] ) ? $_POST['credits'] : '0';
 
 			$update_credits = isset( $_POST['update_credits'] ) ? $_POST['update_credits'] : 0;
 
