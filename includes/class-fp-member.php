@@ -325,7 +325,6 @@ class FP_Member {
 			endif;
 
 			if ( isset( $_POST['expiration_date'] ) && $old_package_id == $package_id  ) :
-				exit;
 				$expiration_date = strtotime( $_POST['expiration_date'] );
 			elseif ( $old_package_id != $package_id ) :
 				$package_data = FP_Membership::get_membership( $package_id );
