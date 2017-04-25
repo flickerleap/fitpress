@@ -325,13 +325,14 @@ class FP_Member {
 			endif;
 
 			if ( isset( $_POST['expiration_date'] ) && $old_package_id == $package_id  ) :
+				exit;
 				$expiration_date = strtotime( $_POST['expiration_date'] );
 			elseif ( $old_package_id != $package_id ) :
 				$package_data = FP_Membership::get_membership( $package_id );
 				if ( 'Once Off' != $package_data[ $package_id ]['term'] ) :
 					$expiration_date = 'N/A';
 				else :
-					$expiration_date = strtotime( $package_data[ $package_id ]['expiration_date'], $membership_start_date );
+					$expiration_date = strtotime( $package_data[ $package_id ]['expiration_date'] );
 				endif;
 			endif;
 
