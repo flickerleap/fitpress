@@ -140,7 +140,7 @@ class FP_Membership {
 
 						$membership_status = new FP_Membership_Status( $member->ID );
 
-						$data['package'] = $memberships[ $membership_id ]['name'];
+						$data['package'] = $memberships[ $package_id ]['name'];
 						$data['status'] = $membership_status->get_status();
 						$data['expiration_date'] = date( 'j F Y', get_post_meta( $member->ID, '_fp_expiration_date', true ) );
 						$data['renewal_date'] = date( 'j F Y', get_post_meta( $member->ID, '_fp_renewal_date', true ) );
