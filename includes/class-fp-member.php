@@ -32,9 +32,63 @@ class FP_Member {
 			add_action( 'load-post-new.php', array( $this, 'init_metabox' ) );
 		}
 
+		if ( ! wp_get_schedule( 'maybe_expire_membership_hook' ) ) :
+			$start = strtotime( 'tomorrow' );
+			wp_schedule_event( $start, 'daily', 'maybe_expire_membership_hook' );
+		endif;
+
+		add_action( 'maybe_expire_memberships_hook', __CLASS__ . '::maybe_expire_memberships' );
+
 		add_action( 'add_sessions_hook', __CLASS__ . '::add_sessions' );
 
 		add_action( 'init', array( $this, 'validate_query' ) );
+
+	}
+
+	/**
+	 * Expire memberships
+	 *
+	 * Check to see if memberships have expired and change their membership.
+	 */
+	public static function maybe_expire_memberships() {
+
+		$args = array(
+			'post_type' => 'fp_member',
+			'meta_query' => array(
+				'relation' => 'AND',
+				array(
+					'key' => '_fp_membership_status',
+					'value' => 'active',
+					'compare' => '=',
+				),
+				array(
+					'relation' => 'OR',
+					array(
+						'key' => '_fp_expiration_date',
+						'value' => array( strtotime( 'today midnight' ), strtotime( 'tomorrow midnight' ) ),
+						'compare' => 'BETWEEN',
+					),
+					array(
+						'key' => '_fp_expiration_date',
+						'value' => strtotime( 'today midnight' ),
+						'compare' => '=',
+					),
+				),
+			),
+			'posts_per_page' => '-1',
+		);
+
+		$memberships = new WP_Query( $args );
+
+		if ( $memberships->found_posts ) :
+			foreach ( $memberships->posts as $membership ) :
+				the_post();
+				$membership_id = $membership->ID;
+				update_post_meta( $membership_id, '_fp_membership_status', 'expired' );
+			endforeach;
+		endif;
+
+		do_action( 'fitpress_expire_memberships' );
 
 	}
 
