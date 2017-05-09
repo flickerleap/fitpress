@@ -48,9 +48,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 									<!-- Body -->
 									<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_body">
 										<tr>
-											<td valign="top" id="body_content" style="padding:10px;">
+											<td valign="top" id="body_content">
 												<!-- Content -->
-												<?php echo $message;?>
+												<div  style="padding:10px;">
+													<?php echo $message;?>
+												</div>
 												<!-- End Content -->
 											</td>
 										</tr>

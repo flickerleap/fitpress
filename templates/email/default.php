@@ -50,7 +50,9 @@ if ( ! defined( 'ABSPATH' ) ) {
                                     	<tr>
                                             <td valign="top" id="body_content" style="padding:10px;">
                                                 <!-- Content -->
-                                                <?php echo $message;?>
+												<div  style="padding:10px;">
+													<?php echo $message;?>
+												</div>
                                                 <!-- End Content -->
                                             </td>
                                         </tr>
