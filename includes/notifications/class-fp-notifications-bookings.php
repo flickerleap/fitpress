@@ -31,7 +31,7 @@ class FP_Booking_Notification {
 
 	public function send_membership_bookings( $notifications ) {
 
-		if ( date('g') == 3 ) :
+		if ( current_time('g') == 3 ) :
 
 			$session_bookings = FP_Booking::get_day_bookings();
 
@@ -75,7 +75,7 @@ class FP_Booking_Notification {
 
 		endif;
 
-		write_log( 'Run bookings mail. ' . date('g') );
+		write_log( 'Run bookings mail. ' . current_time('g') );
 
 		return $notifications;
 
