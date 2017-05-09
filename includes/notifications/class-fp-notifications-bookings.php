@@ -25,11 +25,11 @@ class FP_Booking_Notification {
 	 */
 	public function __construct() {
 
-		add_filter( 'fitpress_hourly_notifications', array( $this, 'send_daily_bookings' ) );
+		add_filter( 'fitpress_hourly_notifications', array( $this, 'send_membership_bookings' ) );
 
 	}
 
-	public function membership_bookings( $notifications ) {
+	public function send_membership_bookings( $notifications ) {
 
 		if ( date('g') == 3 ) :
 
