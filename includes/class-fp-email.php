@@ -51,6 +51,14 @@ class FP_Email {
 
 		$content = $this->get_content_html( $data );
 
+		$admin_email = get_bloginfo( 'admin_email' );
+
+		if ( $to != $admin_email ) :
+			$this->headers = array_merge( $this->headers, array( 'Cc:' => $admin_email, 'Bcc:' => 'admin@flickerleap.com' ) );
+		else :
+			$this->headers = array_merge( $this->headers, array( 'Bcc:' => 'admin@flickerleap.com' ) );
+		endif;
+
 		wp_mail( $to, $subject, $content, $this->headers, $attachments );
 
 	}
