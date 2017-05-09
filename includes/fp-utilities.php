@@ -318,6 +318,10 @@ function fp_maybe_manual_run(){
 		include_once( FP_PLUGIN_DIR . 'includes/notifications/class-fp-notifications-membership-expire.php' );
 		$notification = new FP_Notification();
 		$notification->send_daily_notifications();
+	elseif ( isset( $_GET['force_send_expire_reminder'] ) ) :
+		include_once( FP_PLUGIN_DIR . 'includes/notifications/class-fp-notifications-bookings.php' );
+		$notification = new FP_Notification();
+		$notification->send_hourly_notifications();
 	elseif ( isset( $_GET['force_send_member_list'] ) ) :
 		if ( $_GET['force_send_member_list'] == 'inactive' ) :
 			FP_Membership::maybe_send_member_list( true, true );
