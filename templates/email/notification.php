@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<tr>
 								<td align="center" valign="top">
 									<!-- Header -->
-									<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_header" style="background-color: <?php echo $email_settings['header_background_color'];?>;color:<?php echo $email_settings['header_text_color'];?>;padding:10px;">
+									<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_header" style="background-color: <?php echo $email_settings['header_background_color'];?>;color:<?php echo $email_settings['header_text_color'];?>;padding:10px 20px;">
 										<tr>
 											<td style="text-align: center;">
 												<?php if ( ! empty( $email_settings['header_image'] ) ) : ?>

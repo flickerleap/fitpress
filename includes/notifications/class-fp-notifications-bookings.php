@@ -75,8 +75,6 @@ class FP_Booking_Notification {
 
 		endif;
 
-		write_log( 'Run bookings mail. ' . current_time('g') );
-
 		return $notifications;
 
 	}
