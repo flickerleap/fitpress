@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * FP_Notification Class.
  */
-class FP_Membership_Notification {
+class FP_Booking_Notification {
 
 	/**
 	 * Hook in methods.
@@ -75,4 +75,4 @@ class FP_Membership_Notification {
 	}
 }
 
-new FP_Membership_Notification();
+new FP_Booking_Notification();
