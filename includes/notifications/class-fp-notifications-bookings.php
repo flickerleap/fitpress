@@ -58,15 +58,20 @@ class FP_Booking_Notification {
 					endif;
 				endforeach;
 
-				$notifications[] = array(
-					'template' => 'email/notification.php',
-					'email' => get_bloginfo( 'admin_email' ),
-					'subject' => 'Today\'s Bookings',
-					'header' => 'Today\'s Bookings',
-					'message' => $message,
-				);
+			else :
+
+				$message .= '<p>Hi,</p>';
+				$message .= '<p>There are no bookings for today.</p>';
 
 			endif;
+
+			$notifications[] = array(
+				'template' => 'email/notification.php',
+				'email' => get_bloginfo( 'admin_email' ),
+				'subject' => 'Today\'s Bookings',
+				'header' => 'Today\'s Bookings',
+				'message' => $message,
+			);
 
 		endif;
 

@@ -26,7 +26,7 @@ class FP_Notification {
 	public function __construct() {
 
 		add_action( 'fitpress_daily_cron', array( $this, 'send_daily_notifications' ) );
-		add_action( 'fitpress_hours_cron', array( $this, 'send_hourly_notifications' ) );
+		add_action( 'fitpress_hourly_cron', array( $this, 'send_hourly_notifications' ) );
 
 	}
 
