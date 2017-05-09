@@ -194,8 +194,8 @@ if ( ! class_exists( 'FitPress' ) ) :
 
 			if ( $this->is_request( 'cron' ) ) :
 
-				include_once( 'includes/notifications/class-fp-notifications-membership-expire.php' );
-				include_once( 'includes/notifications/class-fp-notifications-bookings.php' );
+				//include_once( 'includes/notifications/class-fp-notifications-membership-expire.php' );
+				//include_once( 'includes/notifications/class-fp-notifications-bookings.php' );
 
 			endif;
 

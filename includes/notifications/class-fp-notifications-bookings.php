@@ -37,11 +37,6 @@ class FP_Booking_Notification {
 
 			if ( ! empty ( $session_bookings ) ) :
 
-				$membership_id = $membership->ID;
-
-				$user_id = get_post_meta( $membership_id, '_fp_user_id', true );
-				$user = get_user_by( 'ID', $user_id );
-
 				$message = '';
 
 				$message .= '<p>Hi,</p>';
