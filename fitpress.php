@@ -178,7 +178,7 @@ if ( ! class_exists( 'FitPress' ) ) :
 			include_once( 'includes/class-fp-session.php' );
 			include_once( 'includes/class-fp-booking.php' );
 			include_once( 'includes/class-fp-email.php' );
-			include_once( 'includes/class-fp-notifications.php' );
+			//include_once( 'includes/class-fp-notifications.php' );
 
 			include_once( 'includes/class-fp-frontend.php' );
 
