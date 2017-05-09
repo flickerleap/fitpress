@@ -30,6 +30,8 @@ class FP_Email {
 
 		if ( isset( $setup['template'] ) ) :
 			$this->template_html = $setup['template'];
+		else :
+			$this->template_html = 'email/default.php';
 		endif;
 
 		if ( isset( $setup['headers'] ) ) :
@@ -55,16 +57,23 @@ class FP_Email {
 
 	function email_from( $old ) {
 
+		if ( ! isset( $this->email_settings['from_address'] ) ) {
+			$this->email_settings['from_address'] = 'info@fitpress.co.za';
+		}
+
 		return $this->email_settings['from_address'];
 
 	}
 
 	function email_from_name( $old ) {
 
+		if ( ! isset( $this->email_settings['from_name'] ) ) {
+			$this->email_settings['from_name'] = 'FitPress';
+		}
+
 		return $this->email_settings['from_name'];
 
 	}
-
 
 	/**
 	* get_content_html function.

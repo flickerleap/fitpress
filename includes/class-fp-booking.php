@@ -428,11 +428,11 @@ class FP_Booking {
 
 	}
 
-	public static function add_booking( $session_id, $member_ids ){
+	public static function add_booking( $session_id, $member_ids ) {
 
-		foreach( $member_ids as $member_id ):
+		foreach ( $member_ids as $member_id ) :
 
-			if( !self::is_booked( $session_id, $member_id ) && get_user_by('id', $member_id) ):
+			if ( ! self::is_booked( $session_id, $member_id ) && get_user_by( 'id', $member_id ) ) :
 
 				$booking_date = get_post_meta( $session_id, '_fp_start_time', true );
 
@@ -446,7 +446,7 @@ class FP_Booking {
 
 				$booking_post_id = wp_insert_post( $booking_post );
 
-				if( $booking_post_id ):
+				if ( $booking_post_id ) :
 					update_post_meta( $booking_post_id, '_fp_session_id', $session_id );
 					update_post_meta( $booking_post_id, '_fp_user_id', $member_id );
 				endif;
@@ -671,18 +671,19 @@ class FP_Booking {
 
 	}
 
-	public static function get_day_bookings( $start_time ){
+	public static function get_day_bookings( $start_time = null ) {
 
-		if( !$start_time )
+		if ( ! $start_time ) :
 			$start_time = strtotime( 'today midnight' );
+		endif;
 
 		$day_sessions = FP_Session::get_sessions( $start_time, null, 'ids' );
 
 		$day_bookings = array();
 
-		if( !empty( $day_sessions->posts ) ):
+		if ( ! empty( $day_sessions->posts ) ) :
 
-			foreach( $day_sessions->posts as $session_id ):
+			foreach ( $day_sessions->posts as $session_id ) :
 
 				$day_bookings[ get_the_title( $session_id ) ] = array();
 
@@ -693,7 +694,7 @@ class FP_Booking {
 							'key' => '_fp_session_id',
 							'value' => $session_id,
 							'type' => 'NUMERIC',
-						)
+						),
 					),
 					'posts_per_page' => -1,
 				);

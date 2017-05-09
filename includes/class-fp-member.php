@@ -32,12 +32,7 @@ class FP_Member {
 			add_action( 'load-post-new.php', array( $this, 'init_metabox' ) );
 		}
 
-		if ( ! wp_get_schedule( 'maybe_expire_membership_hook' ) ) :
-			$start = strtotime( 'tomorrow' );
-			wp_schedule_event( $start, 'daily', 'maybe_expire_membership_hook' );
-		endif;
-
-		add_action( 'maybe_expire_memberships_hook', __CLASS__ . '::maybe_expire_memberships' );
+		add_action( 'fitpress_daily_cron', __CLASS__ . '::maybe_expire_memberships', 1 );
 
 		add_action( 'add_sessions_hook', __CLASS__ . '::add_sessions' );
 
@@ -85,6 +80,7 @@ class FP_Member {
 				the_post();
 				$membership_id = $membership->ID;
 				update_post_meta( $membership_id, '_fp_membership_status', 'expired' );
+				update_post_meta( $membership_id, '_fp_credits', '0' );
 			endforeach;
 		endif;
 

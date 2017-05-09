@@ -68,24 +68,32 @@ class FP_Membership {
 
 	}
 
-	public static function find_member_callback( ){
+	public static function find_member_callback() {
 
-		$members = self::get_members( array( 'ID', 'display_name' ), false, $_REQUEST['search'] );
+		$members = self::get_members( 'ID', false, $_REQUEST['search'] );
 
 		$result = array();
 
-		if( !empty( $members ) ):
+		if ( ! empty( $members ) ) :
 
 			$result['type'] = 'found';
+
+			foreach ( $members as &$member ) :
+				$user_id = get_post_meta( $member->ID, '_fp_user_id', true );
+				$user = get_user_by( 'id', $user_id );
+				$member->user_id = $user_id;
+				$member->display_name = $user->display_name;
+			endforeach;
+			unset( $member );
 			$result['members'] = $members;
 
-		else:
+		else :
 
 			$result['type'] = 'not-found';
 
 		endif;
 
-		$result = json_encode($result);
+		$result = json_encode( $result );
 		echo $result;
 
 		die();
@@ -471,8 +479,9 @@ class FP_Membership {
 
 	public static function quick_member_add( $member_id = null, $membership_id = null ) {
 
-		if( !$member_id || !$membership_id  )
+		if ( ! $member_id || ! $membership_id  ) :
 			return;
+		endif;
 
 		$credits = FP_Credit::update_member_credits( $membership_id, 0, 0 );
 
@@ -594,12 +603,24 @@ class FP_Membership {
 
 			if ( $search ) :
 
+				$user_args = array(
+					'search' => $search,
+					'fields' => $fields,
+				);
+
+				$users = new WP_User_Query( $user_args );
+
 				$args = array(
 					'meta_query' => array(
 						array(
 							'key' => '_fp_membership_status',
 							'value' => 'active',
 							'compare' => '!=',
+						),
+						array(
+							'key' => '_fp_user_id',
+							'value' => $users,
+							'compare' => 'IN',
 						),
 					),
 					'search' => $search,
@@ -627,12 +648,24 @@ class FP_Membership {
 
 			if ( $search ) :
 
+				$user_args = array(
+					'search' => $search,
+					'fields' => $fields,
+				);
+
+				$users = new WP_User_Query( $user_args );
+
 				$args = array(
 					'meta_query' => array(
 						array(
 							'key' => '_fp_membership_status',
 							'value' => 'active',
 							'compare' => '=',
+						),
+						array(
+							'key' => '_fp_user_id',
+							'value' => $users->results,
+							'compare' => 'IN',
 						),
 					),
 					'search' => $search,
@@ -661,6 +694,8 @@ class FP_Membership {
 		$args['post_type'] = 'fp_member';
 
 		$membership_query = new WP_Query( $args );
+
+		write_log($membership_query->posts);
 
 		return $membership_query->posts;
 

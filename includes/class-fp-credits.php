@@ -23,7 +23,7 @@ class FP_Credit {
 	/**
 	 * Hook in methods.
 	 */
-    public function __construct(){
+	public function __construct(){
 
 		if( !wp_get_schedule('maybe_reset_credits_hook') ):
 			$start = strtotime( 'tomorrow' );
@@ -45,24 +45,24 @@ class FP_Credit {
 
 		if ( date( 'j' ) == $reset_date || $force ) :
 
-			$members = FP_Membership::get_members( );
+			$memberships = FP_Membership::get_members( );
 
-			$memberships = FP_Membership::get_memberships( );
+			$packages = FP_Membership::get_memberships( );
 
 			// Check for results
-			if (!empty($members)) {
+			if ( ! empty( $memberships ) ) {
 
-			    foreach ( $members as $member_id ){
-			        // get all the user's data
-			        $membership_id = get_user_meta( $member_id, 'fitpress_membership_id', true );
-			        $old_credits = get_user_meta( $member_id, 'fitpress_credits', true );
+				foreach ( $memberships as $membership ) {
+					// get all the user's data
+					$membership_id = $membership->ID;
+					$package_id = get_post_meta( $membership_id, '_fp_package_id', true );
+					$old_credits = get_post_meta( $membership_id, '_fp_credits', true );
 
-			        $credits = $memberships[ $membership_id ]['credits'];
+					$credits = $memberships[ $membership_id ]['credits'];
 
-					update_user_meta( $member_id, 'fitpress_credits', $credits, $old_credits);
+					update_post_meta( $membership_id, '_fp_credits', $credits, $old_credits );
 
-			    }
-
+				}
 			}
 
 		endif;
@@ -126,7 +126,7 @@ class FP_Credit {
  * Extension main function
  */
 function __fp_credit_main() {
-    new FP_Credit();
+	new FP_Credit();
 }
 
 // Initialize plugin when plugins are loaded

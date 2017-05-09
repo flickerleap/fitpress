@@ -68,6 +68,16 @@ class FP_Install {
 
 		add_action( 'init', array( 'FP_Install', 'flush_rewrite_rules' ) );
 
+		if ( ! wp_get_schedule( 'fitpress_daily_cron' ) ) :
+			$start = strtotime( 'tomorrow' );
+			wp_schedule_event( $start, 'daily', 'fitpress_daily_cron' );
+		endif;
+
+		if ( ! wp_get_schedule( 'fitpress_hourly_cron' ) ) :
+			$start = strtotime( 'tomorrow' );
+			wp_schedule_event( $start, 'hourly', 'fitpress_hourly_cron' );
+		endif;
+
 		if ( ! file_exists( FP_PLUGIN_DIR . 'export' ) ) :
 			mkdir( FP_PLUGIN_DIR . 'export', 0755, true );
 		endif;
@@ -141,6 +151,24 @@ class FP_Install {
 
 					endforeach;
 
+				endif;
+
+				if ( version_compare( $version, '1.2' ) ) :
+
+					if ( ! wp_get_schedule( 'fitpress_daily_cron' ) ) :
+						$start = strtotime( 'tomorrow' );
+						wp_schedule_event( $start, 'daily', 'fitpress_daily_cron' );
+					endif;
+
+				endif;
+
+				if ( version_compare( $version, '1.3' ) ) :
+
+
+					if ( ! wp_get_schedule( 'fitpress_hourly_cron' ) ) :
+						$start = strtotime( 'tomorrow' );
+						wp_schedule_event( $start, 'hourly', 'fitpress_hourly_cron' );
+					endif;
 				endif;
 
 				self::flush_rewrite_rules();

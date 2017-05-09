@@ -72,7 +72,7 @@ jQuery( document ).ready( function( $ ) {
 					members = data.members;
 
 					var members = $.map( members , function (obj) {
-						obj.id = obj.ID;
+						obj.id = obj.user_id;
 						obj.text = obj.display_name;
 
 						return obj;
