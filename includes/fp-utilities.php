@@ -314,6 +314,9 @@ function fp_maybe_manual_run(){
 		FP_Membership::quick_member_add( $_GET['member_id'], $_GET['membership_id'] );
 		$url = remove_query_arg( array( 'member_id', 'membership_id' ) );
 		wp_redirect( $url );
+	elseif ( isset( $_GET['force_send_renewal_reminder'] ) ) :
+		$membership_notification = new FP_Membership_Notification();
+		add_filter( 'init', array( $membership_notification, 'membership_expire_reminder' ) );
 	elseif( isset( $_GET['force_send_member_list'] ) ):
 		if( $_GET['force_send_member_list'] == 'inactive' )
 			FP_Membership::maybe_send_member_list(true, true);
