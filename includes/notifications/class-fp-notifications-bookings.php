@@ -75,6 +75,8 @@ class FP_Booking_Notification {
 
 		endif;
 
+		write_log('Run bookings mail.');
+
 		return $notifications;
 
 	}
