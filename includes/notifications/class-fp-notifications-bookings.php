@@ -59,7 +59,7 @@ class FP_Booking_Notification {
 				endforeach;
 
 				$notifications[] = array(
-					'template' => 'email/notifcation.php',
+					'template' => 'email/notification.php',
 					'email' => get_bloginfo( 'admin_email' ),
 					'subject' => 'Today\'s Bookings',
 					'header' => 'Today\'s Bookings',

@@ -316,8 +316,8 @@ function fp_maybe_manual_run(){
 		wp_redirect( $url );
 	elseif ( isset( $_GET['force_send_expire_reminder'] ) ) :
 		include_once( FP_PLUGIN_DIR . 'includes/notifications/class-fp-notifications-membership-expire.php' );
-		$membership_notification = new FP_Membership_Notification();
-		add_filter( 'init', array( $membership_notification, 'membership_expire_reminder' ) );
+		$notification = new FP_Notification();
+		$notification->send_daily_notifications();
 	elseif ( isset( $_GET['force_send_member_list'] ) ) :
 		if ( $_GET['force_send_member_list'] == 'inactive' ) :
 			FP_Membership::maybe_send_member_list( true, true );
