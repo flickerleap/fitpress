@@ -20,7 +20,7 @@ fp_display_flash_message();
 
 	<p class="form-row form-row-wide">
 		<label for="username"><?php _e( 'Username or email address', 'fitpress' ); ?> <span class="required">*</span></label>
-		<input type="text" class="input-text" name="username" id="username" value="<?php if ( ! empty( $_POST['username'] ) ) echo esc_attr( $_POST['username'] ); ?>" />
+		<input type="text" class="input-text" name="username" id="username" value="<?php echo ( ! empty( $_POST['username'] ) ) ? esc_attr( $_POST['username'] ) : ''; ?>" />
 	</p>
 	<p class="form-row form-row-wide">
 		<label for="password"><?php _e( 'Password', 'fitpress' ); ?> <span class="required">*</span></label>
@@ -29,7 +29,7 @@ fp_display_flash_message();
 
 	<p class="form-row">
 		<?php wp_nonce_field( 'fitpress-login' ); ?>
-		<?php if ( isset( $_GET['redirect_to'] ) && ! empty( $_GET['redirect_to'] ) || $_POST['redirect_to'] && ! empty( $_POST['redirect_to'] ) ):?>
+		<?php if ( isset( $_GET['redirect_to'] ) && ! empty( $_GET['redirect_to'] ) || isset( $_POST['redirect_to'] ) && ! empty( $_POST['redirect_to'] ) ) :?>
 			<input name="redirect_to" value="<?php echo esc_attr( isset( $_POST['redirect_to'] ) ? $_POST['redirect_to'] : $_GET['redirect_to'] ); ?>" hidden />
 		<?php endif;?>
 		<input type="submit" class="btn" name="login" value="<?php _e( 'Login', 'fitpress' ); ?>" />
