@@ -13,10 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 fp_display_flash_message();
 ?>
-
-<?php do_action( 'fitpress_before_membership', $membership_id );?>
 <h3>Your Current Membership</h3>
 <?php if ( $membership ) :?>
+	<?php do_action( 'fitpress_before_membership', $membership_id );?>
 	<p>
 		Package: <?php echo $membership['name'];?><br />
 		Term: <?php echo $membership['term'];?><br />
@@ -65,9 +64,8 @@ fp_display_flash_message();
 			</p>
 		</form>
 	<?php endif;?>
+	<?php do_action( 'fitpress_after_membership', $membership_id );?>
 <?php else : ?>
 	<p>You currently don't have a membership. Buy one now?</p>
 	<a href="<?php echo fp_get_page_permalink( 'sign-up' );?>" class="btn button">Buy a Membership</a>
 <?php endif;?>
-
-<?php do_action( 'fitpress_after_membership', $membership_id );?>
