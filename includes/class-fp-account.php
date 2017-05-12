@@ -194,22 +194,26 @@ class FP_Account {
 	 *
 	 * @param  array $atts
 	 */
-	private static function membership( ) {
+	private static function membership() {
 
 		$packages = FP_Membership::get_memberships( );
 
 		$membership = FP_Membership::get_user_membership( get_current_user_id() );
 
 		$membership_status = new FP_Membership_Status( $membership['membership_id'] );
-
 		$membership['status'] = $membership_status->get_status();
-		$membership['renewal_date'] = get_post_meta( $membership[ 'membership_id' ], '_fp_renewal_date', true );
-		$membership['expiration'] = get_post_meta( $membership[ 'membership_id' ], '_fp_expiration_date', true );
+
+		if ( $membership ) :
+
+			$membership['renewal_date'] = get_post_meta( $membership['membership_id'], '_fp_renewal_date', true );
+			$membership['expiration'] = get_post_meta( $membership['membership_id'], '_fp_expiration_date', true );
+
+		endif;
 
 		return fp_get_template_html( 'account/membership.php', array(
 			'membership' => $membership,
 			'packages' => $packages,
-			'member_id' => get_current_user_id(),
+			'membership_id' => $membership['membership_id'],
 		) );
 	}
 
