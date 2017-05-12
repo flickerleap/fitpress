@@ -200,10 +200,10 @@ class FP_Account {
 
 		$membership = FP_Membership::get_user_membership( get_current_user_id() );
 
-		$membership_status = new FP_Membership_Status( $membership['membership_id'] );
-		$membership['status'] = $membership_status->get_status();
-
 		if ( $membership ) :
+
+			$membership_status = new FP_Membership_Status( $membership['membership_id'] );
+			$membership['status'] = $membership_status->get_status();
 
 			$membership['renewal_date'] = get_post_meta( $membership['membership_id'], '_fp_renewal_date', true );
 			$membership['expiration'] = get_post_meta( $membership['membership_id'], '_fp_expiration_date', true );

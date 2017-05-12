@@ -66,7 +66,7 @@ fp_display_flash_message();
 		</form>
 	<?php endif;?>
 <?php else : ?>
-	<h3>Buy a Membership</h3>
+	<p>You currently don't have a membership. Buy one now?</p>
 	<a href="<?php echo fp_get_page_permalink( 'sign-up' );?>" class="btn button">Buy a Membership</a>
 <?php endif;?>
 
