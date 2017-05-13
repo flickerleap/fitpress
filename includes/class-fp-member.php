@@ -34,8 +34,6 @@ class FP_Member {
 
 		add_action( 'fitpress_daily_cron', __CLASS__ . '::maybe_expire_memberships', 1 );
 
-		add_action( 'add_sessions_hook', __CLASS__ . '::add_sessions' );
-
 		add_action( 'init', array( $this, 'validate_query' ) );
 
 	}
@@ -60,7 +58,7 @@ class FP_Member {
 					'relation' => 'OR',
 					array(
 						'key' => '_fp_expiration_date',
-						'value' => array( strtotime( 'today midnight' ), strtotime( 'tomorrow midnight' ) ),
+						'value' => array( strtotime( 'today midnight' ), strtotime( 'tomorrow midnight' ) - 1 ),
 						'compare' => 'BETWEEN',
 					),
 					array(
