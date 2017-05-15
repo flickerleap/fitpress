@@ -44,6 +44,7 @@ fp_display_flash_message();
 				<input type="submit" class="btn button" name="update_membership" value="<?php _e( 'Update Membership', 'fitpress' ); ?>" />
 				<input type="hidden" name="action" value="update_membership" />
 			</p>
+			<p>If you would like to cancel your membership, please email <a href="mailto:<?php echo get_bloginfo( 'admin_email' ); ?>"><?php echo get_bloginfo( 'admin_email' ); ?></a>.
 		</form>
 	<?php else : ?>
 		<h3>Update Membership</h3>
