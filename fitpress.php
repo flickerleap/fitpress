@@ -25,7 +25,7 @@ if ( ! class_exists( 'FitPress' ) ) :
 	 * @class FitPress
 	 * @version 1.0
 	 */
-	class FitPress{
+	class FitPress {
 
 		/**
 		 * @var string
@@ -128,8 +128,7 @@ if ( ! class_exists( 'FitPress' ) ) :
 
 			wp_enqueue_script( 'fitpress-script', FP_PLUGIN_URL . '/assets/js/fitpress.js', array( 'jquery' ) );
 
-			wp_localize_script( 'fitpress-script', 'fp_booking',
-				array( 'ajax_url' => self::ajax_url() ) );
+			wp_localize_script( 'fitpress-script', 'fp_booking', array( 'ajax_url' => self::ajax_url() ) );
 
 			wp_enqueue_style( 'fitpress-style', FP_PLUGIN_URL . '/assets/css/fitpress.css' );
 			wp_enqueue_style( 'font-awesome', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css' );
@@ -178,11 +177,11 @@ if ( ! class_exists( 'FitPress' ) ) :
 			include_once( 'includes/class-fp-session.php' );
 			include_once( 'includes/class-fp-booking.php' );
 			include_once( 'includes/class-fp-email.php' );
-			//include_once( 'includes/class-fp-notifications.php' );
+			include_once( 'includes/class-fp-notifications.php' );
 
 			include_once( 'includes/class-fp-frontend.php' );
 
-			if ( $this->is_request( 'admin') ) :
+			if ( $this->is_request( 'admin' ) ) :
 
 				include_once( 'includes/class-fp-admin.php' );
 
@@ -194,8 +193,8 @@ if ( ! class_exists( 'FitPress' ) ) :
 
 			if ( $this->is_request( 'cron' ) ) :
 
-				//include_once( 'includes/notifications/class-fp-notifications-membership-expire.php' );
-				//include_once( 'includes/notifications/class-fp-notifications-bookings.php' );
+				include_once( 'includes/notifications/class-fp-notifications-membership-expire.php' );
+				include_once( 'includes/notifications/class-fp-notifications-bookings.php' );
 
 			endif;
 

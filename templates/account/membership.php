@@ -13,15 +13,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 fp_display_flash_message();
 ?>
-<h3>Your Current Membership</h3>
+<h3>Membership</h3>
 <?php if ( $membership ) :?>
 	<?php do_action( 'fitpress_before_membership', $membership_id );?>
 	<p>
 		Package: <?php echo $membership['name'];?><br />
+		Status: <?php echo $membership['status'];?><br />
 		Term: <?php echo $membership['term'];?><br />
 		Amount:  R <?php echo $membership['price'];?>
 		<?php if ( 'Once Off' != $membership['term'] ) :?>
-			Renewal Date:  R <?php echo $membership['renewal_date'];?>
+			<br />Renewal Date: <?php echo date( 'j F Y', $membership['renewal_date'] );?>
 		<?php endif;?>
 	</p>
 	<?php if ( 'Once Off' != $membership['term'] ) :?>

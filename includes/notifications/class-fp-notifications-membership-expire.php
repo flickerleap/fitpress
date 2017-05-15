@@ -74,7 +74,10 @@ class FP_Membership_Notification {
 				$message = '';
 
 				$message .= '<p>Hi ' . $user->first_name . ',</p>';
-				$message .= '<p>This is just a reminder that your ' . $package_name . ' membership will expire on ' . date( 'j F Y', $expiration_date ) . '. Please make any changes to your account before that date.</p>';
+				$message .= '<p>This is just a friendly reminder, that your membership will expire on ' . date( 'j F Y', $expiration_date ) . '.</p>';
+				$message .= '<p>Please note, should you wish to continue your membership, please log on to <a href="' . fp_get_page_permalink( 'account' ) . '">' . fp_get_page_permalink( 'account' ) . '</a>.</p>';
+				$message .= '<p>Please, contact us should you require any assistance with a training programme.</p>';
+				$message .= '<p>Kind regards,<br />' . get_bloginfo( 'name' ) . '</p>';
 
 				$notifications[] = array(
 					'template' => 'email/notification.php',

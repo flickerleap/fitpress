@@ -96,7 +96,7 @@ function fp_get_page_id( $page ) {
 	if ( $page == 'change_password' || $page == 'edit_address' || $page == 'lost_password' ) {
 		_deprecated_argument( __FUNCTION__, '2.1', 'The "change_password", "edit_address" and "lost_password" pages are no-longer used - an endpoint is added to the my-account instead. To get a valid link use the fp_customer_edit_account_url() function instead.' );
 
-		$page = 'myaccount';
+		$page = 'account';
 	}
 
 	$page = apply_filters( 'woocommerce_get_' . $page . '_page_id', get_option('woocommerce_' . $page . '_page_id' ) );
