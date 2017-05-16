@@ -31,11 +31,11 @@ class FP_Booking_Notification {
 
 	public function send_membership_bookings( $notifications ) {
 
-		if ( current_time('g') == 3 ) :
+		if ( 3 == (int) current_time( 'g' ) ) :
 
 			$session_bookings = FP_Booking::get_day_bookings();
 
-			if ( ! empty ( $session_bookings ) ) :
+			if ( ! empty( $session_bookings ) ) :
 
 				$message = '';
 

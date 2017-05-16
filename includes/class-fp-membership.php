@@ -695,8 +695,6 @@ class FP_Membership {
 
 		$membership_query = new WP_Query( $args );
 
-		write_log($membership_query->posts);
-
 		return $membership_query->posts;
 
 	}
