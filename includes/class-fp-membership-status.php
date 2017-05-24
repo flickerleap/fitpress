@@ -115,7 +115,7 @@ class FP_Membership_Status {
 
 	function save_membership_status( $membership ) {
 
-		if ( ! current_user_can( 'edit_user', $membership['membership_id'] ) ) :
+		if ( ! current_user_can( 'manage_options', $membership['membership_id'] ) ) :
 			return false;
 		endif;
 
