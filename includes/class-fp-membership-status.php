@@ -20,33 +20,33 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class FP_Membership_Status {
 
-    /* We only want a single instance of this class. */
-    private static $instance = null;
+	/* We only want a single instance of this class. */
+	private static $instance = null;
 
-    protected $status = null;
+	protected $status = null;
 
-    protected $membership_id = null;
+	protected $membership_id = null;
 
-    /*
-    * Creates or returns an instance of this class.
-    *
-    * @return  FP_Membership A single instance of this class.
-    */
-    public static function get_instance( ) {
-        if ( null == self::$instance ) {
-            self::$instance = new self;
-        }
-        return self::$instance;
-    } // end get_instance;
+	/*
+	* Creates or returns an instance of this class.
+	*
+	* @return  FP_Membership A single instance of this class.
+	*/
+	public static function get_instance() {
+		if ( null == self::$instance ) {
+			self::$instance = new self;
+		}
+		return self::$instance;
+	} // end get_instance;
 
 	/**
 	 * Hook in methods.
 	 */
-    public function __construct( $membership_id = null ){
+	public function __construct( $membership_id = null ) {
 
-    	if ( $membership_id ) :
-    		$this->set_membership_id( $membership_id );
-    	endif;
+		if ( $membership_id ) :
+			$this->set_membership_id( $membership_id );
+		endif;
 
 		add_action( 'fitpress_after_membership_fields', array( $this, 'show_membership_statuses' ), 2 );
 		add_action( 'fitpress_after_membership_save', array( $this, 'save_membership_status' ), 2 );
@@ -103,7 +103,7 @@ class FP_Membership_Status {
 		<p>
 			<label for="membership_status">Membership Status</label>
 			<select name="membership_status" id="membership_status">
-			<?php foreach( $this->get_statuses() as $key => $status ):?>
+			<?php foreach ( $this->get_statuses() as $key => $status ) :?>
 				<option value="<?php echo $key;?>" <?php echo selected( $key, $this->status );?>><?php echo $status;?></option>
 			<?php endforeach;?>
 			</select>
@@ -139,7 +139,7 @@ class FP_Membership_Status {
  * Extension main function
  */
 function __fp_membership_status_main() {
-    FP_Membership_Status::get_instance();
+	FP_Membership_Status::get_instance();
 }
 
 // Initialize plugin when plugins are loaded
