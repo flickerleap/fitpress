@@ -409,4 +409,3 @@ function wp_get_timezone_string() {
 	// fallback to UTC.
 	return 'UTC';
 }
-?>
