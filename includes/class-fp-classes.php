@@ -321,8 +321,8 @@ class FP_Classes {
 
 		if( isset( $_POST["class_times"] ) && isset( $_POST['class_time_days'] ) ){
 
-			remove_action( 'save_post',      array( $this, 'save_class_metabox' ), 10, 2 );
-			remove_action( 'save_post',      array( $this, 'save_session_metabox' ), 10, 2 );
+			remove_action( 'save_post',      array( $this, 'save_class_metabox' ), 10 );
+			remove_action( 'save_post',      array( $this, 'save_session_metabox' ), 10 );
 
 			foreach( $_POST['class_times'] as $class_time_id => $class_times ):
 
