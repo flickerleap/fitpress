@@ -657,8 +657,7 @@ class FP_Booking {
 
 					$booking_data[] = array(
 						'user' => $user,
-						'action'     => '<a href="' . $url . '" class="button button-flat button-small button-cancel">Cancel</a>',
-						'action'     => '',
+						'action'     => '<a href="' . $url . '" class="button button-flat button-small button-cancel">Cancel</a>'
 					);
 
 				endforeach;
