@@ -13,8 +13,7 @@
 	margin: 0;
 	padding: 0 10px 1px;
 	cursor: pointer;
-	border-width: 1px;
-	border-style: solid;
+	border: 1px solid #ccc;
 	-webkit-appearance: none;
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
@@ -23,7 +22,6 @@
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	color: #555;
-	border-color: #ccc;
 	background: #f7f7f7;
 	-webkit-box-shadow: 0 1px 0 #ccc;
 	box-shadow: 0 1px 0 #ccc;
