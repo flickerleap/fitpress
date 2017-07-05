@@ -254,9 +254,9 @@ class FP_Session {
       		'post_title' => get_the_title( $class_id ) . ': ' . $_POST['date'] . ' (' . date( 'H:i', $start_time ) . ') - (' . date( 'H:i', $end_time ) . ')',
 	    );
 
-	    remove_action( 'save_post', array( $this, 'save_session_metabox' ), 10, 2 );
+	    remove_action( 'save_post', array( $this, 'save_session_metabox' ), 10);
 	    wp_update_post( $args );
-		remove_action( 'save_post', array( $this, 'save_session_metabox' ), 10, 2 );
+		remove_action( 'save_post', array( $this, 'save_session_metabox' ), 10);
 
 	    update_post_meta( $post_id, "_fp_start_time", $start_time );
 	    update_post_meta( $post_id, "_fp_end_time", $end_time );
