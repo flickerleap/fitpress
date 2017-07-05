@@ -8,9 +8,9 @@ jQuery(document).ready(function($) {
 		return;
     }
 
-    button = $(this);
+    var button = $(this);
 
-    old_text = $(this).text();
+    var old_text = $(this).text();
 
     $(this).html('<i class="fa fa-refresh fa-spin"></i>');
     $(this).addClass('disabled');
@@ -22,10 +22,10 @@ jQuery(document).ready(function($) {
          data : {action: $(this).data('action'), session_id: $(this).data('session-id')},
          success: function(response) {
             if(response.type == "success") {
-              cell = button.parent();
-              limit = cell.parent().find('.session-limit').text();
+              var cell = button.parent();
+              var limit = cell.parent().find('.session-limit').text();
               if(limit != 'Unlimited'){
-                  availability = limit - response.bookings;
+                  var availability = limit - response.bookings;
                   cell.parent().find('.session-bookings').text( availability );
               }
               $('.credits').text(response.credits);
