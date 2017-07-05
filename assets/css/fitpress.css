@@ -6,7 +6,7 @@ td.fp-calendar-day:hover   { background:#eee; }
 td.fp-calendar-day-np  { background:#faf1f1; min-height:80px; }
 th.fp-calendar-day-head { width: calc( 100% / 7 );border: none; font-weight:bold; text-align:center; padding:5px; font-size: 13px;}
 div.fp-day-number      { padding: 0 5px; height: 25px; line-height: 25px; font-weight:bold; text-align:center; border-bottom:1px solid #999; }
-td.fp-calendar-day, td.fp-calendar-day-np { border: 1px solid #fff; font-size:10px; padding: 5px 5px 0px; vertical-align: top;text-align: center;}
+td.fp-calendar-day, td.fp-calendar-day-np { border: 1px solid #fff; font-size:10px; padding: 5px 5px 0; vertical-align: top;text-align: center;}
 table.fp-calendar td .day-session{clear:both;position: relative;margin-bottom: 0;padding: 5px;}
 table.fp-calendar td .day-session:nth-child(odd){background:#eee;}
 table.fp-calendar td .day-session .class-name{font-size: 9px;margin: 0;}
