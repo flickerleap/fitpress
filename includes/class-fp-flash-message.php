@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Post_Types Class.
+ * FP_Flash_Message Class.
  */
 class FP_Flash_Message {
 

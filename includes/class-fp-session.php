@@ -16,7 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Post_Types Class.
+ * FP_Session Class.
+ * For the Session Post Type
  */
 class FP_Session {
 
