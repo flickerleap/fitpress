@@ -32,24 +32,24 @@ class FP_Membership_Notification {
 	public function membership_expire_reminder( $notifications ) {
 
 		$args = array(
-			'post_type' => 'fp_member',
-			'meta_query' => array(
+			'post_type'      => 'fp_member',
+			'meta_query'     => array(
 				'relation' => 'AND',
 				array(
-					'key' => '_fp_membership_status',
-					'value' => 'active',
+					'key'     => '_fp_membership_status',
+					'value'   => 'active',
 					'compare' => '=',
 				),
 				array(
 					'relation' => 'OR',
 					array(
-						'key' => '_fp_expiration_date',
-						'value' => array( strtotime( '+3 days midnight' ), strtotime( '+4 days midnight' ) - 1 ),
+						'key'     => '_fp_expiration_date',
+						'value'   => array( strtotime( '+3 days midnight' ), strtotime( '+4 days midnight' ) - 1 ),
 						'compare' => 'BETWEEN',
 					),
 					array(
-						'key' => '_fp_expiration_date',
-						'value' => strtotime( '+3 days midnight' ),
+						'key'     => '_fp_expiration_date',
+						'value'   => strtotime( '+3 days midnight' ),
 						'compare' => '=',
 					),
 				),
@@ -65,11 +65,11 @@ class FP_Membership_Notification {
 				$membership_id = $membership->ID;
 
 				$user_id = get_post_meta( $membership_id, '_fp_user_id', true );
-				$user = get_user_by( 'ID', $user_id );
+				$user    = get_user_by( 'ID', $user_id );
 
 				$expiration_date = get_post_meta( $membership_id, '_fp_expiration_date', true );
-				$package_id = get_post_meta( $membership_id, '_fp_package_id', true );
-				$package_name = get_the_title( $package_id );
+				$package_id      = get_post_meta( $membership_id, '_fp_package_id', true );
+				$package_name    = get_the_title( $package_id );
 
 				$message = '';
 
@@ -81,10 +81,10 @@ class FP_Membership_Notification {
 
 				$notifications[] = array(
 					'template' => 'email/notification.php',
-					'email' => $user->user_email,
-					'subject' => 'Membership Renewal Reminder',
-					'header' => 'Membership Renewal Reminder',
-					'message' => $message,
+					'email'    => $user->user_email,
+					'subject'  => 'Membership Renewal Reminder',
+					'header'   => 'Membership Renewal Reminder',
+					'message'  => $message,
 				);
 
 			endforeach;

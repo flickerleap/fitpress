@@ -18,14 +18,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * FP_Post_Types Class.
  */
-class FP_Flash_Message{
+class FP_Flash_Message {
 
-	public static function set( $message, $type = 'success' ){
+	public static function set( $message, $type = 'success' ) {
 
-		if( $message ):
+		if ( $message ):
 
 			$_SESSION['fp_flash_message'][] = array(
-				'type' => $type,
+				'type'    => $type,
 				'message' => $message
 			);
 
@@ -37,13 +37,13 @@ class FP_Flash_Message{
 
 	}
 
-	public static function display(){
+	public static function display() {
 
-		if( isset( $_SESSION['fp_flash_message'] ) ):
+		if ( isset( $_SESSION['fp_flash_message'] ) ):
 
 			$flash_message = '';
 
-			foreach($_SESSION['fp_flash_message'] as $flash):
+			foreach ( $_SESSION['fp_flash_message'] as $flash ):
 
 				$flash_message .= '<div class="flash-message flash-message-' . $flash['type'] . '">';
 
@@ -61,16 +61,17 @@ class FP_Flash_Message{
 
 	}
 
-	public static function count( $type ){
+	public static function count( $type ) {
 
 		$type_count = 0;
 
-		if( isset( $_SESSION['fp_flash_message'] ) ):
+		if ( isset( $_SESSION['fp_flash_message'] ) ):
 
-			foreach( $_SESSION['fp_flash_message'] as $flash ):
+			foreach ( $_SESSION['fp_flash_message'] as $flash ):
 
-				if( $flash['type'] == $type )
-					$type_count++;
+				if ( $flash['type'] == $type ) {
+					$type_count ++;
+				}
 
 			endforeach;
 

@@ -3,10 +3,12 @@
  * Get other templates passing attributes and including the file.
  *
  * @access public
+ *
  * @param string $template_name
  * @param array $args (default: array())
  * @param string $template_path (default: '')
  * @param string $default_path (default: '')
+ *
  * @return void
  */
 function fp_get_template( $template_name, $args = array(), $template_path = '', $default_path = '' ) {
@@ -18,6 +20,7 @@ function fp_get_template( $template_name, $args = array(), $template_path = '', 
 
 	if ( ! file_exists( $located ) ) {
 		_doing_it_wrong( __FUNCTION__, sprintf( '<code>%s</code> does not exist.', $located ), '2.1' );
+
 		return;
 	}
 
@@ -32,11 +35,13 @@ function fp_get_template( $template_name, $args = array(), $template_path = '', 
  * Like wc_get_template, but returns the HTML instead of outputting.
  * @see wc_get_template
  * @since 2.5.0
+ *
  * @param string $template_name
  */
 function fp_get_template_html( $template_name, $args = array(), $template_path = '', $default_path = '' ) {
 	ob_start();
 	fp_get_template( $template_name, $args, $template_path, $default_path );
+
 	return ob_get_clean();
 }
 
@@ -45,14 +50,16 @@ function fp_get_template_html( $template_name, $args = array(), $template_path =
  *
  * This is the load order:
  *
- *		yourtheme		/	$template_path	/	$template_name
- *		yourtheme		/	$template_name
- *		$default_path	/	$template_name
+ *        yourtheme        /    $template_path    /    $template_name
+ *        yourtheme        /    $template_name
+ *        $default_path    /    $template_name
  *
  * @access public
+ *
  * @param string $template_name
  * @param string $template_path (default: '')
  * @param string $default_path (default: '')
+ *
  * @return string
  */
 function fp_locate_template( $template_name, $template_path = '', $default_path = '' ) {
@@ -80,10 +87,12 @@ function fp_locate_template( $template_name, $template_path = '', $default_path 
 	// Return what we found
 	return apply_filters( 'fitpress_locate_template', $template, $template_name, $template_path );
 }
+
 /**
  * Retrieve page ids - used for myaccount, edit_address, shop, cart, checkout, pay, view_order, terms. returns -1 if no page is found
  *
  * @param string $page
+ *
  * @return int
  */
 function fp_get_page_id( $page ) {
@@ -99,15 +108,16 @@ function fp_get_page_id( $page ) {
 		$page = 'account';
 	}
 
-	$page = apply_filters( 'woocommerce_get_' . $page . '_page_id', get_option('woocommerce_' . $page . '_page_id' ) );
+	$page = apply_filters( 'woocommerce_get_' . $page . '_page_id', get_option( 'woocommerce_' . $page . '_page_id' ) );
 
-	return $page ? absint( $page ) : -1;
+	return $page ? absint( $page ) : - 1;
 }
 
 /**
  * Retrieve page permalink
  *
  * @param string $page
+ *
  * @return string
  */
 function fp_get_page_permalink( $page ) {
@@ -124,8 +134,9 @@ function fp_get_page_permalink( $page ) {
  * @return string
  */
 function fp_get_endpoint_url( $endpoint, $value = '', $permalink = '' ) {
-	if ( ! $permalink )
+	if ( ! $permalink ) {
 		$permalink = get_permalink();
+	}
 
 	// Map endpoint to options
 	$endpoint = isset( FP()->query->query_vars[ $endpoint ] ) ? FP()->query->query_vars[ $endpoint ] : $endpoint;
@@ -148,8 +159,8 @@ function fp_get_endpoint_url( $endpoint, $value = '', $permalink = '' ) {
 /**
  * Get the edit address slug translation.
  *
- * @param  string  $id   Address ID.
- * @param  bool    $flip Flip the array to make it possible to retrieve the values ​​from both sides.
+ * @param  string $id Address ID.
+ * @param  bool $flip Flip the array to make it possible to retrieve the values ​​from both sides.
  *
  * @return string        Address slug i18n.
  */
@@ -179,7 +190,8 @@ function fp_edit_address_i18n( $id, $flip = false ) {
 function fp_lostpassword_url() {
 	return fp_get_endpoint_url( 'lost-password', '', fp_get_page_permalink( 'account' ) );
 }
-add_filter( 'lostpassword_url',  'fp_lostpassword_url', 10, 0 );
+
+add_filter( 'lostpassword_url', 'fp_lostpassword_url', 10, 0 );
 
 /**
  * Returns the url to the book endpoint url
@@ -190,7 +202,8 @@ add_filter( 'lostpassword_url',  'fp_lostpassword_url', 10, 0 );
 function fp_book_url() {
 	return fp_get_endpoint_url( 'book', '', fp_get_page_permalink( 'account' ) );
 }
-add_filter( 'book_url',  'fp_book_url', 10, 0 );
+
+add_filter( 'book_url', 'fp_book_url', 10, 0 );
 
 /**
  * Returns the url to the membership endpoint url
@@ -201,7 +214,8 @@ add_filter( 'book_url',  'fp_book_url', 10, 0 );
 function fp_membership_url() {
 	return fp_get_endpoint_url( 'membership', '', fp_get_page_permalink( 'account' ) );
 }
-add_filter( 'book_url',  'fp_membership_url', 10, 0 );
+
+add_filter( 'book_url', 'fp_membership_url', 10, 0 );
 
 /**
  * Returns the url to the checkout endpoint url
@@ -212,7 +226,8 @@ add_filter( 'book_url',  'fp_membership_url', 10, 0 );
 function fp_checkout_url() {
 	return fp_get_endpoint_url( 'checkout', '', fp_get_page_permalink( 'sign-up' ) );
 }
-add_filter( 'checkout_url',  'fp_checkout_url', 10, 0 );
+
+add_filter( 'checkout_url', 'fp_checkout_url', 10, 0 );
 
 /**
  * Returns the url to the cancel endpoint url
@@ -223,7 +238,8 @@ add_filter( 'checkout_url',  'fp_checkout_url', 10, 0 );
 function fp_cancel_url() {
 	return fp_get_endpoint_url( 'cancel', '', fp_get_page_permalink( 'sign-up' ) );
 }
-add_filter( 'cancel_url',  'fp_cancel_url', 10, 0 );
+
+add_filter( 'cancel_url', 'fp_cancel_url', 10, 0 );
 
 /**
  * Returns the url to the confirm endpoint url
@@ -234,7 +250,8 @@ add_filter( 'cancel_url',  'fp_cancel_url', 10, 0 );
 function fp_confirm_url() {
 	return fp_get_endpoint_url( 'confirm', '', fp_get_page_permalink( 'sign-up' ) );
 }
-add_filter( 'confirm_url',  'fp_confirm_url', 10, 0 );
+
+add_filter( 'confirm_url', 'fp_confirm_url', 10, 0 );
 
 /**
  * Returns the url to the notify endpoint url
@@ -245,7 +262,8 @@ add_filter( 'confirm_url',  'fp_confirm_url', 10, 0 );
 function fp_notify_url() {
 	return fp_get_endpoint_url( 'notify', '', fp_get_page_permalink( 'sign-up' ) );
 }
-add_filter( 'notify_url',  'fp_notify_url', 10, 0 );
+
+add_filter( 'notify_url', 'fp_notify_url', 10, 0 );
 
 /**
  * Returns the url to the make-booking endpoint url
@@ -256,7 +274,8 @@ add_filter( 'notify_url',  'fp_notify_url', 10, 0 );
 function fp_make_booking_url() {
 	return fp_get_endpoint_url( 'make-booking', '', fp_get_page_permalink( 'account' ) );
 }
-add_filter( 'make_booking_url',  'fp_make_booking_url', 10, 0 );
+
+add_filter( 'make_booking_url', 'fp_make_booking_url', 10, 0 );
 
 /**
  * Returns the url to the cancel-booking endpoint url
@@ -267,7 +286,8 @@ add_filter( 'make_booking_url',  'fp_make_booking_url', 10, 0 );
 function fp_cancel_booking_url() {
 	return fp_get_endpoint_url( 'cancel-booking', '', fp_get_page_permalink( 'account' ) );
 }
-add_filter( 'cancel_booking_url',  'fp_cancel_booking_url', 10, 0 );
+
+add_filter( 'cancel_booking_url', 'fp_cancel_booking_url', 10, 0 );
 
 
 /**
@@ -295,14 +315,15 @@ function fp_template_redirect() {
 	}
 
 }
+
 add_action( 'template_redirect', 'fp_template_redirect' );
 
-function fp_maybe_manual_run(){
-	if( isset( $_GET['force_reset_credits'] ) ):
+function fp_maybe_manual_run() {
+	if ( isset( $_GET['force_reset_credits'] ) ):
 		FP_Credit::maybe_reset_credits( true );
 		$url = remove_query_arg( array( 'force_reset_credits' ) );
 		wp_redirect( $url );
-	elseif( isset( $_GET['force_create_sessions'] ) ):
+	elseif ( isset( $_GET['force_create_sessions'] ) ):
 		$FP_Session = new FP_Session();
 		if ( isset( $_GET['start_day'] ) && ! empty( $_GET['start_day'] ) ) :
 			$FP_Session->add_sessions( $_GET['start_day'], $_GET['force_create_sessions'] );
@@ -319,14 +340,14 @@ function fp_maybe_manual_run(){
 		include_once( FP_PLUGIN_DIR . 'includes/notifications/class-fp-notifications-membership-expire.php' );
 		$notification = new FP_Notification();
 		$notification->send_daily_notifications();
-        $url = remove_query_arg( array( 'force_send_renewal_reminder' ) );
-        wp_redirect( $url );
+		$url = remove_query_arg( array( 'force_send_renewal_reminder' ) );
+		wp_redirect( $url );
 	elseif ( isset( $_GET['force_send_bookings'] ) ) :
 		include_once( FP_PLUGIN_DIR . 'includes/notifications/class-fp-notifications-bookings.php' );
 		$notification = new FP_Notification();
 		$notification->send_hourly_notifications();
-        $url = remove_query_arg( array( 'force_send_renewal_reminder' ) );
-        wp_redirect( $url );
+		$url = remove_query_arg( array( 'force_send_renewal_reminder' ) );
+		wp_redirect( $url );
 	elseif ( isset( $_GET['force_send_member_list'] ) ) :
 		if ( $_GET['force_send_member_list'] == 'inactive' ) :
 			FP_Membership::maybe_send_member_list( true, true );
@@ -337,21 +358,22 @@ function fp_maybe_manual_run(){
 		wp_redirect( $url );
 	endif;
 }
-add_action( 'template_redirect', 'fp_maybe_manual_run');
 
-function fp_add_flash_message( $message, $type = 'success' ){
+add_action( 'template_redirect', 'fp_maybe_manual_run' );
+
+function fp_add_flash_message( $message, $type = 'success' ) {
 
 	FP_Flash_Message::set( $message, $type );
 
 }
 
-function fp_display_flash_message( ){
+function fp_display_flash_message() {
 
 	FP_Flash_Message::display();
 
 }
 
-function fp_flash_message_count( $type ){
+function fp_flash_message_count( $type ) {
 
 	return FP_Flash_Message::count( $type );
 
@@ -359,7 +381,7 @@ function fp_flash_message_count( $type ){
 
 if ( ! function_exists( 'write_log' ) ) {
 	function write_log( $log ) {
-		if( WP_DEBUG && WP_DEBUG_LOG ):
+		if ( WP_DEBUG && WP_DEBUG_LOG ):
 			if ( is_array( $log ) || is_object( $log ) ) :
 				error_log( print_r( $log, true ) );
 			else :

@@ -28,7 +28,7 @@ class FP_Member {
 		add_action( 'init', array( $this, 'register_post_types' ), 5 );
 
 		if ( is_admin() ) {
-			add_action( 'load-post.php',     array( $this, 'init_metabox' ) );
+			add_action( 'load-post.php', array( $this, 'init_metabox' ) );
 			add_action( 'load-post-new.php', array( $this, 'init_metabox' ) );
 		}
 
@@ -46,24 +46,24 @@ class FP_Member {
 	public static function maybe_expire_memberships() {
 
 		$args = array(
-			'post_type' => 'fp_member',
-			'meta_query' => array(
+			'post_type'      => 'fp_member',
+			'meta_query'     => array(
 				'relation' => 'AND',
 				array(
-					'key' => '_fp_membership_status',
-					'value' => 'active',
+					'key'     => '_fp_membership_status',
+					'value'   => 'active',
 					'compare' => '=',
 				),
 				array(
 					'relation' => 'OR',
 					array(
-						'key' => '_fp_expiration_date',
-						'value' => array( strtotime( 'today midnight' ), strtotime( 'tomorrow midnight' ) - 1 ),
+						'key'     => '_fp_expiration_date',
+						'value'   => array( strtotime( 'today midnight' ), strtotime( 'tomorrow midnight' ) - 1 ),
 						'compare' => 'BETWEEN',
 					),
 					array(
-						'key' => '_fp_expiration_date',
-						'value' => strtotime( 'today midnight' ),
+						'key'     => '_fp_expiration_date',
+						'value'   => strtotime( 'today midnight' ),
 						'compare' => '=',
 					),
 				),
@@ -86,7 +86,7 @@ class FP_Member {
 
 	}
 
-	public function validate_query(){
+	public function validate_query() {
 
 		if ( isset( $_GET['post_type'] ) && $_GET['post_type'] == 'fp_member' && ! isset( $_GET['user_id'] ) ) :
 			wp_redirect( get_admin_url( null, 'users.php' ) );
@@ -98,13 +98,13 @@ class FP_Member {
 	 * Register core post types.
 	 */
 	public static function register_post_types() {
-		if ( post_type_exists('fp_member') ) {
+		if ( post_type_exists( 'fp_member' ) ) {
 			return;
 		}
 
 		register_post_type( 'fp_member',
 			array(
-				'labels'             => array(
+				'labels'              => array(
 					'name'                  => __( 'Memberships', 'fitpress' ),
 					'singular_name'         => __( 'Membership', 'fitpress' ),
 					'menu_name'             => _x( 'Memberships', 'Admin menu name', 'fitpress' ),
@@ -144,8 +144,8 @@ class FP_Member {
 	 * Meta box initialization.
 	 */
 	public function init_metabox() {
-		add_action( 'add_meta_boxes', array( $this, 'add_metabox'  )        );
-		add_action( 'save_post',      array( $this, 'save_session_metabox' ), 10, 2 );
+		add_action( 'add_meta_boxes', array( $this, 'add_metabox' ) );
+		add_action( 'save_post', array( $this, 'save_session_metabox' ), 10, 2 );
 	}
 
 	/**
@@ -174,8 +174,8 @@ class FP_Member {
 	}
 
 	/**
-     * Renders the meta box.
-     *
+	 * Renders the meta box.
+	 *
 	 * @param $post
 	 */
 	public function render_member_metabox( $post ) {
@@ -186,9 +186,9 @@ class FP_Member {
 
 		$user_id = get_post_meta( $post->ID, '_fp_user_id', true );
 
-		$user_id = $user_id ? $user_id : $_GET['user_id'];?>
+		$user_id = $user_id ? $user_id : $_GET['user_id']; ?>
 
-		<input type="hidden" name="user_id" value="<?php echo $user_id;?>" />
+        <input type="hidden" name="user_id" value="<?php echo $user_id; ?>"/>
 
 		<?php if ( $packages ) :
 
@@ -199,87 +199,97 @@ class FP_Member {
 			$user = get_userdata( $user_id );
 			?>
 
-			<p>
-				<label for="package_id">Package</label>
-				<select name="package_id" id="package_id">
-				<?php foreach( $packages as $id => $package):?>
-					<option value="<?php echo $id;?>" <?php echo selected( $id, ($package_id) ? $package_id : '' );?>><?php echo $package;?></option>
-				<?php endforeach;?>
-				</select>
-			</p>
+            <p>
+                <label for="package_id">Package</label>
+                <select name="package_id" id="package_id">
+					<?php foreach ( $packages as $id => $package ): ?>
+                        <option value="<?php echo $id; ?>" <?php echo selected( $id, ( $package_id ) ? $package_id : '' ); ?>><?php echo $package; ?></option>
+					<?php endforeach; ?>
+                </select>
+            </p>
 
-			<?php if ( $package_id ) :?>
+			<?php if ( $package_id ) : ?>
 
-				<?php
-				$credits = get_post_meta( $post->ID, '_fp_credits', true );
-				$membership_start_date = date( 'j F Y', get_post_meta( $post->ID, '_fp_membership_start_date', true ) );
-				$expiration_date = get_post_meta( $post->ID, '_fp_expiration_date', true );
-				$renewal_date = get_post_meta( $post->ID, '_fp_renewal_date', true );
-				?>
+			<?php
+			$credits               = get_post_meta( $post->ID, '_fp_credits', true );
+			$membership_start_date = date( 'j F Y', get_post_meta( $post->ID, '_fp_membership_start_date', true ) );
+			$expiration_date       = get_post_meta( $post->ID, '_fp_expiration_date', true );
+			$renewal_date          = get_post_meta( $post->ID, '_fp_renewal_date', true );
+			?>
 
-				<p>
-					<label for="credits">Credits</label>
-					<input type="text" name="credits" value="<?php echo ( $credits ) ? $credits : ''; ?>" />
-				</p>
+            <p>
+                <label for="credits">Credits</label>
+                <input type="text" name="credits" value="<?php echo ( $credits ) ? $credits : ''; ?>"/>
+            </p>
 
-				<p>
-					<label for="membership_start_date">Start Date</label>
-					<input type="text" name="membership_start_date" value="<?php echo ( $membership_start_date ) ? $membership_start_date : ''; ?>" />
-				</p>
+            <p>
+                <label for="membership_start_date">Start Date</label>
+                <input type="text" name="membership_start_date"
+                       value="<?php echo ( $membership_start_date ) ? $membership_start_date : ''; ?>"/>
+            </p>
 
-				<p>
-					<label for="expiration_date">Expiration Date</label>
-					<?php if ( $expiration_date && 'N/A' != $expiration_date ) :?>
-						<input type="text" name="expiration_date" value="<?php echo ( $expiration_date ) ? date( 'j F Y', $expiration_date ) : ''; ?>" />
-					<?php else : ?>
-						<input type="text" name="expiration_date" value="N/A" />
-					<?php endif;?>
-				</p>
+            <p>
+                <label for="expiration_date">Expiration Date</label>
+				<?php if ( $expiration_date && 'N/A' != $expiration_date ) : ?>
+                    <input type="text" name="expiration_date"
+                           value="<?php echo ( $expiration_date ) ? date( 'j F Y', $expiration_date ) : ''; ?>"/>
+				<?php else : ?>
+                    <input type="text" name="expiration_date" value="N/A"/>
+				<?php endif; ?>
+            </p>
 
-				<?php do_action( 'fitpress_after_membership_fields', $post->ID, $user_id );?>
+			<?php do_action( 'fitpress_after_membership_fields', $post->ID, $user_id ); ?>
 
-			<?php endif;?>
+		<?php endif; ?>
 
-			<p>
-				<label for="username"><?php _e( 'Username', 'fitpress' ); ?></label>
-				<input type="text" class="input-text" name="username" id="username" value="<?php echo esc_attr( isset( $user->user_login ) ? $user->user_login : '' ); ?>" disabled="disabled" />
-			</p>
+            <p>
+                <label for="username"><?php _e( 'Username', 'fitpress' ); ?></label>
+                <input type="text" class="input-text" name="username" id="username"
+                       value="<?php echo esc_attr( isset( $user->user_login ) ? $user->user_login : '' ); ?>"
+                       disabled="disabled"/>
+            </p>
 
-			<p>
-				<label for="account_first_name"><?php _e( 'First name', 'fitpress' ); ?></label>
-				<input type="text" class="input-text" name="account_first_name" id="account_first_name" value="<?php echo esc_attr( isset( $user->first_name ) ? $user->first_name : '' ); ?>" />
-			</p>
+            <p>
+                <label for="account_first_name"><?php _e( 'First name', 'fitpress' ); ?></label>
+                <input type="text" class="input-text" name="account_first_name" id="account_first_name"
+                       value="<?php echo esc_attr( isset( $user->first_name ) ? $user->first_name : '' ); ?>"/>
+            </p>
 
-			<p>
-				<label for="account_last_name"><?php _e( 'Last name', 'fitpress' ); ?></label>
-				<input type="text" class="input-text" name="account_last_name" id="account_last_name" value="<?php echo esc_attr( isset( $user->last_name ) ? $user->last_name : '' ); ?>" />
-			</p>
+            <p>
+                <label for="account_last_name"><?php _e( 'Last name', 'fitpress' ); ?></label>
+                <input type="text" class="input-text" name="account_last_name" id="account_last_name"
+                       value="<?php echo esc_attr( isset( $user->last_name ) ? $user->last_name : '' ); ?>"/>
+            </p>
 
-			<p>
-				<label for="account_email"><?php _e( 'Email address', 'fitpress' ); ?></label>
-				<input type="email" class="input-text" name="account_email" id="account_email" value="<?php echo esc_attr( isset( $user->user_email ) ? $user->user_email : '' ); ?>" />
-			</p>
+            <p>
+                <label for="account_email"><?php _e( 'Email address', 'fitpress' ); ?></label>
+                <input type="email" class="input-text" name="account_email" id="account_email"
+                       value="<?php echo esc_attr( isset( $user->user_email ) ? $user->user_email : '' ); ?>"/>
+            </p>
 
-			<p>
-				<label for="contact_number"><?php _e( 'Contact Number', 'fitpress' ); ?></label>
-				<input type="tel" class="input-text" name="contact_number" id="contact_number" value="<?php echo esc_attr( isset( $user->contact_number ) ? $user->contact_number : '' ); ?>" />
-			</p>
+            <p>
+                <label for="contact_number"><?php _e( 'Contact Number', 'fitpress' ); ?></label>
+                <input type="tel" class="input-text" name="contact_number" id="contact_number"
+                       value="<?php echo esc_attr( isset( $user->contact_number ) ? $user->contact_number : '' ); ?>"/>
+            </p>
 
-			<p>
-				<label for="emergency_contact_name"><?php _e( 'Emergency Contact Name', 'fitpress' ); ?></label>
-				<input type="text" class="input-text" name="emergency_contact_name" id="emergency_contact_name" value="<?php echo esc_attr( isset( $user->emergency_contact_name ) ? $user->emergency_contact_name : '' ); ?>" />
-			</p>
+            <p>
+                <label for="emergency_contact_name"><?php _e( 'Emergency Contact Name', 'fitpress' ); ?></label>
+                <input type="text" class="input-text" name="emergency_contact_name" id="emergency_contact_name"
+                       value="<?php echo esc_attr( isset( $user->emergency_contact_name ) ? $user->emergency_contact_name : '' ); ?>"/>
+            </p>
 
-			<p>
-				<label for="emergency_contact_number"><?php _e( 'Emergency Contact Number', 'fitpress' ); ?></label>
-				<input type="text" class="input-text" name="emergency_contact_number" id="emergency_contact_number" value="<?php echo esc_attr( isset( $user->emergency_contact_number ) ? $user->emergency_contact_number : '' ); ?>" />
-			</p>
+            <p>
+                <label for="emergency_contact_number"><?php _e( 'Emergency Contact Number', 'fitpress' ); ?></label>
+                <input type="text" class="input-text" name="emergency_contact_number" id="emergency_contact_number"
+                       value="<?php echo esc_attr( isset( $user->emergency_contact_number ) ? $user->emergency_contact_number : '' ); ?>"/>
+            </p>
 
-		<?php
+			<?php
 		endif;
 	}
 
-	public function render_actions_metabox( $post ){
+	public function render_actions_metabox( $post ) {
 
 		$user_id = get_post_meta( $post->ID, '_fp_user_id', true );
 
@@ -291,24 +301,24 @@ class FP_Member {
 
 		<?php if ( $package_id ) : ?>
 
-			<p>
-				<label for="update_credits">Update Credits?</label>
-				<input type="checkbox" name="update_credits" value="1" />
-			</p>
+            <p>
+                <label for="update_credits">Update Credits?</label>
+                <input type="checkbox" name="update_credits" value="1"/>
+            </p>
 
-		<?php endif;?>
+		<?php endif; ?>
 
-		<?php do_action( 'fitpress_after_membership_actions' );?>
+		<?php do_action( 'fitpress_after_membership_actions' ); ?>
 
 		<?php
 
 	}
 
 	/**
-     * Handles saving session metabox
-     *
+	 * Handles saving session metabox
+	 *
 	 * @param $membership_id
-	 * @param WP_Post $post    Post object.
+	 * @param WP_Post $post Post object.
 	 */
 	public function save_session_metabox( $membership_id, $post ) {
 
@@ -350,10 +360,10 @@ class FP_Member {
 
 		if ( isset( $_POST['package_id'] ) && ! empty( $_POST['package_id'] ) ) :
 
-			$old_package_id = get_post_meta( $membership_id, '_fp_package_id', true );
-			$old_credits = get_post_meta( $membership_id, '_fp_credits', true );
+			$old_package_id            = get_post_meta( $membership_id, '_fp_package_id', true );
+			$old_credits               = get_post_meta( $membership_id, '_fp_credits', true );
 			$old_membership_start_date = get_post_meta( $membership_id, '_fp_membership_start_date', true );
-			$old_expiration_date = get_post_meta( $membership_id, '_fp_expiration_date', true );
+			$old_expiration_date       = get_post_meta( $membership_id, '_fp_expiration_date', true );
 
 			$package_id = $_POST['package_id'];
 
@@ -373,9 +383,9 @@ class FP_Member {
 				$membership_start_date = strtotime( 'today' );
 			endif;
 
-			if ( isset( $_POST['expiration_date'] ) && $old_package_id == $package_id  ) :
+			if ( isset( $_POST['expiration_date'] ) && $old_package_id == $package_id ) :
 				$expiration_date = strtotime( $_POST['expiration_date'] );
-			elseif ( $old_package_id != $package_id ) :
+            elseif ( $old_package_id != $package_id ) :
 				$package_data = FP_Membership::get_membership( $package_id );
 				if ( 'Once Off' != $package_data[ $package_id ]['term'] ) :
 					$expiration_date = 'N/A';
@@ -384,7 +394,10 @@ class FP_Member {
 				endif;
 			endif;
 
-			do_action( 'fitpress_before_membership_save', array( 'membership_id' => $post->ID, 'package_id' => $package_id, 'old_package_id' => $old_package_id ) );
+			do_action( 'fitpress_before_membership_save', array( 'membership_id'  => $post->ID,
+			                                                     'package_id'     => $package_id,
+			                                                     'old_package_id' => $old_package_id
+			) );
 
 			update_post_meta( $membership_id, '_fp_user_id', $member_id, $member_id );
 			update_post_meta( $membership_id, '_fp_package_id', $package_id, $old_package_id );
@@ -392,7 +405,10 @@ class FP_Member {
 			update_post_meta( $membership_id, '_fp_membership_start_date', $membership_start_date, $old_membership_start_date );
 			update_post_meta( $membership_id, '_fp_expiration_date', $expiration_date, $old_expiration_date );
 
-			do_action( 'fitpress_after_membership_save', array( 'membership_id' => $post->ID, 'package_id' => $package_id, 'old_package_id' => $old_package_id ) );
+			do_action( 'fitpress_after_membership_save', array( 'membership_id'  => $post->ID,
+			                                                    'package_id'     => $package_id,
+			                                                    'old_package_id' => $old_package_id
+			) );
 
 		endif;
 
@@ -402,9 +418,9 @@ class FP_Member {
 
 		$user = get_user_by( 'id', $member_id );
 
-		$user->first_name = $_POST['account_first_name'];
-		$user->last_name = $_POST['account_last_name'];
-		$user->user_email = $_POST['account_email'];
+		$user->first_name   = $_POST['account_first_name'];
+		$user->last_name    = $_POST['account_last_name'];
+		$user->user_email   = $_POST['account_email'];
 		$user->display_name = $_POST['account_first_name'] . ' ' . $_POST['account_last_name'];
 
 		wp_update_user( $user );

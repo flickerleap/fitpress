@@ -22,11 +22,11 @@ class FP_Email {
 
 	public $template_html = 'email/default.php';
 
-	public $headers = array('Content-Type: text/html; charset=UTF-8');
+	public $headers = array( 'Content-Type: text/html; charset=UTF-8' );
 
 	protected $email_settings = array();
 
-	public function __construct( $setup = array() ){
+	public function __construct( $setup = array() ) {
 
 		if ( isset( $setup['template'] ) ) :
 			$this->template_html = $setup['template'];
@@ -45,7 +45,7 @@ class FP_Email {
 
 	}
 
-	public function send_email( $to, $subject = 'Test', $data = array(), $attachments = null){
+	public function send_email( $to, $subject = 'Test', $data = array(), $attachments = null ) {
 
 		$data = array_merge( $data, array( 'email_settings' => $this->email_settings ) );
 
@@ -54,7 +54,10 @@ class FP_Email {
 		$admin_email = get_bloginfo( 'admin_email' );
 
 		if ( $to != $admin_email ) :
-			$this->headers = array_merge( $this->headers, array( 'Cc: ' . $admin_email, 'Bcc: admin@flickerleap.com' ) );
+			$this->headers = array_merge( $this->headers, array(
+				'Cc: ' . $admin_email,
+				'Bcc: admin@flickerleap.com'
+			) );
 		else :
 			$this->headers = array_merge( $this->headers, array( 'Bcc: admin@flickerleap.com' ) );
 		endif;
@@ -84,14 +87,15 @@ class FP_Email {
 	}
 
 	/**
-	* get_content_html function.
-	*
-	* @since 0.1
-	* @return string
-	*/
+	 * get_content_html function.
+	 *
+	 * @since 0.1
+	 * @return string
+	 */
 	public function get_content_html( $data ) {
 		ob_start();
-			fp_get_template( $this->template_html, $data );
+		fp_get_template( $this->template_html, $data );
+
 		return ob_get_clean();
 	}
 

@@ -62,10 +62,10 @@ class FP_Booking_Notification {
 
 			$notifications[] = array(
 				'template' => 'email/notification.php',
-				'email' => get_bloginfo( 'admin_email' ),
-				'subject' => 'Today\'s Bookings',
-				'header' => 'Today\'s Bookings',
-				'message' => $message,
+				'email'    => get_bloginfo( 'admin_email' ),
+				'subject'  => 'Today\'s Bookings',
+				'header'   => 'Today\'s Bookings',
+				'message'  => $message,
 			);
 
 		endif;
