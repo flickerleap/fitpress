@@ -38,7 +38,7 @@ jQuery(document).ready(function($) {
          error: function() {
            $(this).text(old_text);
            alert("There was an error. Please try again later.");
-         },
+         }
       });
 
   });

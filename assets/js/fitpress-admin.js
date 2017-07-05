@@ -63,7 +63,7 @@ jQuery( document ).ready( function( $ ) {
 			data: function (params) {
 				return {
 					action: 'fp_find_member',
-					search: params.term,
+					search: params.term
 				};
 			},
 			processResults: function (data, params) {
