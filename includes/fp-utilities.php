@@ -182,7 +182,7 @@ function fp_lostpassword_url() {
 add_filter( 'lostpassword_url',  'fp_lostpassword_url', 10, 0 );
 
 /**
- * Returns the url to the lost password endpoint url
+ * Returns the url to the book endpoint url
  *
  * @access public
  * @return string
@@ -193,7 +193,7 @@ function fp_book_url() {
 add_filter( 'book_url',  'fp_book_url', 10, 0 );
 
 /**
- * Returns the url to the lost password endpoint url
+ * Returns the url to the membership endpoint url
  *
  * @access public
  * @return string
@@ -204,7 +204,7 @@ function fp_membership_url() {
 add_filter( 'book_url',  'fp_membership_url', 10, 0 );
 
 /**
- * Returns the url to the lost password endpoint url
+ * Returns the url to the checkout endpoint url
  *
  * @access public
  * @return string
@@ -215,7 +215,7 @@ function fp_checkout_url() {
 add_filter( 'checkout_url',  'fp_checkout_url', 10, 0 );
 
 /**
- * Returns the url to the lost password endpoint url
+ * Returns the url to the cancel endpoint url
  *
  * @access public
  * @return string
@@ -226,7 +226,7 @@ function fp_cancel_url() {
 add_filter( 'cancel_url',  'fp_cancel_url', 10, 0 );
 
 /**
- * Returns the url to the lost password endpoint url
+ * Returns the url to the confirm endpoint url
  *
  * @access public
  * @return string
@@ -237,7 +237,7 @@ function fp_confirm_url() {
 add_filter( 'confirm_url',  'fp_confirm_url', 10, 0 );
 
 /**
- * Returns the url to the lost password endpoint url
+ * Returns the url to the notify endpoint url
  *
  * @access public
  * @return string
@@ -246,8 +246,9 @@ function fp_notify_url() {
 	return fp_get_endpoint_url( 'notify', '', fp_get_page_permalink( 'sign-up' ) );
 }
 add_filter( 'notify_url',  'fp_notify_url', 10, 0 );
+
 /**
- * Returns the url to the lost password endpoint url
+ * Returns the url to the make-booking endpoint url
  *
  * @access public
  * @return string
@@ -258,7 +259,7 @@ function fp_make_booking_url() {
 add_filter( 'make_booking_url',  'fp_make_booking_url', 10, 0 );
 
 /**
- * Returns the url to the lost password endpoint url
+ * Returns the url to the cancel-booking endpoint url
  *
  * @access public
  * @return string

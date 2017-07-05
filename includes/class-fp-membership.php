@@ -101,13 +101,11 @@ class FP_Membership {
 	}
 
 	/**
-	* Adds credits to user if subscription is successfully activated
-	*
-	* @param int $user_id A user ID for the user that the subscription was activated for.
-	* @param mixed $subscription_key The key referring to the activated subscription
-	* @version 1.0
-	* @since 0.1
-	*/
+     * Maybe send member list function
+     *
+	 * @param bool $force
+	 * @param bool $none_members
+	 */
 	public static function maybe_send_member_list( $force = false, $none_members = false ) {
 
 		if ( 1 == date( 'j' ) || $force ) :
@@ -256,6 +254,8 @@ class FP_Membership {
 
 	/**
 	 * Renders the meta box.
+     *
+     * @param $post
 	 */
 	public function render_metabox( $post ) {
 		// Add nonce for security and authentication.

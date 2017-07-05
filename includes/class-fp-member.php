@@ -174,7 +174,9 @@ class FP_Member {
 	}
 
 	/**
-	 * Renders the meta box.
+     * Renders the meta box.
+     *
+	 * @param $post
 	 */
 	public function render_member_metabox( $post ) {
 		// Add nonce for security and authentication.
@@ -303,11 +305,10 @@ class FP_Member {
 	}
 
 	/**
-	 * Handles saving the meta box.
-	 *
-	 * @param int     $post_id Post ID.
+     * Handles saving session metabox
+     *
+	 * @param $membership_id
 	 * @param WP_Post $post    Post object.
-	 * @return null
 	 */
 	public function save_session_metabox( $membership_id, $post ) {
 

@@ -119,6 +119,8 @@ class FP_Session {
 
     /**
      * Renders the meta box.
+     *
+     * @param $post
      */
     public function render_session_metabox( $post ) {
         // Add nonce for security and authentication.

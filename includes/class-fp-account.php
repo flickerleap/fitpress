@@ -174,10 +174,13 @@ class FP_Account {
 
 	}
 
+
 	/**
 	 * My account page
 	 *
-	 * @param  array $atts
+	 * @param $atts
+	 *
+	 * @return string
 	 */
 	private static function account( $atts ) {
 		extract( shortcode_atts( array(
@@ -189,10 +192,11 @@ class FP_Account {
 		) );
 	}
 
+
 	/**
-	 * My account page
+	 * My membership page
 	 *
-	 * @param  array $atts
+	 * @return string
 	 */
 	private static function membership() {
 
@@ -218,9 +222,9 @@ class FP_Account {
 	}
 
 	/**
-	 * My account page
+	 * Account menu
 	 *
-	 * @param  array $atts
+	 * @return string
 	 */
 	private static function account_menu( ) {
 

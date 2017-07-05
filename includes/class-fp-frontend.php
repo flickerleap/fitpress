@@ -178,9 +178,9 @@ class FP_Frontend {
 	}
 
 	/**
-	 * My account page
+	 * Checkout page
 	 *
-	 * @param  array $atts
+	 * @return string
 	 */
 	private static function checkout( ) {
 
@@ -221,10 +221,9 @@ class FP_Frontend {
 
 	}
 
+
 	/**
-	 * My account page
-	 *
-	 * @param  array $atts
+	 * Notify function
 	 */
 	private static function notify( ) {
 
@@ -235,9 +234,9 @@ class FP_Frontend {
 	}
 
 	/**
-	 * My account page
+	 * Cancel function
 	 *
-	 * @param  array $atts
+	 * @return string
 	 */
 	private static function cancel( ) {
 

@@ -166,7 +166,9 @@ class FP_Classes {
 	}
 
 	/**
-	 * Renders the meta box.
+     * Renders the metabox
+     *
+	 * @param $post
 	 */
 	public function render_class_metabox( $post ) {
 		// Add nonce for security and authentication.
