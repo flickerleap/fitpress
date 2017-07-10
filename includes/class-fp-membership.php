@@ -442,10 +442,11 @@ class FP_Membership {
 
 	function save_membership_profile_fields( $member_id ) {
 
-		if ( !current_user_can( 'edit_user', $member_id ) )
+		if ( !current_user_can( 'edit_user', $member_id ) ) {
 			return false;
+        }
 
-		if( isset( $_POST['membership_id'] ) && isset( $_POST['credits'] ) && isset( $_POST['membership_date'] ) ) :
+		if ( isset( $_POST['membership_id'] ) && isset( $_POST['credits'] ) && isset( $_POST['membership_date'] ) ) :
 
 			$old_membership_id = get_user_meta( $member_id, 'fitpress_membership_id', true );
 			$old_credits = get_user_meta( $member_id, 'fitpress_credits', true );
@@ -463,11 +464,25 @@ class FP_Membership {
 
 			endif;
 
+			if ( $old_membership_id != $membership_id ) {
+				$user = get_userdata($member_id);
+
+				$subject = 'Notification: Package change for ' . $user->display_name;
+				$message = '';
+				$message .= '<p>Please note, <strong>' . $user->display_name . '</strong> (#' . $member_id . ') has updated their package:</p>';
+				$message .= '<p>From: <strong>'. get_the_title($old_membership_id) .'</strong><br> To: <strong>'. get_the_title($membership_id) .'</strong></p>';
+				$message .= '<p>Kind regards,<br />' . get_bloginfo( 'name' ) . '</p>';
+
+				$fp_email = new FP_Email();
+				$fp_email->send_email( get_bloginfo( 'admin_email' ), $subject, array( 'header' => $subject, 'message' => $message ) );
+            }
+
 			do_action( 'fitpress_before_membership_profile_save', array( 'member_id' => $member_id, 'old_membership_id' => $old_membership_id ) );
 
 			update_user_meta( $member_id, 'fitpress_membership_id', $membership_id, $old_membership_id );
 			update_user_meta( $member_id, 'fitpress_credits', $credits, $old_credits );
 			update_user_meta( $member_id, 'fitpress_membership_date', $membership_date, $old_membership_date );
+
 
 		endif;
 
