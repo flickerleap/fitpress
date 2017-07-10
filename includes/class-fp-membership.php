@@ -483,7 +483,6 @@ class FP_Membership {
 			update_user_meta( $member_id, 'fitpress_credits', $credits, $old_credits );
 			update_user_meta( $member_id, 'fitpress_membership_date', $membership_date, $old_membership_date );
 
-
 		endif;
 
 		update_user_meta( $member_id, 'contact_number', $_POST['contact_number'] );
