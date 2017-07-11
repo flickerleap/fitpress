@@ -1,0 +1,303 @@
+table.fp-calendar {
+  width: 100%;
+  border: none;
+}
+
+tr.fp-calendar-row {
+  border: none;
+}
+
+td.fp-calendar-day {
+  min-height: 80px;
+  position: relative;
+
+  .mobile-day {
+    display: none;
+  }
+
+  &:hover {
+    background: #eee;
+  }
+}
+
+td.fp-calendar-day-np {
+  background: #faf1f1;
+  min-height: 80px;
+}
+
+th.fp-calendar-day-head {
+  width: calc(100% / 7);
+  border: none;
+  font-weight: bold;
+  text-align: center;
+  padding: 5px;
+  font-size: 13px;
+}
+
+div.fp-day-number {
+  padding: 0 5px;
+  height: 25px;
+  line-height: 25px;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 1px solid #999;
+}
+
+td.fp-calendar-day,
+td.fp-calendar-day-np {
+  border: 1px solid #fff;
+  font-size: 10px;
+  padding: 5px 5px 0px;
+  vertical-align: top;
+  text-align: center;
+}
+
+table.fp-calendar td {
+  .day-session {
+    clear: both;
+    position: relative;
+    margin-bottom: 0;
+    padding: 5px;
+
+    &:nth-child(odd) {
+      background: #eee;
+    }
+
+    .class-name {
+      font-size: 9px;
+      margin: 0;
+    }
+
+    .session-time {
+      font-size: 11px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .session-book {
+      font-size: 9px;
+      line-height: 1.2em;
+      margin: 0;
+      width: 50%;
+      display: inline-block;
+    }
+
+    .session-space {
+      font-size: 9px;
+      line-height: 1.2em;
+      margin: 0;
+      width: 50%;
+      display: inline-block;
+    }
+  }
+}
+
+.page table.fp-calendar td {
+  .button {
+    font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: inline-block;
+    background: #eee;
+    color: #222;
+    border: none;
+    line-height: 1.5em;
+    padding: 0 5px;
+    border-radius: 4px;
+    margin: 0;
+    box-shadow: none;
+
+    &:hover {
+      background: #ddd;
+    }
+
+    &.do-booking {
+      background: #55dd55;
+      text-decoration: none;
+      border: none;
+      color: #fff !important;
+      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+
+      &:hover {
+        background: #44cc44;
+      }
+    }
+
+    &.button-cancel {
+      background: #dd5555;
+      color: #fff !important;
+      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    &.button-booking:hover {
+      background: #cc4444;
+    }
+  }
+}
+
+@media only screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1024px) {
+  table.fp-calendar {
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+      display: block;
+      width: 100%;
+    }
+
+    thead tr,
+    tr td.fp-calendar-day-np,
+    tr td.fp-calendar-day-empty {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+
+    tr .mobile-day {
+      display: inline
+    }
+
+    td { /* Behave  like a "row" */
+      border: none;
+      background: none;
+
+      .day-session {
+        width: 50%;
+        display: inline-block;
+        padding: 10px;
+        background: none;
+
+        &:nth-child(odd) {
+          background: none;
+        }
+      }
+    }
+
+    div.fp-day-number {
+      font-size: 13px;
+    }
+  }
+}
+
+.account-menu {
+  margin: 0 0 20px;
+  padding: 0;
+
+  li {
+    margin: 0 10px 0 0;
+    padding: 0;
+    list-style: none;
+    display: inline-block;
+
+    a {
+      display: inline-block;
+      box-shadow: none;
+      padding: 0 10px;
+      line-height: 2em;
+      border-radius: 4px;
+      color: #444;
+
+      &:hover {
+        background: #eee;
+      }
+    }
+  }
+
+  .active a {
+    background: #eee;
+  }
+}
+
+.flash-message {
+  padding: 10px;
+  border-left: 5px solid;
+  border-radius: 4px;
+  background: #eeeeee;
+  margin-bottom: 10px;
+}
+
+.flash-message-error {
+  border-left-color: #dd5555;
+  background: #ffeeee;
+
+  a {
+    color: #dd5555;
+  }
+}
+
+.flash-message-success {
+  border-left-color: #55dd55;
+  background: #eeffee;
+
+  a {
+    color: #55dd55;
+  }
+}
+
+.form-row {
+  padding: 0.7em;
+
+  &.form-row-first,
+  &.form-row-last {
+    width: 50%;
+    float: left;
+  }
+
+  &.form-row-first {
+    clear: both;
+  }
+
+  &.form-row-wide {
+    width: 100%;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  input[type=email],
+  input[type=text],
+  input[type=url],
+  input[type=search],
+  input[type=password],
+  input[type=number],
+  input[type=tel],
+  input[type=date] {
+    height: 40px !important;
+    margin: 0;
+    padding: 0.7em;
+    border: 1px solid #ddd;
+    color: #666;
+    font-size: 14px;
+    line-height: normal !important;
+    width: 100%;
+  }
+
+  input[type=button],
+  input[type=submit],
+  button {
+    height: 40px !important;
+    margin: 10px 0 0;
+    padding: 0.7em;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    line-height: normal !important;
+  }
+
+  select {
+    height: 40px;
+    margin: 0;
+    padding: 0.7em;
+    border: 1px solid #ddd;
+    color: #666;
+    font-size: 14px;
+    line-height: normal !important;
+    width: 100%;
+  }
+
+}
+
