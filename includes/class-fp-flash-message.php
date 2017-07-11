@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Flash_Message Class.
+ * Class FP_Flash_Message
  */
 class FP_Flash_Message {
 

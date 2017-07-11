@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Notification Class.
+ * Class FP_Notification
  */
 class FP_Notification {
 

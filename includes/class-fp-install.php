@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Install Class.
+ * Class FP_Install
  */
 class FP_Install {
 

@@ -16,8 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Classes Class.
- * For the Classes Post Type
+ * Class FP_Classes
  */
 class FP_Classes {
 

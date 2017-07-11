@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Membership_Status Class.
+ * Class FP_Membership_Status
  */
 class FP_Membership_Status {
 

@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Booking Class.
+ * Class FP_Booking
  */
 class FP_Booking {
 

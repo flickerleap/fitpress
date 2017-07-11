@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Frontend Class.
+ * Class FP_Frontend
  */
 class FP_Frontend {
 

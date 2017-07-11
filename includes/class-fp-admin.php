@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Admin Class.
+ * Class FP_Admin
  */
 class FP_Admin {
 
