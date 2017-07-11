@@ -250,7 +250,7 @@ class FP_Account {
 		return fp_get_template_html( 'account/calender-bookings.php', array(
 			'sessions' => $session_data['sessions'],
 			'user_id'  => $session_data['user_id'],
-			'credits'  => $session_data['credits']
+			'credits'  => $session_data['credits'],
 		) );
 
 	}
@@ -368,7 +368,7 @@ class FP_Account {
 
 		$FP_Email->send_email( $user_email, get_bloginfo( 'name' ) . ' Password Reset Link', array(
 			'header'  => 'Reset Password',
-			'message' => $message = '<p>Click this link to reset your password: <a href="' . $reset_url . '">' . $reset_url . '</a></p>'
+			'message' => $message = '<p>Click this link to reset your password: <a href="' . $reset_url . '">' . $reset_url . '</a></p>',
 		) );
 
 		fp_add_flash_message( __( 'Check your e-mail for the confirmation link.', 'fitpress' ) );
@@ -528,7 +528,7 @@ class FP_Account {
 			'password_2',
 			'reset_key',
 			'reset_login',
-			'_wpnonce'
+			'_wpnonce',
 		);
 
 		foreach ( $posted_fields as $field ) {
