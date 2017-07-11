@@ -42,6 +42,7 @@ jQuery( document ).ready( function( $ ) {
 
 			$('.add-member').val( $( this ).data( 'member-id' ) );
 			$('.find-member-search').val( '' );
+			// @TODO escape() has been deprecated, find alternative.
 			$('.find-member-search').val( escape( '<span>' + $( this ).text() + '</span>' ) );
 			$( '.add-member' ).data( 'added-members' ).push( $( this ).data( 'member-id' ) );
 
@@ -62,7 +63,7 @@ jQuery( document ).ready( function( $ ) {
 			data: function (params) {
 				return {
 					action: 'fp_find_member',
-					search: params.term,
+					search: params.term
 				};
 			},
 			processResults: function (data, params) {

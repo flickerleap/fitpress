@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Post_Types Class.
+ * Class FP_Install
  */
 class FP_Install {
 
@@ -26,16 +26,16 @@ class FP_Install {
 	public static function install() {
 
 		$holidays = array(
-			'1 January' => 'New Year\'s Day',
-			'21 March' => 'Human Rights Day',
-			'27 April' => 'Freedom Day',
-			'1 May' => 'Workers Day',
-			'16 June' => 'Youth Day',
-			'9 August' => 'National Women\'s Day',
+			'1 January'    => 'New Year\'s Day',
+			'21 March'     => 'Human Rights Day',
+			'27 April'     => 'Freedom Day',
+			'1 May'        => 'Workers Day',
+			'16 June'      => 'Youth Day',
+			'9 August'     => 'National Women\'s Day',
 			'24 September' => 'Heritage Day',
-			'16 December' => 'Day of Reconciliation',
-			'25 December' => 'Christmas Day',
-			'26 December' => 'Day of Goodwill',
+			'16 December'  => 'Day of Reconciliation',
+			'25 December'  => 'Christmas Day',
+			'26 December'  => 'Day of Goodwill',
 		);
 
 		update_option( 'fitpress_holidays', $holidays );
@@ -43,9 +43,9 @@ class FP_Install {
 		if ( ! get_page_by_title( 'Account' ) ) :
 
 			$account_page = array(
-				'post_type' => 'page',
-				'post_title' => 'Account',
-				'post_status' => 'publish',
+				'post_type'    => 'page',
+				'post_title'   => 'Account',
+				'post_status'  => 'publish',
 				'post_content' => '[fitpress_account]',
 			);
 
@@ -56,9 +56,9 @@ class FP_Install {
 		if ( ! get_page_by_title( 'Sign Up' ) ) :
 
 			$signup_page = array(
-				'post_type' => 'page',
-				'post_title' => 'Sign Up',
-				'post_status' => 'publish',
+				'post_type'    => 'page',
+				'post_title'   => 'Sign Up',
+				'post_status'  => 'publish',
 				'post_content' => '[fitpress_signup]',
 			);
 
@@ -122,15 +122,15 @@ class FP_Install {
 
 							if ( $package_id && $package_id !== 0 ) :
 
-								$credits = get_user_meta( $user_id, 'fitpress_credits', true );
+								$credits               = get_user_meta( $user_id, 'fitpress_credits', true );
 								$membership_start_date = get_user_meta( $user_id, 'fitpress_membership_date', true );
-								$renewal_date = get_user_meta( $user_id, 'fitpress_next_invoice_date', true );
-								$membership_status = get_user_meta( $user_id, 'fitpress_membership_status', true );
+								$renewal_date          = get_user_meta( $user_id, 'fitpress_next_invoice_date', true );
+								$membership_status     = get_user_meta( $user_id, 'fitpress_membership_status', true );
 
 								$membership_post = array(
-									'post_title' => 'Membership for user id: ' . $user_id,
+									'post_title'   => 'Membership for user id: ' . $user_id,
 									'post_content' => '',
-									'post_status'    => 'publish',
+									'post_status'  => 'publish',
 									'post_type'    => 'fp_member',
 								);
 

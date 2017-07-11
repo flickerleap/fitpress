@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Post_Types Class.
+ * Class FP_Frontend
  */
 class FP_Frontend {
 
@@ -32,17 +32,18 @@ class FP_Frontend {
 	*
 	* @return  FP_Membership A single instance of this class.
 	*/
-	public static function get_instance( ) {
+	public static function get_instance() {
 		if ( null == self::$instance ) {
 			self::$instance = new self;
 		}
+
 		return self::$instance;
 	} // end get_instance;
 
 	/**
 	 * Hook in methods.
 	 */
-	public function __construct(){
+	public function __construct() {
 
 		add_shortcode( 'fitpress_memberships', array( $this, 'membership_output' ) );
 
@@ -62,7 +63,7 @@ class FP_Frontend {
 
 	}
 
-	public function add_endpoints(){
+	public function add_endpoints() {
 
 		foreach ( $this->query_vars as $var ) {
 			add_rewrite_endpoint( $var, EP_ROOT | EP_PAGES );
@@ -86,7 +87,9 @@ class FP_Frontend {
 	 * add_query_vars function.
 	 *
 	 * @access public
+	 *
 	 * @param array $vars
+	 *
 	 * @return array
 	 */
 	public function add_query_vars( $vars ) {
@@ -107,15 +110,13 @@ class FP_Frontend {
 		foreach ( $this->query_vars as $key => $var ) {
 			if ( isset( $_GET[ $var ] ) ) {
 				$wp->query_vars[ $key ] = $_GET[ $var ];
-			}
-
-			elseif ( isset( $wp->query_vars[ $var ] ) ) {
+			} elseif ( isset( $wp->query_vars[ $var ] ) ) {
 				$wp->query_vars[ $key ] = $wp->query_vars[ $var ];
 			}
 		}
 	}
 
-	public function maybe_notification_request(){
+	public function maybe_notification_request() {
 
 		global $wp;
 
@@ -130,13 +131,16 @@ class FP_Frontend {
 	public function membership_output( $atts ) {
 
 		$args = array(
-			'post_type' => 'membership',
+			'post_type'      => 'membership',
 			'posts_per_page' => '10',
 		);
 
 		$memberships = new WP_Query( $args );
 
-		$signup = apply_filters( 'fp_membership_signup_button', array( 'text' => 'Enquire', 'link' => fp_get_page_permalink( 'sign-up' ) ) );
+		$signup = apply_filters( 'fp_membership_signup_button', array(
+			'text' => 'Enquire',
+			'link' => fp_get_page_permalink( 'sign-up' )
+		) );
 
 		fp_get_template_html( 'general/shortcode.php', array( 'memberships' => $memberships, 'signup' => $signup ) );
 
@@ -169,8 +173,8 @@ class FP_Frontend {
 			$packages = FP_Membership::get_memberships();
 
 			return fp_get_template_html( 'sign-up/sign-up.php', array(
-				'packages' => $packages,
-				'current_user' 	=> get_userdata( get_current_user_id() ),
+				'packages'     => $packages,
+				'current_user' => get_userdata( get_current_user_id() ),
 			) );
 
 		endif;
@@ -178,11 +182,11 @@ class FP_Frontend {
 	}
 
 	/**
-	 * My account page
+	 * Checkout page
 	 *
-	 * @param  array $atts
+	 * @return string
 	 */
-	private static function checkout( ) {
+	private static function checkout() {
 
 		$payment = new FP_Payment();
 
@@ -205,13 +209,13 @@ class FP_Frontend {
 			$pay_now = false;
 		endif;
 
-		$return =  fp_get_template_html( 'sign-up/checkout.php', array(
-			'current_user' 	=> $current_user,
-			'membership' => $membership,
-			'pay_now' => $pay_now,
+		$return = fp_get_template_html( 'sign-up/checkout.php', array(
+			'current_user' => $current_user,
+			'membership'   => $membership,
+			'pay_now'      => $pay_now,
 		) );
 
-		foreach( $payment_methods as $method => $name ):
+		foreach ( $payment_methods as $method => $name ):
 
 			$return .= apply_filters( 'fitpress_payment_method_' . $method, $membership, $current_user, $pay_now );
 
@@ -221,12 +225,11 @@ class FP_Frontend {
 
 	}
 
+
 	/**
-	 * My account page
-	 *
-	 * @param  array $atts
+	 * Notify function
 	 */
-	private static function notify( ) {
+	private static function notify() {
 
 		$method = $_GET['method'];
 
@@ -235,11 +238,11 @@ class FP_Frontend {
 	}
 
 	/**
-	 * My account page
+	 * Cancel function
 	 *
-	 * @param  array $atts
+	 * @return string
 	 */
-	private static function cancel( ) {
+	private static function cancel() {
 
 		$return = '';
 
@@ -254,11 +257,11 @@ class FP_Frontend {
 		$current_user = get_userdata( $user_id );
 
 		$return .= fp_get_template( 'sign-up/checkout.php', array(
-			'current_user' 	=> $current_user,
-			'membership' => $membership,
+			'current_user' => $current_user,
+			'membership'   => $membership,
 		) );
 
-		foreach( $payment_methods as $method => $name ):
+		foreach ( $payment_methods as $method => $name ):
 
 			$return .= apply_filters( 'fitpress_payment_method_' . $method, $membership, $current_user );
 
@@ -268,35 +271,35 @@ class FP_Frontend {
 
 	}
 
-	public function process_signup(){
+	public function process_signup() {
 
-		if ( 'POST' !== strtoupper( $_SERVER[ 'REQUEST_METHOD' ] ) ) :
+		if ( 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ) ) :
 			return;
 		endif;
 
-		if ( empty( $_POST[ 'action' ] ) || 'signup_account' !== $_POST[ 'action' ] || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'signup_account' ) ) :
+		if ( empty( $_POST['action'] ) || 'signup_account' !== $_POST['action'] || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'signup_account' ) ) :
 			return;
 		endif;
 
-		$errors       = new WP_Error();
-		$user         = new stdClass();
+		$errors = new WP_Error();
+		$user   = new stdClass();
 
-		$user->ID     = (int) get_current_user_id();
+		$user->ID = (int) get_current_user_id();
 
-		$account_first_name = ! empty( $_POST[ 'account_first_name' ] ) ? sanitize_text_field( $_POST[ 'account_first_name' ] ) : '';
-		$account_last_name  = ! empty( $_POST[ 'account_last_name' ] ) ? sanitize_text_field( $_POST[ 'account_last_name' ] ) : '';
-		$account_email      = ! empty( $_POST[ 'account_email' ] ) ? sanitize_email( $_POST[ 'account_email' ] ) : '';
-		$contact_number      = ! empty( $_POST[ 'contact_number' ] ) ? sanitize_text_field( $_POST[ 'contact_number' ] ) : '';
+		$account_first_name = ! empty( $_POST['account_first_name'] ) ? sanitize_text_field( $_POST['account_first_name'] ) : '';
+		$account_last_name  = ! empty( $_POST['account_last_name'] ) ? sanitize_text_field( $_POST['account_last_name'] ) : '';
+		$account_email      = ! empty( $_POST['account_email'] ) ? sanitize_email( $_POST['account_email'] ) : '';
+		$contact_number     = ! empty( $_POST['contact_number'] ) ? sanitize_text_field( $_POST['contact_number'] ) : '';
 
-		$emergency_contact_name      = ! empty( $_POST[ 'emergency_contact_name' ] ) ? sanitize_text_field( $_POST[ 'emergency_contact_name' ] ) : '';
-		$emergency_contact_number      = ! empty( $_POST[ 'emergency_contact_number' ] ) ? sanitize_text_field( $_POST[ 'emergency_contact_number' ] ) : '';
-		$account_username      = ! empty( $_POST[ 'account_username' ] ) ? sanitize_text_field( $_POST[ 'account_username' ] ) : '';
+		$emergency_contact_name   = ! empty( $_POST['emergency_contact_name'] ) ? sanitize_text_field( $_POST['emergency_contact_name'] ) : '';
+		$emergency_contact_number = ! empty( $_POST['emergency_contact_number'] ) ? sanitize_text_field( $_POST['emergency_contact_number'] ) : '';
+		$account_username         = ! empty( $_POST['account_username'] ) ? sanitize_text_field( $_POST['account_username'] ) : '';
 
-		$package_id		= ! empty( $_POST[ 'package_id' ] ) ? $_POST[ 'package_id' ] : '';
-		$membership_status	= 'on-hold';
+		$package_id        = ! empty( $_POST['package_id'] ) ? $_POST['package_id'] : '';
+		$membership_status = 'on-hold';
 
-		$pass1              = ! empty( $_POST[ 'password_1' ] ) ? $_POST[ 'password_1' ] : '';
-		$pass2              = ! empty( $_POST[ 'password_2' ] ) ? $_POST[ 'password_2' ] : '';
+		$pass1 = ! empty( $_POST['password_1'] ) ? $_POST['password_1'] : '';
+		$pass2 = ! empty( $_POST['password_2'] ) ? $_POST['password_2'] : '';
 
 		if ( empty( $package_id ) ) :
 			fp_add_flash_message( __( 'Please select a package.', 'fitpress' ), 'error' );
@@ -318,7 +321,7 @@ class FP_Frontend {
 			fp_add_flash_message( __( 'Please enter an emergency contact.', 'fitpress' ), 'error' );
 		endif;
 
-		$email_user_id = email_exists( $account_email );
+		$email_user_id    = email_exists( $account_email );
 		$username_user_id = username_exists( $account_username );
 
 		if ( $user->ID <= 0 ) :
@@ -334,10 +337,10 @@ class FP_Frontend {
 			elseif ( $username_user_id && $email_user_id && $username_user_id != $email_user_id ):
 				fp_add_flash_message( __( 'A member with that username already exists. Please choose another username.', 'fitpress' ), 'error' );
 			elseif ( $username_user_id && $email_user_id && $username_user_id == $email_user_id ):
-					add_user_to_blog( get_current_blog_id(), $username_user_id, 'subscriber' );
-					update_user_meta( $username_user_id, 'fitpress_membership_id', $membership_id );
-					update_user_meta( $username_user_id, 'fitpress_membership_status', $membership_status );
-					fp_add_flash_message( __( 'A user account was found with your details. The account has been linked to this membership, please <a href="' . fp_get_page_permalink('account') . '">log in</a> to complete the sign up.', 'fitpress' ), 'error' );
+				add_user_to_blog( get_current_blog_id(), $username_user_id, 'subscriber' );
+				update_user_meta( $username_user_id, 'fitpress_membership_id', $membership_id );
+				update_user_meta( $username_user_id, 'fitpress_membership_status', $membership_status );
+				fp_add_flash_message( __( 'A user account was found with your details. The account has been linked to this membership, please <a href="' . fp_get_page_permalink( 'account' ) . '">log in</a> to complete the sign up.', 'fitpress' ), 'error' );
 			endif;
 
 			if ( empty( $pass1 ) || empty( $pass2 ) ) :
@@ -367,10 +370,10 @@ class FP_Frontend {
 			if ( $user->ID <= 0 ) :
 
 				$user = array(
-					'user_login' 	=> $account_username,
-					'user_email' 	=> $account_email,
-					'display_name'	=> $account_first_name . ' ' . $account_last_name,
-					'user_pass'		=> $pass1,
+					'user_login'   => $account_username,
+					'user_email'   => $account_email,
+					'display_name' => $account_first_name . ' ' . $account_last_name,
+					'user_pass'    => $pass1,
 				);
 
 				$user_id = wp_insert_user( $user );
@@ -379,7 +382,7 @@ class FP_Frontend {
 
 				$user = get_user_by( 'id', $user->ID );
 
-				$user->user_email = $account_email;
+				$user->user_email   = $account_email;
 				$user->display_name = $account_first_name . ' ' . $account_last_name;
 
 				$user_id = wp_update_user( $user );
@@ -393,9 +396,9 @@ class FP_Frontend {
 				if ( ! $membership ) :
 
 					$membership_post = array(
-						'post_title' => 'Membership for user id: ' . $user_id,
+						'post_title'   => 'Membership for user id: ' . $user_id,
 						'post_content' => '',
-						'post_status'    => 'publish',
+						'post_status'  => 'publish',
 						'post_type'    => 'fp_member',
 					);
 
@@ -415,7 +418,7 @@ class FP_Frontend {
 
 				update_post_meta( $membership_id, '_fp_package_id', $package_id );
 				update_post_meta( $membership_id, '_fp_membership_status', $membership_status );
-				update_post_meta( $membership_id, '_fp_membership_start_date', strtotime( date('j F Y') ) );
+				update_post_meta( $membership_id, '_fp_membership_start_date', strtotime( date( 'j F Y' ) ) );
 				update_post_meta( $membership_id, '_fp_user_id', $user_id );
 
 				fp_add_flash_message( __( 'Sign up complete.', 'fitpress' ) );
