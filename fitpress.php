@@ -56,6 +56,7 @@ if ( ! class_exists( 'FitPress' ) ) :
 			if ( is_null( self::$_instance ) ) {
 				self::$_instance = new self();
 			}
+
 			return self::$_instance;
 		}
 
@@ -152,6 +153,7 @@ if ( ! class_exists( 'FitPress' ) ) :
 
 		/**
 		 * Define constant if not already set
+		 *
 		 * @param  string $name
 		 * @param  string|bool $value
 		 */
@@ -204,6 +206,7 @@ if ( ! class_exists( 'FitPress' ) ) :
 		 * What type of request is this?
 		 *
 		 * @param  string $type admin, ajax, cron or frontend.
+		 *
 		 * @return bool
 		 */
 		private function is_request( $type ) {

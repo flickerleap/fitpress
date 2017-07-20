@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Post_Types Class.
+ * FP_Account Class.
  */
 class FP_Account {
 
@@ -25,7 +25,7 @@ class FP_Account {
 	/**
 	 * Hook in methods.
 	 */
-    public function __construct(){
+	public function __construct() {
 
 		add_action( 'init', array( $this, 'add_endpoints' ) );
 
@@ -39,8 +39,8 @@ class FP_Account {
 		add_action( 'template_redirect', array( $this, 'update_membership' ) );
 
 		if ( ! is_admin() ) :
-			add_filter( 'query_vars', array( $this, 'add_query_vars'), 0 );
-			add_action( 'parse_request', array( $this, 'parse_request'), 0 );
+			add_filter( 'query_vars', array( $this, 'add_query_vars' ), 0 );
+			add_action( 'parse_request', array( $this, 'parse_request' ), 0 );
 		endif;
 
 		$this->init_query_vars();
@@ -49,7 +49,7 @@ class FP_Account {
 
 	}
 
-	public function add_endpoints(){
+	public function add_endpoints() {
 
 		foreach ( $this->query_vars as $var ) {
 			add_rewrite_endpoint( $var, EP_ROOT | EP_PAGES );
@@ -57,7 +57,7 @@ class FP_Account {
 
 	}
 
-	public function maybe_show_details_alert(){
+	public function maybe_show_details_alert() {
 
 		global $wp;
 		global $wp_query;
@@ -66,14 +66,14 @@ class FP_Account {
 			return;
 		endif;
 
-		$user_id     = (int) get_current_user_id();
+		$user_id      = (int) get_current_user_id();
 		$details_page = isset( $wp->query_vars['update-account'] ) || get_page_by_path( 'sign-up' )->ID == $wp_query->queried_object_id;
 
-		if ( $user_id && ! $details_page && ( ! get_user_meta( $user_id, 'first_name', true ) || ! get_user_meta( $user_id, 'last_name', true ) || ! get_user_meta( $user_id, 'contact_number', true ) ||  ! get_user_meta( $user_id, 'emergency_contact_name', true ) ||  ! get_user_meta( $user_id, 'emergency_contact_number', true ) ) ) :
+		if ( $user_id && ! $details_page && ( ! get_user_meta( $user_id, 'first_name', true ) || ! get_user_meta( $user_id, 'last_name', true ) || ! get_user_meta( $user_id, 'contact_number', true ) || ! get_user_meta( $user_id, 'emergency_contact_name', true ) || ! get_user_meta( $user_id, 'emergency_contact_number', true ) ) ) :
 			fp_add_flash_message(
 				sprintf(
-					__( 'We do not have all your details, please update them %shere%s.','fitpress' ),
-					'<a href="' . fp_customer_edit_account_url( ) . '">',
+					__( 'We do not have all your details, please update them %shere%s.', 'fitpress' ),
+					'<a href="' . fp_customer_edit_account_url() . '">',
 					'</a>'
 				),
 				'error'
@@ -100,7 +100,9 @@ class FP_Account {
 	 * add_query_vars function.
 	 *
 	 * @access public
+	 *
 	 * @param array $vars
+	 *
 	 * @return array
 	 */
 	public function add_query_vars( $vars ) {
@@ -121,15 +123,13 @@ class FP_Account {
 		foreach ( $this->query_vars as $key => $var ) {
 			if ( isset( $_GET[ $var ] ) ) {
 				$wp->query_vars[ $key ] = $_GET[ $var ];
-			}
-
-			elseif ( isset( $wp->query_vars[ $var ] ) ) {
+			} elseif ( isset( $wp->query_vars[ $var ] ) ) {
 				$wp->query_vars[ $key ] = $wp->query_vars[ $var ];
 			}
 		}
 	}
 
-	public function output( $atts ){
+	public function output( $atts ) {
 
 		global $wp;
 
@@ -139,7 +139,7 @@ class FP_Account {
 
 			if ( isset( $wp->query_vars['lost-password'] ) ) {
 
-				$return .=self::lost_password();
+				$return .= self::lost_password();
 
 			} else {
 
@@ -153,7 +153,7 @@ class FP_Account {
 
 			if ( isset( $wp->query_vars['update-account'] ) ) {
 
-				$return .=self::edit_account();
+				$return .= self::edit_account();
 
 			} elseif ( isset( $wp->query_vars['book'] ) ) {
 
@@ -161,7 +161,7 @@ class FP_Account {
 
 			} elseif ( isset( $wp->query_vars['membership'] ) ) {
 
-				$return .= self::membership( );
+				$return .= self::membership();
 
 			} else {
 
@@ -174,58 +174,61 @@ class FP_Account {
 
 	}
 
+
 	/**
 	 * My account page
 	 *
-	 * @param  array $atts
+	 * @param $atts
+	 *
+	 * @return string
 	 */
 	private static function account( $atts ) {
-		extract( shortcode_atts( array(
-		), $atts ) );
+		extract( shortcode_atts( array(), $atts ) );
 
 		return fp_get_template_html( 'account/account.php', array(
-			'current_user' 	=> get_userdata( get_current_user_id() ),
+			'current_user'    => get_userdata( get_current_user_id() ),
 			'booked_sessions' => FP_Booking::get_booked_sessions( array( 'member_id' => get_current_user_id() ) ),
 		) );
 	}
 
+
 	/**
-	 * My account page
+	 * My membership page
 	 *
-	 * @param  array $atts
+	 * @return string
 	 */
 	private static function membership() {
 
-		$packages = FP_Membership::get_memberships( );
+		$packages = FP_Membership::get_memberships();
 
 		$membership = FP_Membership::get_user_membership( get_current_user_id() );
 
 		if ( $membership ) :
 
-			$membership_status = new FP_Membership_Status( $membership['membership_id'] );
+			$membership_status    = new FP_Membership_Status( $membership['membership_id'] );
 			$membership['status'] = $membership_status->get_status();
 
 			$membership['renewal_date'] = get_post_meta( $membership['membership_id'], '_fp_renewal_date', true );
-			$membership['expiration'] = get_post_meta( $membership['membership_id'], '_fp_expiration_date', true );
+			$membership['expiration']   = get_post_meta( $membership['membership_id'], '_fp_expiration_date', true );
 
 		endif;
 
 		return fp_get_template_html( 'account/membership.php', array(
-			'membership' => $membership,
-			'packages' => $packages,
+			'membership'    => $membership,
+			'packages'      => $packages,
 			'membership_id' => $membership['membership_id'],
 		) );
 	}
 
 	/**
-	 * My account page
+	 * Account menu
 	 *
-	 * @param  array $atts
+	 * @return string
 	 */
-	private static function account_menu( ) {
+	private static function account_menu() {
 
 		return fp_get_template_html( 'account/menu.php', array(
-			'current_user' 	=> get_userdata( get_current_user_id() )
+			'current_user' => get_userdata( get_current_user_id() )
 		) );
 
 	}
@@ -244,7 +247,11 @@ class FP_Account {
 
 		$session_data = FP_Booking::bookable_sesssion();
 
-		return fp_get_template_html( 'account/calender-bookings.php',  array( 'sessions' => $session_data['sessions'], 'user_id' => $session_data['user_id'], 'credits' => $session_data['credits'] ) );
+		return fp_get_template_html( 'account/calender-bookings.php', array(
+			'sessions' => $session_data['sessions'],
+			'user_id'  => $session_data['user_id'],
+			'credits'  => $session_data['credits'],
+		) );
 
 	}
 
@@ -264,9 +271,9 @@ class FP_Account {
 			$user = self::check_password_reset_key( $_GET['key'], $_GET['login'] );
 
 			// reset key / login is correct, display reset password form with hidden key / login values
-			if( is_object( $user ) ) {
-				$args['form'] = 'reset_password';
-				$args['key'] = esc_attr( $_GET['key'] );
+			if ( is_object( $user ) ) {
+				$args['form']  = 'reset_password';
+				$args['key']   = esc_attr( $_GET['key'] );
 				$args['login'] = esc_attr( $_GET['login'] );
 			}
 		} elseif ( isset( $_GET['reset'] ) ) {
@@ -291,11 +298,12 @@ class FP_Account {
 		if ( empty( $_POST['user_login'] ) ) {
 
 			fp_add_flash_message( __( 'Enter a username or e-mail address.', 'fitpress' ), 'error' );
+
 			return false;
 
 		} else {
 			// Check on username first, as customers can use emails as usernames.
-			$login = trim( $_POST['user_login'] );
+			$login     = trim( $_POST['user_login'] );
 			$user_data = get_user_by( 'login', $login );
 		}
 
@@ -309,11 +317,13 @@ class FP_Account {
 		if ( ! $user_data ) {
 
 			fp_add_flash_message( __( 'Invalid username or e-mail.', 'fitpress' ), 'error' );
+
 			return false;
 		}
 
 		if ( is_multisite() && ! is_user_member_of_blog( $user_data->ID, get_current_blog_id() ) ) {
 			fp_add_flash_message( __( 'Invalid username or e-mail.', 'fitpress' ), 'error' );
+
 			return false;
 		}
 
@@ -356,9 +366,13 @@ class FP_Account {
 
 		$FP_Email = new FP_Email( array( 'template' => 'email/default.php' ) );
 
-		$FP_Email->send_email( $user_email, get_bloginfo( 'name' ) . ' Password Reset Link', array( 'header' => 'Reset Password', 'message' => $message = '<p>Click this link to reset your password: <a href="' . $reset_url . '">' . $reset_url . '</a></p>' ) );
+		$FP_Email->send_email( $user_email, get_bloginfo( 'name' ) . ' Password Reset Link', array(
+			'header'  => 'Reset Password',
+			'message' => $message = '<p>Click this link to reset your password: <a href="' . $reset_url . '">' . $reset_url . '</a></p>',
+		) );
 
 		fp_add_flash_message( __( 'Check your e-mail for the confirmation link.', 'fitpress' ) );
+
 		return true;
 	}
 
@@ -369,6 +383,7 @@ class FP_Account {
 	 *
 	 * @param string $key Hash to validate sending user's password
 	 * @param string $login The user login
+	 *
 	 * @return WP_USER|bool User's database row on success, false for invalid keys
 	 */
 	public static function check_password_reset_key( $key, $login ) {
@@ -378,11 +393,13 @@ class FP_Account {
 
 		if ( empty( $key ) || ! is_string( $key ) ) {
 			fp_add_flash_message( __( 'Invalid key', 'fitpress' ), 'error' );
+
 			return false;
 		}
 
 		if ( empty( $login ) || ! is_string( $login ) ) {
 			fp_add_flash_message( __( 'Invalid key', 'fitpress' ), 'error' );
+
 			return false;
 		}
 
@@ -399,6 +416,7 @@ class FP_Account {
 
 		if ( empty( $user ) || empty( $valid ) ) {
 			fp_add_flash_message( __( 'Invalid key', 'fitpress' ), 'error' );
+
 			return false;
 		}
 
@@ -409,8 +427,10 @@ class FP_Account {
 	 * Handles resetting the user's password.
 	 *
 	 * @access public
+	 *
 	 * @param object $user The user
 	 * @param string $new_pass New password for the user in plaintext
+	 *
 	 * @return void
 	 */
 	public static function reset_password( $user, $new_pass ) {
@@ -428,7 +448,7 @@ class FP_Account {
 		if ( ! empty( $_POST['login'] ) && ! empty( $_POST['_wpnonce'] ) && wp_verify_nonce( $_POST['_wpnonce'], 'fitpress-login' ) ) {
 
 			try {
-				$creds  = array();
+				$creds = array();
 
 				$validation_error = new WP_Error();
 
@@ -448,13 +468,13 @@ class FP_Account {
 					$user = get_user_by( 'email', $_POST['username'] );
 
 					if ( isset( $user->user_login ) ) {
-						$creds['user_login'] 	= $user->user_login;
+						$creds['user_login'] = $user->user_login;
 					} else {
 						throw new Exception( '<strong>' . __( 'Error', 'fitpress' ) . ':</strong> ' . __( 'A user could not be found with this email address.', 'fitpress' ) );
 					}
 
 				} else {
-					$creds['user_login'] 	= $_POST['username'];
+					$creds['user_login'] = $_POST['username'];
 				}
 
 				$creds['user_password'] = $_POST['password'];
@@ -481,9 +501,9 @@ class FP_Account {
 					exit;
 				}
 
-			} catch (Exception $e) {
+			} catch ( Exception $e ) {
 
-				fp_add_flash_message( apply_filters('login_errors', $e->getMessage() ), 'error' );
+				fp_add_flash_message( apply_filters( 'login_errors', $e->getMessage() ), 'error' );
 
 			}
 		}
@@ -502,7 +522,14 @@ class FP_Account {
 	 * Handle reset password form
 	 */
 	public static function process_reset_password() {
-		$posted_fields = array( 'fp_reset_password', 'password_1', 'password_2', 'reset_key', 'reset_login', '_wpnonce' );
+		$posted_fields = array(
+			'fp_reset_password',
+			'password_1',
+			'password_2',
+			'reset_key',
+			'reset_login',
+			'_wpnonce',
+		);
 
 		foreach ( $posted_fields as $field ) {
 			if ( ! isset( $_POST[ $field ] ) ) {
@@ -522,7 +549,7 @@ class FP_Account {
 				fp_add_flash_message( __( 'Please enter your password.', 'fitpress' ), 'error' );
 			}
 
-			if ( $posted_fields[ 'password_1' ] !== $posted_fields[ 'password_2' ] ) {
+			if ( $posted_fields['password_1'] !== $posted_fields['password_2'] ) {
 				fp_add_flash_message( __( 'Passwords do not match.', 'fitpress' ), 'error' );
 			}
 
@@ -549,11 +576,11 @@ class FP_Account {
 	 */
 	public static function update_membership() {
 
-		if ( 'POST' !== strtoupper( $_SERVER[ 'REQUEST_METHOD' ] ) ) {
+		if ( 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
 			return;
 		}
 
-		if ( empty( $_POST[ 'action' ] ) || 'update_membership' !== $_POST[ 'action' ] || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'update_membership' ) ) {
+		if ( empty( $_POST['action'] ) || 'update_membership' !== $_POST['action'] || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'update_membership' ) ) {
 			return;
 		}
 
@@ -563,7 +590,7 @@ class FP_Account {
 
 		$membership_id = $membership['membership_id'];
 
-		$package_id = sanitize_text_field( $_POST[ 'package_id' ] );
+		$package_id = sanitize_text_field( $_POST['package_id'] );
 
 		update_post_meta( $membership_id, '_fp_package_id', $package_id );
 
@@ -574,17 +601,17 @@ class FP_Account {
 	 */
 	public static function save_account_details() {
 
-		if ( 'POST' !== strtoupper( $_SERVER[ 'REQUEST_METHOD' ] ) ) {
+		if ( 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
 			return;
 		}
 
-		if ( empty( $_POST[ 'action' ] ) || 'save_account_details' !== $_POST[ 'action' ] || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'save_account_details' ) ) {
+		if ( empty( $_POST['action'] ) || 'save_account_details' !== $_POST['action'] || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'save_account_details' ) ) {
 			return;
 		}
 
-		$update       = true;
-		$errors       = new WP_Error();
-		$user         = new stdClass();
+		$update = true;
+		$errors = new WP_Error();
+		$user   = new stdClass();
 
 		$user->ID     = (int) get_current_user_id();
 		$current_user = get_user_by( 'id', $user->ID );
@@ -593,16 +620,16 @@ class FP_Account {
 			return;
 		}
 
-		$account_first_name = ! empty( $_POST[ 'account_first_name' ] ) ? sanitize_text_field( $_POST[ 'account_first_name' ] ) : '';
-		$account_last_name  = ! empty( $_POST[ 'account_last_name' ] ) ? sanitize_text_field( $_POST[ 'account_last_name' ] ) : '';
-		$account_email      = ! empty( $_POST[ 'account_email' ] ) ? sanitize_email( $_POST[ 'account_email' ] ) : '';
-		$contact_number      = ! empty( $_POST[ 'contact_number' ] ) ? sanitize_text_field( $_POST[ 'contact_number' ] ) : '';
-		$emergency_contact_name      = ! empty( $_POST[ 'emergency_contact_name' ] ) ? sanitize_text_field( $_POST[ 'emergency_contact_name' ] ) : '';
-		$emergency_contact_number      = ! empty( $_POST[ 'emergency_contact_number' ] ) ? sanitize_text_field( $_POST[ 'emergency_contact_number' ] ) : '';
-		$pass_cur           = ! empty( $_POST[ 'password_current' ] ) ? $_POST[ 'password_current' ] : '';
-		$pass1              = ! empty( $_POST[ 'password_1' ] ) ? $_POST[ 'password_1' ] : '';
-		$pass2              = ! empty( $_POST[ 'password_2' ] ) ? $_POST[ 'password_2' ] : '';
-		$save_pass          = true;
+		$account_first_name       = ! empty( $_POST['account_first_name'] ) ? sanitize_text_field( $_POST['account_first_name'] ) : '';
+		$account_last_name        = ! empty( $_POST['account_last_name'] ) ? sanitize_text_field( $_POST['account_last_name'] ) : '';
+		$account_email            = ! empty( $_POST['account_email'] ) ? sanitize_email( $_POST['account_email'] ) : '';
+		$contact_number           = ! empty( $_POST['contact_number'] ) ? sanitize_text_field( $_POST['contact_number'] ) : '';
+		$emergency_contact_name   = ! empty( $_POST['emergency_contact_name'] ) ? sanitize_text_field( $_POST['emergency_contact_name'] ) : '';
+		$emergency_contact_number = ! empty( $_POST['emergency_contact_number'] ) ? sanitize_text_field( $_POST['emergency_contact_number'] ) : '';
+		$pass_cur                 = ! empty( $_POST['password_current'] ) ? $_POST['password_current'] : '';
+		$pass1                    = ! empty( $_POST['password_1'] ) ? $_POST['password_1'] : '';
+		$pass2                    = ! empty( $_POST['password_2'] ) ? $_POST['password_2'] : '';
+		$save_pass                = true;
 
 		$user->first_name   = $account_first_name;
 		$user->last_name    = $account_last_name;
@@ -682,7 +709,7 @@ class FP_Account {
  * Extension main function
  */
 function __fp_account_main() {
-    new FP_Account();
+	new FP_Account();
 }
 
 // Initialize plugin when plugins are loaded
