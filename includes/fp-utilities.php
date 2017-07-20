@@ -324,7 +324,7 @@ function fp_maybe_manual_run(){
 		include_once( FP_PLUGIN_DIR . 'includes/notifications/class-fp-notifications-bookings.php' );
 		$notification = new FP_Notification();
 		$notification->send_hourly_notifications();
-        $url = remove_query_arg( array( 'force_send_renewal_reminder' ) );
+        $url = remove_query_arg( array( 'force_send_bookings' ) );
         wp_redirect( $url );
 	elseif ( isset( $_GET['force_send_member_list'] ) ) :
 		if ( $_GET['force_send_member_list'] == 'inactive' ) :
