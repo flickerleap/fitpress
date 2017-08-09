@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Notification Class.
+ * Class FP_Notification
  */
 class FP_Notification {
 
@@ -42,7 +42,9 @@ class FP_Notification {
 
 				$fp_email = new FP_Email( array( 'template' => $notification['template'] ) );
 
-				$fp_email->send_email( $notification['email'], $notification['subject'], array( 'header' => $notification['header'], 'message' => $notification['message'] ) );
+				$fp_email->send_email( $notification['email'], $notification['subject'], array( 'header'  => $notification['header'],
+				                                                                                'message' => $notification['message']
+				) );
 
 			endforeach;
 
@@ -60,7 +62,9 @@ class FP_Notification {
 
 				$fp_email = new FP_Email( array( 'template' => $notification['template'] ) );
 
-				$fp_email->send_email( $notification['email'], $notification['subject'], array( 'header' => $notification['header'], 'message' => $notification['message'] ) );
+				$fp_email->send_email( $notification['email'], $notification['subject'], array( 'header'  => $notification['header'],
+				                                                                                'message' => $notification['message']
+				) );
 
 			endforeach;
 
