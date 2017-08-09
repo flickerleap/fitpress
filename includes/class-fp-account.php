@@ -567,11 +567,11 @@ class FP_Account {
 
 		$package_id = sanitize_text_field( $_POST['package_id'] );
 
-		do_action( 'fitpress_before_membership_save', array( 'membership_id' => $membership_id, 'package_id' => $membership_id, 'old_package_id' => $old_package_id ) );
+		do_action( 'fitpress_before_membership_save', array( 'membership_id' => $membership_id, 'package_id' => $package_id, 'old_package_id' => $old_package_id ) );
 
 		update_post_meta( $membership_id, '_fp_package_id', $package_id );
 
-		do_action( 'fitpress_after_membership_save', array( 'membership_id' => $membership_id, 'package_id' => $membership_id, 'old_package_id' => $old_package_id ) );
+		do_action( 'fitpress_after_membership_save', array( 'membership_id' => $membership_id, 'package_id' => $package_id, 'old_package_id' => $old_package_id ) );
 
 	}
 

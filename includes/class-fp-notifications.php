@@ -28,7 +28,7 @@ class FP_Notification {
 		add_action( 'fitpress_daily_cron', array( $this, 'send_daily_notifications' ) );
 		add_action( 'fitpress_hourly_cron', array( $this, 'send_hourly_notifications' ) );
 
-		add_action( 'fitpress_after_membership_save', array( $this, 'package_update_notification' ) );
+		add_action( 'fitpress_after_membership_save', array( $this, 'package_update_notification' ), 10, 1 );
 
 	}
 
