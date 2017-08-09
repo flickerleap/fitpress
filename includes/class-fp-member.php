@@ -86,7 +86,7 @@ class FP_Member {
 
 	}
 
-	public function validate_query(){
+	public function validate_query() {
 
 		if ( isset( $_GET['post_type'] ) && $_GET['post_type'] == 'fp_member' && ! isset( $_GET['user_id'] ) ) :
 			wp_redirect( get_admin_url( null, 'users.php' ) );

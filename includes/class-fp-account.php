@@ -549,11 +549,11 @@ class FP_Account {
 	 */
 	public static function update_membership() {
 
-		if ( 'POST' !== strtoupper( $_SERVER[ 'REQUEST_METHOD' ] ) ) {
+		if ( 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
 			return;
 		}
 
-		if ( empty( $_POST[ 'action' ] ) || 'update_membership' !== $_POST[ 'action' ] || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'update_membership' ) ) {
+		if ( empty( $_POST['action'] ) || 'update_membership' !== $_POST['action'] || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'update_membership' ) ) {
 			return;
 		}
 
@@ -563,9 +563,15 @@ class FP_Account {
 
 		$membership_id = $membership['membership_id'];
 
-		$package_id = sanitize_text_field( $_POST[ 'package_id' ] );
+		$old_package_id = $membership['package_id'];
+
+		$package_id = sanitize_text_field( $_POST['package_id'] );
+
+		do_action( 'fitpress_before_membership_save', array( 'membership_id' => $membership_id, 'package_id' => $membership_id, 'old_package_id' => $old_package_id ) );
 
 		update_post_meta( $membership_id, '_fp_package_id', $package_id );
+
+		do_action( 'fitpress_after_membership_save', array( 'membership_id' => $membership_id, 'package_id' => $membership_id, 'old_package_id' => $old_package_id ) );
 
 	}
 
