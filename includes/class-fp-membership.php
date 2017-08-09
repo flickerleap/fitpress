@@ -463,7 +463,7 @@ class FP_Membership {
 	}
 
 	function save_membership_profile_fields( $member_id ) {
-
+    
 		if ( ! current_user_can( 'edit_user', $member_id ) ) {
 			return false;
 		}
