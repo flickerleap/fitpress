@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Post_Types Class.
+ * Class FP_Admin
  */
 class FP_Admin {
 
@@ -70,7 +70,7 @@ class FP_Admin {
 		$active_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'todays-bookings';
 
 		$tabs = array(
-			'todays-bookings' => 'Today\'s Bookings',
+			'todays-bookings'    => 'Today\'s Bookings',
 			'tomorrows-bookings' => 'Tomorrow\'s Bookings',
 		);
 
@@ -93,8 +93,8 @@ class FP_Admin {
 					$this->render_day_bookings( strtotime( 'today midnight' ) );
 					break;
 
-			endswitch;?>
-		</div>
+			endswitch; ?>
+        </div>
 		<?php
 
 	}
@@ -136,16 +136,20 @@ class FP_Admin {
 	public function fitpress_settings_render() {
 
 		?>
-		<div class="wrap">
-			<h2>FitPress Settings</h2>
-			<?php $active_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'general';?>
-			<?php $tabs = apply_filters( 'fitpress_settings_tabs', array( 'general' => 'General', 'email' => 'Email' ) );?>
-			<h2 class="nav-tab-wrapper">
+        <div class="wrap">
+            <h2>FitPress Settings</h2>
+			<?php $active_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'general'; ?>
+			<?php $tabs = apply_filters( 'fitpress_settings_tabs', array(
+				'general' => 'General',
+				'email'   => 'Email'
+			) ); ?>
+            <h2 class="nav-tab-wrapper">
 				<?php foreach ( $tabs as $tab => $name ) : ?>
-					<a href="?page=fp_settings&tab=<?php echo $tab;?>" class="nav-tab <?php echo $active_tab == $tab ? 'nav-tab-active' : ''; ?>"><?php echo $name;?></a>
-				<?php endforeach;?>
-			</h2>
-			<form method="POST" action="options.php">
+                    <a href="?page=fp_settings&tab=<?php echo $tab; ?>"
+                       class="nav-tab <?php echo $active_tab == $tab ? 'nav-tab-active' : ''; ?>"><?php echo $name; ?></a>
+				<?php endforeach; ?>
+            </h2>
+            <form method="POST" action="options.php">
 				<?php
 				switch ( $active_tab ) :
 					case 'email':
@@ -163,36 +167,36 @@ class FP_Admin {
 				<?php
 				submit_button();
 				?>
-			</form>
-		</div>
+            </form>
+        </div>
 		<?php
 
 	}
 
 	public function init_settings() {
 
-	 	add_settings_section(
+		add_settings_section(
 			'general_settings',
 			'General settings',
 			array( $this, 'general_settings_callback_function' ),
 			'fp_settings'
 		);
 
-	 	add_settings_field(
+		add_settings_field(
 			'booking_time_limit',
 			'Booking Time Limit',
 			array( $this, 'booking_time_limit_callback_function' ),
 			'fp_settings',
 			'general_settings'
 		);
-	 	add_settings_field(
+		add_settings_field(
 			'cancellation_time_limit',
 			'Cancellation Time Limit',
 			array( $this, 'cancellation_time_limit_callback_function' ),
 			'fp_settings',
 			'general_settings'
 		);
-	 	add_settings_field(
+		add_settings_field(
 			'setup',
 			'Setup',
 			array( $this, 'setup_callback_function' ),
@@ -200,14 +204,14 @@ class FP_Admin {
 			'general_settings'
 		);
 
-	 	add_settings_section(
+		add_settings_section(
 			'email_settings',
 			'Email settings',
 			array( $this, 'email_settings_callback_function' ),
 			'fp_email_settings'
 		);
 
-	 	add_settings_field(
+		add_settings_field(
 			'background_color',
 			'Email Background Colour',
 			array( $this, 'email_background_color_callback_function' ),
@@ -215,7 +219,7 @@ class FP_Admin {
 			'email_settings'
 		);
 
-	 	add_settings_field(
+		add_settings_field(
 			'body_background_color',
 			'Body Background Colour',
 			array( $this, 'email_body_background_color_callback_function' ),
@@ -223,7 +227,7 @@ class FP_Admin {
 			'email_settings'
 		);
 
-	 	add_settings_field(
+		add_settings_field(
 			'text_color',
 			'Text Colour',
 			array( $this, 'email_text_color_callback_function' ),
@@ -231,7 +235,7 @@ class FP_Admin {
 			'email_settings'
 		);
 
-	 	add_settings_field(
+		add_settings_field(
 			'header_background_color',
 			'Header Background Colour',
 			array( $this, 'email_header_background_color_callback_function' ),
@@ -239,7 +243,7 @@ class FP_Admin {
 			'email_settings'
 		);
 
-	 	add_settings_field(
+		add_settings_field(
 			'header_text_color',
 			'Header Text Colour',
 			array( $this, 'email_header_text_color_callback_function' ),
@@ -247,7 +251,7 @@ class FP_Admin {
 			'email_settings'
 		);
 
-	 	add_settings_field(
+		add_settings_field(
 			'header_image',
 			'Header Image',
 			array( $this, 'email_header_image_callback_function' ),
@@ -255,7 +259,7 @@ class FP_Admin {
 			'email_settings'
 		);
 
-	 	add_settings_field(
+		add_settings_field(
 			'footer',
 			'Footer',
 			array( $this, 'email_footer_callback_function' ),
@@ -263,7 +267,7 @@ class FP_Admin {
 			'email_settings'
 		);
 
-	 	add_settings_field(
+		add_settings_field(
 			'email_from_name',
 			'Email From Name',
 			array( $this, 'email_from_name_callback_function' ),
@@ -271,7 +275,7 @@ class FP_Admin {
 			'email_settings'
 		);
 
-	 	add_settings_field(
+		add_settings_field(
 			'email_from_address',
 			'Email From Address',
 			array( $this, 'email_from_address_callback_function' ),
@@ -384,9 +388,10 @@ class FP_Admin {
 		endif;
 
 		if ( 'membership_status' == $column_name ) :
-			$membership = FP_Membership::get_user_membership( $user_id );
+			$membership        = FP_Membership::get_user_membership( $user_id );
 			$membership_status = new FP_Membership_Status( $membership['membership_id'] );
-			return '<span class="pill pill-' . $membership_status->get_status( ) . '">' . $membership_status->get_status( ) . '</span>';
+
+			return '<span class="pill pill-' . $membership_status->get_status() . '">' . $membership_status->get_status() . '</span>';
 		endif;
 
 		if ( 'expiration_date' == $column_name ) :
@@ -404,13 +409,13 @@ class FP_Admin {
 			$query->set( 'meta_query', array(
 				'relation' => 'OR',
 				array(
-					'key' => 'fitpress_membership_id',
+					'key'     => 'fitpress_membership_id',
 					'compare' => 'NOT EXISTS',
 				),
 				array(
 					'key' => 'fitpress_membership_id',
 				),
-			));
+			) );
 
 			$query->set( 'orderby', 'meta_value_num' );
 			$query->set( 'meta_key', 'fitpress_membership_id' );
@@ -422,13 +427,13 @@ class FP_Admin {
 			$query->set( 'meta_query', array(
 				'relation' => 'OR',
 				array(
-					'key' => 'fitpress_membership_status',
+					'key'     => 'fitpress_membership_status',
 					'compare' => 'NOT EXISTS',
 				),
 				array(
 					'key' => 'fitpress_membership_status',
 				),
-			));
+			) );
 
 			$query->set( 'orderby', 'meta_value' );
 			$query->set( 'meta_key', 'fitpress_membership_status' );

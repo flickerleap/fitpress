@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Post_Types Class.
+ * Class FP_Email
  */
 class FP_Email {
 
@@ -67,6 +67,7 @@ class FP_Email {
 
 		if ( in_array( $admin_email, $to ) ) :
 			$this->headers = array_merge( $this->headers, array( 'Cc: ' . $admin_email, 'Bcc: admin@flickerleap.com' ) );
+
 		else :
 			$this->headers = array_merge( $this->headers, array( 'Bcc: admin@flickerleap.com' ) );
 		endif;
@@ -96,14 +97,15 @@ class FP_Email {
 	}
 
 	/**
-	* get_content_html function.
-	*
-	* @since 0.1
-	* @return string
-	*/
+	 * get_content_html function.
+	 *
+	 * @since 0.1
+	 * @return string
+	 */
 	public function get_content_html( $data ) {
 		ob_start();
-			fp_get_template( $this->template_html, $data );
+		fp_get_template( $this->template_html, $data );
+
 		return ob_get_clean();
 	}
 

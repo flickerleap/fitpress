@@ -94,7 +94,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
                                                                     </tbody>
 
-                                                                    <tfooter>
+                                                                    <tfoot>
 
                                                                         <tr>
                                                                             <th style="text-align: right;padding: 5px;">VAT</th>
@@ -111,7 +111,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                                                                             <th style="text-align: right;padding: 5px;">R <?php echo number_format( $total, 2, '.', ' ');?></th>
                                                                         </tr>
 
-                                                                    </tfooter>
+                                                                    </tfoot>
 
                                                                 </table>
 
