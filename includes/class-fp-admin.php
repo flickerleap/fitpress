@@ -77,15 +77,14 @@ class FP_Admin {
 		$tabs = apply_filters( 'fitpress_dashboard_tabs', $tabs );
 
 		?>
-        <div class="wrap">
-            <h2>FitPress Dashboard</h2>
-            <h2 class="nav-tab-wrapper">
-				<?php foreach ( $tabs as $tab_key => $tab_name ): ?>
-                    <a href="?page=fitpress&amp;tab=<?php echo $tab_key; ?>"
-                       class="nav-tab <?php echo $active_tab == $tab_key ? 'nav-tab-active' : ''; ?>"><?php echo $tab_name; ?></a>
-				<?php endforeach; ?>
-            </h2>
-			<?php switch ( $active_tab ):
+		<div class="wrap">
+			<h2>FitPress Dashboard</h2>
+			<h2 class="nav-tab-wrapper">
+				<?php foreach ( $tabs as $tab_key => $tab_name ) :?>
+					<a href="?page=fitpress&amp;tab=<?php echo $tab_key; ?>" class="nav-tab <?php echo $active_tab == $tab_key ? 'nav-tab-active' : ''; ?>"><?php echo $tab_name; ?></a>
+				<?php endforeach;?>
+			</h2>
+			<?php switch ( $active_tab ) :
 				case 'tomorrows-bookings':
 					$this->render_day_bookings( strtotime( 'tomorrow midnight' ) );
 					break;
@@ -104,30 +103,29 @@ class FP_Admin {
 
 		$day_bookings = FP_Booking::get_day_bookings( $start_time );
 
-		if ( ! empty( $day_bookings ) ):
+		if ( ! empty( $day_bookings ) ) :
 
-			foreach ( $day_bookings as $session => $bookings ):
+			foreach ( $day_bookings as $session => $bookings ) :
 
 				echo '<h3>' . $session . '</h3>';
 
-				if ( ! empty( $bookings ) ):
+				if ( ! empty( $bookings ) ) :
 
-					?>
-                    <ol>
-					<?php foreach ( $bookings as $booking ): ?>
-                    <li>
-                        <a href="<?php echo get_edit_user_link( $booking['user']->ID ); ?>"><?php echo $booking['user']->display_name; ?></a>
-                    </li>
-				<?php endforeach; ?>
-                    </ol><?php
+					?><ol>
+						<?php foreach ( $bookings as $booking ) :?>
+						<li>
+							<a href="<?php echo get_edit_user_link( $booking['user']->ID ); ?>"><?php echo $booking['user']->display_name;?></a>
+						</li>
+						<?php endforeach;?>
+					</ol><?php
 
-				else:
+				else :
 					echo '<p>No bookings for this session.</p>';
 				endif;
 
 			endforeach;
 
-		else:
+		else :
 
 			echo '<p>There are no sessions on this day.</p>';
 
@@ -285,8 +283,16 @@ class FP_Admin {
 			'email_settings'
 		);
 
-		register_setting( 'fp_settings', 'fitpress_settings' );
-		register_setting( 'fp_email_settings', 'fitpress_email_settings' );
+	 	add_settings_field(
+			'bookings_address',
+			'Bookings Email Addresses',
+			array( $this, 'bookings_address_callback_function' ),
+			'fp_email_settings',
+			'email_settings'
+		);
+
+	 	register_setting( 'fp_settings', 'fitpress_settings' );
+	 	register_setting( 'fp_email_settings', 'fitpress_email_settings' );
 
 	}
 
@@ -343,6 +349,11 @@ class FP_Admin {
 	public function email_from_address_callback_function() {
 		$value = ( ! empty( $this->email_settings['from_address'] ) ) ? $this->email_settings['from_address'] : get_bloginfo( 'admin_email' );
 		echo '<input name="fitpress_email_settings[from_address]" id="from_address" class="small" type="text" value="' . $value . '" />';
+	}
+
+	public function bookings_address_callback_function() {
+		$value = ( ! empty( $this->email_settings['booking_address'] ) ) ? $this->email_settings['booking_address'] : get_bloginfo( 'admin_email' );
+		echo '<input name="fitpress_email_settings[booking_address]" id="booking_address" class="small" type="text" value="' . $value . '" />';
 	}
 
 	public function booking_time_limit_callback_function() {
@@ -452,7 +463,7 @@ class FP_Admin {
 
 		$expiration_date = get_post_meta( $membership['membership_id'], '_fp_expiration_date', true );
 
-		if ( $expiration_date && $expiration_date != 'N/A' ) :
+		if ( $expiration_date && 'N/A' != $expiration_date ) :
 
 			return date( 'j F Y', intval( $expiration_date ) );
 
@@ -465,9 +476,9 @@ class FP_Admin {
 /**
  * Extension main function
  */
-function __fp_admin_main() {
+function _fp_admin_main() {
 	new FP_Admin();
 }
 
 // Initialize plugin when plugins are loaded
-add_action( 'plugins_loaded', '__fp_admin_main' );
+add_action( 'plugins_loaded', '_fp_admin_main' );
