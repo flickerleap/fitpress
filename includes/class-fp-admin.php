@@ -43,7 +43,7 @@ class FP_Admin {
 	public function fitpress_dashboard() {
 
 		//add an item to the menu
-		add_menu_page (
+		add_menu_page(
 			'FitPress Dashboard',
 			'FitPress',
 			'manage_options',
@@ -54,7 +54,7 @@ class FP_Admin {
 		);
 
 		//add an item to the menu
-		add_submenu_page (
+		add_submenu_page(
 			'fitpress',
 			'FitPress Settings',
 			'Settings',
@@ -65,9 +65,9 @@ class FP_Admin {
 
 	}
 
-	public function fitpress_dashboard_render(){
+	public function fitpress_dashboard_render() {
 
-		$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'todays-bookings';
+		$active_tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'todays-bookings';
 
 		$tabs = array(
 			'todays-bookings' => 'Today\'s Bookings',
@@ -80,11 +80,11 @@ class FP_Admin {
 		<div class="wrap">
 			<h2>FitPress Dashboard</h2>
 			<h2 class="nav-tab-wrapper">
-				<?php foreach( $tabs as $tab_key => $tab_name ):?>
+				<?php foreach ( $tabs as $tab_key => $tab_name ) :?>
 					<a href="?page=fitpress&amp;tab=<?php echo $tab_key; ?>" class="nav-tab <?php echo $active_tab == $tab_key ? 'nav-tab-active' : ''; ?>"><?php echo $tab_name; ?></a>
 				<?php endforeach;?>
 			</h2>
-			<?php switch( $active_tab ):
+			<?php switch ( $active_tab ) :
 				case 'tomorrows-bookings':
 					$this->render_day_bookings( strtotime( 'tomorrow midnight' ) );
 					break;
@@ -99,33 +99,33 @@ class FP_Admin {
 
 	}
 
-	public function render_day_bookings( $start_time ){
+	public function render_day_bookings( $start_time ) {
 
 		$day_bookings = FP_Booking::get_day_bookings( $start_time );
 
-		if( !empty( $day_bookings ) ):
+		if ( ! empty( $day_bookings ) ) :
 
-			foreach( $day_bookings as $session => $bookings ):
+			foreach ( $day_bookings as $session => $bookings ) :
 
 				echo '<h3>' . $session . '</h3>';
 
-				if( !empty( $bookings ) ):
+				if ( ! empty( $bookings ) ) :
 
 					?><ol>
-						<?php foreach( $bookings as $booking ):?>
+						<?php foreach ( $bookings as $booking ) :?>
 						<li>
 							<a href="<?php echo get_edit_user_link( $booking['user']->ID ); ?>"><?php echo $booking['user']->display_name;?></a>
 						</li>
 						<?php endforeach;?>
 					</ol><?php
 
-				else:
+				else :
 					echo '<p>No bookings for this session.</p>';
 				endif;
 
 			endforeach;
 
-		else:
+		else :
 
 			echo '<p>There are no sessions on this day.</p>';
 
@@ -133,7 +133,7 @@ class FP_Admin {
 
 	}
 
-	public function fitpress_settings_render(){
+	public function fitpress_settings_render() {
 
 		?>
 		<div class="wrap">
@@ -279,12 +279,20 @@ class FP_Admin {
 			'email_settings'
 		);
 
+	 	add_settings_field(
+			'bookings_address',
+			'Bookings Email Addresses',
+			array( $this, 'bookings_address_callback_function' ),
+			'fp_email_settings',
+			'email_settings'
+		);
+
 	 	register_setting( 'fp_settings', 'fitpress_settings' );
 	 	register_setting( 'fp_email_settings', 'fitpress_email_settings' );
 
 	}
 
-	public function setup_callback_function(){
+	public function setup_callback_function() {
 		echo 'If the automated setup did not run, <a href="' . add_query_arg( 'fp-setup', 'run' ) . '">click here to run it</a>.';
 	}
 
@@ -337,6 +345,11 @@ class FP_Admin {
 	public function email_from_address_callback_function() {
 		$value = ( ! empty( $this->email_settings['from_address'] ) ) ? $this->email_settings['from_address'] : get_bloginfo( 'admin_email' );
 		echo '<input name="fitpress_email_settings[from_address]" id="from_address" class="small" type="text" value="' . $value . '" />';
+	}
+
+	public function bookings_address_callback_function() {
+		$value = ( ! empty( $this->email_settings['booking_address'] ) ) ? $this->email_settings['booking_address'] : get_bloginfo( 'admin_email' );
+		echo '<input name="fitpress_email_settings[booking_address]" id="booking_address" class="small" type="text" value="' . $value . '" />';
 	}
 
 	public function booking_time_limit_callback_function() {
@@ -445,7 +458,7 @@ class FP_Admin {
 
 		$expiration_date = get_post_meta( $membership['membership_id'], '_fp_expiration_date', true );
 
-		if ( $expiration_date && $expiration_date != 'N/A' ) :
+		if ( $expiration_date && 'N/A' != $expiration_date ) :
 
 			return date( 'j F Y', intval( $expiration_date ) );
 
@@ -458,9 +471,9 @@ class FP_Admin {
 /**
  * Extension main function
  */
-function __fp_admin_main() {
+function _fp_admin_main() {
 	new FP_Admin();
 }
 
 // Initialize plugin when plugins are loaded
-add_action( 'plugins_loaded', '__fp_admin_main' );
+add_action( 'plugins_loaded', '_fp_admin_main' );

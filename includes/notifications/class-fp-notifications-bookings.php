@@ -60,9 +60,15 @@ class FP_Booking_Notification {
 
 			endif;
 
+			if (  $email_settings = get_option( 'fitpress_email_settings', false ) ) :
+				$email = explode( ',', $email_settings['booking_address'] );
+			else :
+				$email = get_bloginfo( 'admin_email' );
+			endif;
+
 			$notifications[] = array(
 				'template' => 'email/notification.php',
-				'email' => get_bloginfo( 'admin_email' ),
+				'email' => $email,
 				'subject' => 'Today\'s Bookings',
 				'header' => 'Today\'s Bookings',
 				'message' => $message,
