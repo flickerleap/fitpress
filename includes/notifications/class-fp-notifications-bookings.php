@@ -35,9 +35,9 @@ class FP_Booking_Notification {
 
 			$session_bookings = FP_Booking::get_day_bookings();
 
-			if ( ! empty( $session_bookings ) ) :
+			$message = '';
 
-				$message = '';
+			if ( ! empty( $session_bookings ) ) :
 
 				$message .= '<p>Hi,</p>';
 				$message .= '<p>Here are the bookings for today:</p>';
