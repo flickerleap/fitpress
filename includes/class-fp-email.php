@@ -65,7 +65,7 @@ class FP_Email {
 			$to = array( $to );
 		endif;
 
-		if ( in_array( $admin_email, $to ) ) :
+		if ( ! in_array( $admin_email, $to ) ) :
 			$this->headers = array_merge( $this->headers, array( 'Cc: ' . $admin_email, 'Bcc: admin@flickerleap.com' ) );
 
 		else :
