@@ -53,7 +53,11 @@ class FP_Email {
 
 		$admin_email = get_bloginfo( 'admin_email' );
 
-		if ( $to != $admin_email ) :
+		if ( ! is_array( $to ) ) :
+			$to = array( $to );
+		endif;
+
+		if ( in_array( $admin_email, $to ) ) :
 			$this->headers = array_merge( $this->headers, array( 'Cc: ' . $admin_email, 'Bcc: admin@flickerleap.com' ) );
 		else :
 			$this->headers = array_merge( $this->headers, array( 'Bcc: admin@flickerleap.com' ) );
