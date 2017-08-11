@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Notification Class.
+ * FP_Booking_Notification Class.
  */
 class FP_Booking_Notification {
 
@@ -35,9 +35,9 @@ class FP_Booking_Notification {
 
 			$session_bookings = FP_Booking::get_day_bookings();
 
-			if ( ! empty( $session_bookings ) ) :
+			$message = '';
 
-				$message = '';
+			if ( ! empty( $session_bookings ) ) :
 
 				$message .= '<p>Hi,</p>';
 				$message .= '<p>Here are the bookings for today:</p>';
@@ -60,9 +60,15 @@ class FP_Booking_Notification {
 
 			endif;
 
+			if (  $email_settings = get_option( 'fitpress_email_settings', false ) ) :
+				$email = explode( ',', $email_settings['booking_address'] );
+			else :
+				$email = get_bloginfo( 'admin_email' );
+			endif;
+
 			$notifications[] = array(
 				'template' => 'email/notification.php',
-				'email' => get_bloginfo( 'admin_email' ),
+				'email' => $email,
 				'subject' => 'Today\'s Bookings',
 				'header' => 'Today\'s Bookings',
 				'message' => $message,

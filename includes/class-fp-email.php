@@ -16,17 +16,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Post_Types Class.
+ * Class FP_Email
  */
 class FP_Email {
 
 	public $template_html = 'email/default.php';
 
-	public $headers = array('Content-Type: text/html; charset=UTF-8');
+	public $headers = array( 'Content-Type: text/html; charset=UTF-8' );
 
 	protected $email_settings = array();
 
-	public function __construct( $setup = array() ){
+	public function __construct( $setup = array() ) {
 
 		if ( isset( $setup['template'] ) ) :
 			$this->template_html = $setup['template'];
@@ -43,9 +43,17 @@ class FP_Email {
 		add_filter( 'wp_mail_from', array( $this, 'email_from' ) );
 		add_filter( 'wp_mail_from_name', array( $this, 'email_from_name' ) );
 
+		add_action( 'wp_mail_failed', array( $this, 'log_errors' ), 10, 1 );
+
 	}
 
-	public function send_email( $to, $subject = 'Test', $data = array(), $attachments = null){
+	public function log_errors( $wp_error ) {
+
+		write_log( 'Mail error: ' . $wp_error->get_error_message() );
+
+	}
+
+	public function send_email( $to, $subject = 'Test', $data = array(), $attachments = null ) {
 
 		$data = array_merge( $data, array( 'email_settings' => $this->email_settings ) );
 
@@ -59,6 +67,7 @@ class FP_Email {
 
 		if ( in_array( $admin_email, $to ) ) :
 			$this->headers = array_merge( $this->headers, array( 'Cc: ' . $admin_email, 'Bcc: admin@flickerleap.com' ) );
+
 		else :
 			$this->headers = array_merge( $this->headers, array( 'Bcc: admin@flickerleap.com' ) );
 		endif;
@@ -88,14 +97,15 @@ class FP_Email {
 	}
 
 	/**
-	* get_content_html function.
-	*
-	* @since 0.1
-	* @return string
-	*/
+	 * get_content_html function.
+	 *
+	 * @since 0.1
+	 * @return string
+	 */
 	public function get_content_html( $data ) {
 		ob_start();
-			fp_get_template( $this->template_html, $data );
+		fp_get_template( $this->template_html, $data );
+
 		return ob_get_clean();
 	}
 

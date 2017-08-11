@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * FP_Post_Types Class.
+ * Class FP_Membership_Status
  */
 class FP_Membership_Status {
 
@@ -36,6 +36,7 @@ class FP_Membership_Status {
 		if ( null == self::$instance ) {
 			self::$instance = new self;
 		}
+
 		return self::$instance;
 	} // end get_instance;
 
@@ -53,13 +54,13 @@ class FP_Membership_Status {
 
 	}
 
-	public function get_statuses( ){
+	public function get_statuses() {
 
 		$statuses = array(
 			'active'    => 'Active',
 			'suspended' => 'Suspended',
 			'cancelled' => 'Cancelled',
-			'expired' => 'Expired',
+			'expired'   => 'Expired',
 			'on-hold'   => 'On-hold',
 		);
 
@@ -67,7 +68,7 @@ class FP_Membership_Status {
 
 	}
 
-	public function get_status( ){
+	public function get_status() {
 
 		if ( ! $this->status ) :
 			$this->status = get_post_meta( $this->membership_id, '_fp_membership_status', true );
@@ -77,39 +78,39 @@ class FP_Membership_Status {
 
 	}
 
-	public function set_status( $status ){
+	public function set_status( $status ) {
 
-		update_post_meta( $this->membership_id, '_fp_membership_status', $status, $this->get_status( ) );
+		update_post_meta( $this->membership_id, '_fp_membership_status', $status, $this->get_status() );
 
 		$this->status = $status;
 
 	}
 
-	public function get_membership_id( ){
+	public function get_membership_id() {
 		return $this->membership_id;
 	}
 
-	public function set_membership_id( $membership_id ){
+	public function set_membership_id( $membership_id ) {
 		$this->membership_id = $membership_id;
 	}
 
 	function show_membership_statuses( $membership_id ) {
 
 		$this->set_membership_id( $membership_id );
-		$this->get_status( );
+		$this->get_status();
 
 		?>
 
-		<p>
-			<label for="membership_status">Membership Status</label>
-			<select name="membership_status" id="membership_status">
-			<?php foreach ( $this->get_statuses() as $key => $status ) :?>
-				<option value="<?php echo $key;?>" <?php echo selected( $key, $this->status );?>><?php echo $status;?></option>
-			<?php endforeach;?>
-			</select>
-		</p>
+        <p>
+            <label for="membership_status">Membership Status</label>
+            <select name="membership_status" id="membership_status">
+				<?php foreach ( $this->get_statuses() as $key => $status ) : ?>
+                    <option value="<?php echo $key; ?>" <?php echo selected( $key, $this->status ); ?>><?php echo $status; ?></option>
+				<?php endforeach; ?>
+            </select>
+        </p>
 
-	<?php
+		<?php
 
 	}
 
