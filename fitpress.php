@@ -186,6 +186,7 @@ if ( ! class_exists( 'FitPress' ) ) :
 			if ( $this->is_request( 'admin' ) ) :
 
 				include_once( 'includes/class-fp-admin.php' );
+				include_once( 'includes/admin/class-fp-member-admin.php' );
 
 			endif;
 
