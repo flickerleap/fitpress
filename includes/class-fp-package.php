@@ -761,9 +761,9 @@ class FP_Package {
 /**
  * Extension main function
  */
-function __fp_membership_main() {
+function __fp_package_main() {
 	FP_Package::get_instance();
 }
 
 // Initialize plugin when plugins are loaded
-add_action( 'plugins_loaded', '__fp_membership_main' );
+add_action( 'plugins_loaded', '__fp_package_main' );
