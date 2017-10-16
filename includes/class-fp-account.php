@@ -199,9 +199,9 @@ class FP_Account {
 	 */
 	private static function membership() {
 
-		$packages = FP_Membership::get_memberships();
+		$packages = FP_Package::get_memberships();
 
-		$membership = FP_Membership::get_user_membership( get_current_user_id() );
+		$membership = FP_Package::get_user_membership( get_current_user_id() );
 
 		if ( $membership ) :
 
@@ -586,7 +586,7 @@ class FP_Account {
 
 		$member_id = get_current_user_id();
 
-		$membership = FP_Membership::get_user_membership( $member_id );
+		$membership = FP_Package::get_user_membership( $member_id );
 
 		$membership_id = $membership['membership_id'];
 

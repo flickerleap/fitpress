@@ -45,9 +45,9 @@ class FP_Credit {
 
 		if ( date( 'j' ) == $reset_date || $force ) :
 
-			$memberships = FP_Membership::get_members();
+			$memberships = FP_Package::get_members();
 
-			$packages = FP_Membership::get_memberships();
+			$packages = FP_Package::get_memberships();
 
 			// Check for results
 			if ( ! empty( $memberships ) ) {
@@ -86,9 +86,9 @@ class FP_Credit {
 
 		if ( ! $current_membership_id ):
 			$current_credits    = 0;
-			$membership_details = FP_Membership::get_membership( array( $new_membership_id ) );
+			$membership_details = FP_Package::get_membership( array( $new_membership_id ) );
 		else:
-			$membership_details = FP_Membership::get_membership( array( $new_membership_id, $current_membership_id ) );
+			$membership_details = FP_Package::get_membership( array( $new_membership_id, $current_membership_id ) );
 		endif;
 
 		if ( $membership_details ):
@@ -115,7 +115,7 @@ class FP_Credit {
 
 	public static function modify_credits( $change, $member_id ) {
 
-		$membership      = FP_Membership::get_user_membership( $member_id );
+		$membership      = FP_Package::get_user_membership( $member_id );
 		$current_credits = get_post_meta( $membership['membership_id'], '_fp_credits', true );
 
 		$new_credits = $current_credits + $change;

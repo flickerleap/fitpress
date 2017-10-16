@@ -388,7 +388,7 @@ class FP_Admin {
 		endif;
 
 		if ( 'membership_status' == $column_name ) :
-			$membership        = FP_Membership::get_user_membership( $user_id );
+			$membership        = FP_Package::get_user_membership( $user_id );
 			$membership_status = new FP_Membership_Status( $membership['membership_id'] );
 
 			return '<span class="pill pill-' . $membership_status->get_status() . '">' . $membership_status->get_status() . '</span>';
@@ -449,7 +449,7 @@ class FP_Admin {
 	}
 
 	public function get_membership( $user_id ) {
-		$membership = FP_Membership::get_user_membership( $user_id );
+		$membership = FP_Package::get_user_membership( $user_id );
 
 		if ( ! $membership ) :
 			return '<a href="' . get_admin_url( null, 'post-new.php?post_type=fp_member&user_id=' . $user_id ) . '" class="button button-primary">Add</a>';
@@ -459,7 +459,7 @@ class FP_Admin {
 	}
 
 	public function get_expiration_date( $user_id ) {
-		$membership = FP_Membership::get_user_membership( $user_id );
+		$membership = FP_Package::get_user_membership( $user_id );
 
 		$expiration_date = get_post_meta( $membership['membership_id'], '_fp_expiration_date', true );
 

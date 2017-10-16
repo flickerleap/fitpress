@@ -171,8 +171,8 @@ if ( ! class_exists( 'FitPress' ) ) :
 			include_once( 'includes/class-fp-install.php' );
 			$this->query = include_once( 'includes/class-fp-account.php' );
 			include_once( 'includes/class-fp-flash-message.php' );
-			include_once( 'includes/class-fp-member.php' );
 			include_once( 'includes/class-fp-membership.php' );
+			include_once( 'includes/class-fp-package.php' );
 			include_once( 'includes/class-fp-membership-status.php' );
 			include_once( 'includes/class-fp-credits.php' );
 			include_once( 'includes/class-fp-classes.php' );
