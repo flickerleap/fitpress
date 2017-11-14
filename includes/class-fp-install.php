@@ -114,7 +114,7 @@ class FP_Install {
 
 					foreach ( $users as $user_id ) :
 
-						$old_membership = FP_Membership::get_user_membership( $user_id );
+						$old_membership = FP_Package::get_user_membership( $user_id );
 
 						if ( ! $old_membership ) :
 

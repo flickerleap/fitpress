@@ -30,7 +30,7 @@ class FP_Frontend {
 	/*
 	* Creates or returns an instance of this class.
 	*
-	* @return  FP_Membership A single instance of this class.
+	* @return  FP_Frontend A single instance of this class.
 	*/
 	public static function get_instance() {
 		if ( null == self::$instance ) {
@@ -170,7 +170,7 @@ class FP_Frontend {
 
 		else :
 
-			$packages = FP_Membership::get_memberships();
+			$packages = FP_Package::get_memberships();
 
 			return fp_get_template_html( 'sign-up/sign-up.php', array(
 				'packages'     => $packages,
@@ -194,7 +194,7 @@ class FP_Frontend {
 
 		$user_id = get_current_user_id();
 
-		$membership = FP_Membership::get_user_membership( $user_id );
+		$membership = FP_Package::get_user_membership( $user_id );
 
 		if ( ! $membership ) :
 			wp_redirect( fp_get_page_permalink( 'sign-up' ) );
@@ -252,7 +252,7 @@ class FP_Frontend {
 
 		$user_id = get_current_user_id();
 
-		$membership = FP_Membership::get_user_membership( $user_id );
+		$membership = FP_Package::get_user_membership( $user_id );
 
 		$current_user = get_userdata( $user_id );
 
@@ -391,7 +391,7 @@ class FP_Frontend {
 
 			if ( ! is_wp_error( $user_id ) ) :
 
-				$membership = FP_Membership::get_user_membership( $user_id );
+				$membership = FP_Package::get_user_membership( $user_id );
 
 				if ( ! $membership ) :
 

@@ -333,7 +333,7 @@ function fp_maybe_manual_run() {
 		$url = remove_query_arg( array( 'force_create_sessions' ) );
 		wp_redirect( $url );
 	elseif ( isset( $_GET['member_id'] ) && isset( $_GET['membership_id'] ) ) :
-		FP_Membership::quick_member_add( $_GET['member_id'], $_GET['membership_id'] );
+		FP_Package::quick_member_add( $_GET['member_id'], $_GET['membership_id'] );
 		$url = remove_query_arg( array( 'member_id', 'membership_id' ) );
 		wp_redirect( $url );
 	elseif ( isset( $_GET['force_send_expire_reminder'] ) ) :
@@ -350,9 +350,9 @@ function fp_maybe_manual_run() {
     wp_redirect( $url );
 	elseif ( isset( $_GET['force_send_member_list'] ) ) :
 		if ( $_GET['force_send_member_list'] == 'inactive' ) :
-			FP_Membership::maybe_send_member_list( true, true );
+			FP_Package::maybe_send_member_list( true, true );
 		else :
-			FP_Membership::maybe_send_member_list( true );
+			FP_Package::maybe_send_member_list( true );
 		endif;
 		$url = remove_query_arg( array( 'force_send_member_list' ) );
 		wp_redirect( $url );

@@ -122,7 +122,7 @@ class FP_Booking {
 		$url = remove_query_arg( array( 'message' ) );
 
 		$user_id    = get_current_user_id();
-		$membership = FP_Membership::get_user_membership( $user_id );
+		$membership = FP_Package::get_user_membership( $user_id );
 		$credits    = get_post_meta( $membership['membership_id'], '_fp_credits', true );
 
 		$session              = get_post( $session_id );
@@ -207,7 +207,7 @@ class FP_Booking {
 		$credits = 0;
 
 		$user_id    = get_current_user_id();
-		$membership = FP_Membership::get_user_membership( $user_id );
+		$membership = FP_Package::get_user_membership( $user_id );
 		$credits    = get_post_meta( $membership['membership_id'], '_fp_credits', true );
 
 		$raw_sessions = FP_Session::get_session();
