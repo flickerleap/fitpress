@@ -51,26 +51,21 @@ class FP_Booking_Notification {
 				endif;
 			endforeach;
 
-		else :
+			if (  $email_settings = get_option( 'fitpress_email_settings', false ) ) :
+				$email = explode( ',', $email_settings['booking_address'] );
+			else :
+				$email = get_bloginfo( 'admin_email' );
+			endif;
 
-			$message .= '<p>Hi,</p>';
-			$message .= '<p>There are no bookings for today.</p>';
+			$notifications[] = array(
+				'template' => 'email/notification.php',
+				'email' => $email,
+				'subject' => 'Today\'s Bookings',
+				'header' => 'Today\'s Bookings',
+				'message' => $message,
+			);
 
 		endif;
-
-		if (  $email_settings = get_option( 'fitpress_email_settings', false ) ) :
-			$email = explode( ',', $email_settings['booking_address'] );
-		else :
-			$email = get_bloginfo( 'admin_email' );
-		endif;
-
-		$notifications[] = array(
-			'template' => 'email/notification.php',
-			'email' => $email,
-			'subject' => 'Today\'s Bookings',
-			'header' => 'Today\'s Bookings',
-			'message' => $message,
-		);
 
 		return $notifications;
 
