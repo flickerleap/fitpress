@@ -31,50 +31,46 @@ class FP_Booking_Notification {
 
 	public function send_membership_bookings( $notifications ) {
 
-		if ( 3 == (int) current_time( 'g' ) ) :
+		$session_bookings = FP_Booking::get_day_bookings();
 
-			$session_bookings = FP_Booking::get_day_bookings();
+		$message = '';
 
-			$message = '';
+		if ( ! empty( $session_bookings ) ) :
 
-			if ( ! empty( $session_bookings ) ) :
+			$message .= '<p>Hi,</p>';
+			$message .= '<p>Here are the bookings for today:</p>';
 
-				$message .= '<p>Hi,</p>';
-				$message .= '<p>Here are the bookings for today:</p>';
+			foreach ( $session_bookings as $session => $bookings ) :
+				if ( ! empty( $bookings ) ) :
+					$message .= '<h3>' . $session . '</h3>';
+					$message .= '<p>';
+					foreach ( $bookings as $booking ) :
+						$message .= $booking['user']->first_name . ' ' . $booking['user']->last_name . '<br />';
+					endforeach;
+					$message .= '</p>';
+				endif;
+			endforeach;
 
-				foreach ( $session_bookings as $session => $bookings ) :
-					if ( ! empty( $bookings ) ) :
-						$message .= '<h3>' . $session . '</h3>';
-						$message .= '<p>';
-						foreach ( $bookings as $booking ) :
-							$message .= $booking['user']->first_name . ' ' . $booking['user']->last_name . '<br />';
-						endforeach;
-						$message .= '</p>';
-					endif;
-				endforeach;
+		else :
 
-			else :
-
-				$message .= '<p>Hi,</p>';
-				$message .= '<p>There are no bookings for today.</p>';
-
-			endif;
-
-			if (  $email_settings = get_option( 'fitpress_email_settings', false ) ) :
-				$email = explode( ',', $email_settings['booking_address'] );
-			else :
-				$email = get_bloginfo( 'admin_email' );
-			endif;
-
-			$notifications[] = array(
-				'template' => 'email/notification.php',
-				'email' => $email,
-				'subject' => 'Today\'s Bookings',
-				'header' => 'Today\'s Bookings',
-				'message' => $message,
-			);
+			$message .= '<p>Hi,</p>';
+			$message .= '<p>There are no bookings for today.</p>';
 
 		endif;
+
+		if (  $email_settings = get_option( 'fitpress_email_settings', false ) ) :
+			$email = explode( ',', $email_settings['booking_address'] );
+		else :
+			$email = get_bloginfo( 'admin_email' );
+		endif;
+
+		$notifications[] = array(
+			'template' => 'email/notification.php',
+			'email' => $email,
+			'subject' => 'Today\'s Bookings',
+			'header' => 'Today\'s Bookings',
+			'message' => $message,
+		);
 
 		return $notifications;
 
