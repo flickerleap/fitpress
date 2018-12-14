@@ -1,4 +1,4 @@
-# fitpress
+# FitPress
 
 FitPress is a WordPress plugin that allows fitness facilities who require bookings for classes to have members create a profile on their site, get a certain amount of credits every month, and then book sessions that have been created. Sessions can be based on different types of classes and support many variations in scheduling.
 
